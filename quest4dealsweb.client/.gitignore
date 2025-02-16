@@ -62,19 +62,19 @@ nuget/
 # IDEs and Editors
 # ==========================
 ## VS Code
-.vscode/
+.vscode
 *.code-workspace
 
 ## Visual Studio
-.vs/
+.vs
 *.csproj.user
 *.sln.cache
 *.userprefs
 *.suo
-*.resharper/
+*.resharper
 
 ## JetBrains (Rider, WebStorm, IntelliJ)
-.idea/
+.idea
 *.iml
 *.ipr
 *.iws
