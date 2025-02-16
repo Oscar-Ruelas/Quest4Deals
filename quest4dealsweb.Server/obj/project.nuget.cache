@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "dgSpecHash": "lP37xwrYA18=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\oscar\\Documents\\GitHub\\Quest4Deals\\quest4dealsweb.Server\\quest4dealsweb.Server.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\oscar\\.nuget\\packages\\amazon.extensions.cognitoauthentication\\3.0.0-preview.1\\amazon.extensions.cognitoauthentication.3.0.0-preview.1.nupkg.sha512",
+    "C:\\Users\\oscar\\.nuget\\packages\\awssdk.cognitoidentity\\4.0.0-preview.4\\awssdk.cognitoidentity.4.0.0-preview.4.nupkg.sha512",
+    "C:\\Users\\oscar\\.nuget\\packages\\awssdk.cognitoidentityprovider\\4.0.0-preview.4\\awssdk.cognitoidentityprovider.4.0.0-preview.4.nupkg.sha512",
+    "C:\\Users\\oscar\\.nuget\\packages\\awssdk.core\\4.0.0-preview.4\\awssdk.core.4.0.0-preview.4.nupkg.sha512",
+    "C:\\Users\\oscar\\.nuget\\packages\\awssdk.securitytoken\\4.0.0-preview.4\\awssdk.securitytoken.4.0.0-preview.4.nupkg.sha512",
+    "C:\\Users\\oscar\\.nuget\\packages\\microsoft.aspnetcore.spaproxy\\8.0.13\\microsoft.aspnetcore.spaproxy.8.0.13.nupkg.sha512",
+    "C:\\Users\\oscar\\.nuget\\packages\\microsoft.extensions.apidescription.server\\6.0.5\\microsoft.extensions.apidescription.server.6.0.5.nupkg.sha512",
+    "C:\\Users\\oscar\\.nuget\\packages\\microsoft.openapi\\1.6.14\\microsoft.openapi.1.6.14.nupkg.sha512",
+    "C:\\Users\\oscar\\.nuget\\packages\\swashbuckle.aspnetcore\\6.6.2\\swashbuckle.aspnetcore.6.6.2.nupkg.sha512",
+    "C:\\Users\\oscar\\.nuget\\packages\\swashbuckle.aspnetcore.swagger\\6.6.2\\swashbuckle.aspnetcore.swagger.6.6.2.nupkg.sha512",
+    "C:\\Users\\oscar\\.nuget\\packages\\swashbuckle.aspnetcore.swaggergen\\6.6.2\\swashbuckle.aspnetcore.swaggergen.6.6.2.nupkg.sha512",
+    "C:\\Users\\oscar\\.nuget\\packages\\swashbuckle.aspnetcore.swaggerui\\6.6.2\\swashbuckle.aspnetcore.swaggerui.6.6.2.nupkg.sha512"
+  ],
+  "logs": []
+}
