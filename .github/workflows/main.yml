@@ -43,7 +43,7 @@ jobs:
 
       - name: Install Frontend Dependencies
         run: |
-          cd path/to/react-app
+          cd quest4dealsweb.client
           npm install
 
       - name: Build Frontend
