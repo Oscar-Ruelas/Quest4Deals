@@ -1,7 +1,13 @@
+import Filter from "./components/Filter";
+import Navbar from "./components/Navbar";
+import Dashboard from "./components/Dashboard";
+
 function App() {
   return (
     <div>
-      <h1>Quest4Deals</h1>
+      <Navbar />
+      <Filter />
+      <Dashboard />
     </div>
   );
 }
