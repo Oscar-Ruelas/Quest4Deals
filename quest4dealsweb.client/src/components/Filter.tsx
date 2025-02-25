@@ -1,10 +1,6 @@
 function Filter() {
-  // Temporary style for the component to outline the container for css placement
-  const tempStyle = {
-    border: "1px solid black",
-  };
   return (
-    <div style={tempStyle}>
+    <div className="filter">
       <h2>Filters</h2>
       <select name="platform" id="platform">
         <option value="All">Platform</option>
