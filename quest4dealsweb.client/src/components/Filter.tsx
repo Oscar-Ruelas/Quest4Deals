@@ -25,6 +25,7 @@ function Filter() {
         <option value="High_Low">Highest to Lowest</option>
         <option value="Free">Free</option>
       </select>
+      <button type="submit">Apply</button>
     </div>
   );
 }

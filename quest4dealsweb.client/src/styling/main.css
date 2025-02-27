@@ -5,15 +5,25 @@
 }
 
 .navbar {
+  /* Styling for positioning within parent element */
   grid-row: 1;
   grid-column: 1 / -1;
   border: 1px solid black;
+  /* Styling within navbar */
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
 }
 
 .filter {
+  /* Styling for positioning within parent element */
   grid-column: 1;
   grid-row: 2 / -1;
   border: 1px solid black;
+  /* Styling within navbar */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .dashboard {
