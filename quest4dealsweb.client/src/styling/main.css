@@ -1,3 +1,18 @@
+/* This makes these colors accessible across the entire project, so we can define a color theme here and use them in styling components */
+:root {
+  --primary-color: #007bff;
+  --secondary-color: #00ff00;
+  --background-color: #1a1a1a;
+  --text-color: #d3d3d3;
+  --highlight-color: #ff6600;
+  --secondary-text-color: #a9a9a9;
+  --error-color: #ff3b30;
+}
+
+html {
+  background-color: var(--background-color);
+}
+
 .App {
   display: grid;
   grid-template-columns: 200px 1fr 1fr 1fr;
@@ -13,6 +28,11 @@
   display: flex;
   justify-content: space-evenly;
   align-items: center;
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  font-size: 1.5em;
+  font-weight: bold;
+  border-radius: 10px;
 }
 
 .filter {
@@ -24,6 +44,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  background-color: var(--primary-color);
 }
 
 .dashboard {
