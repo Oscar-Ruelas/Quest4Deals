@@ -1,3 +1,16 @@
+/* This makes these colors accessible across the entire project, so we can define a color theme here and use them in styling components */
+:root {
+  --primary-color: #222222;
+  --secondary-color: #4472ca;
+  --highlight-color: #f79256;
+}
+
+html,
+body {
+  background-color: var(--primary-color);
+  font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+}
+
 .App {
   display: grid;
   grid-template-columns: 200px 1fr 1fr 1fr;
@@ -8,28 +21,82 @@
   /* Styling for positioning within parent element */
   grid-row: 1;
   grid-column: 1 / -1;
-  border: 1px solid black;
   /* Styling within navbar */
   display: flex;
   justify-content: space-evenly;
   align-items: center;
+  background-color: var(--secondary-color);
+  color: var(--highlight-color);
+  font-size: 1.5em;
+  border-radius: 10px;
+  margin: 5px;
+}
+
+.navbar a {
+  color: var(--highlight-color);
+  text-decoration: none;
+}
+
+.navbar a:hover {
+  color: white;
+}
+
+.navbar input {
+  width: 400px;
+  height: 30px;
+  border-radius: 5px;
+  border: 1px solid black;
+}
+
+.navbar img {
+  width: 150px;
+  height: auto;
+  border-radius: 10px;
 }
 
 .filter {
   /* Styling for positioning within parent element */
   grid-column: 1;
   grid-row: 2 / -1;
-  border: 1px solid black;
   /* Styling within navbar */
   display: flex;
   flex-direction: column;
   align-items: center;
+  background-color: var(--secondary-color);
+  color: var(--highlight-color);
+  font-size: 1.5em;
+  border-radius: 10px;
+}
+
+.filter select {
+  width: 150px;
+  height: 30px;
+  border-radius: 5px;
+  border: 1px solid black;
+  margin: 10px;
+}
+
+.filter button {
+  width: 150px;
+  height: 30px;
+  border-radius: 5px;
+  border: 1px solid black;
+}
+
+.filter button:hover {
+  background-color: var(--highlight-color);
+  color: white;
+  transition: 0.1s;
+  cursor: pointer;
+}
+
+.filter button:active {
+  background-color: var(--primary-color);
 }
 
 .dashboard {
   grid-column: 2 / -1;
   grid-row: 2 / -1;
-  border: 1px solid black;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-evenly;
@@ -39,8 +106,12 @@
   border: 1px solid black;
   width: 300px;
   height: 300px;
-  margin: 10px;
+  margin: 2px;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
+  background-color: var(--secondary-color);
+  color: white;
+  border-radius: 10px;
+  padding: 5px;
 }

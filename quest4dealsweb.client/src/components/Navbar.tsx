@@ -3,7 +3,7 @@ function Navbar() {
   return (
     <div className="navbar">
       <input type="search" placeholder="Search Games" />
-      <img src="" alt="Quest4Deals Logo" />
+      <img src="../../public/logo.png" alt="Quest4Deals Logo" />
       <a href="">Sign In</a>
     </div>
   );
