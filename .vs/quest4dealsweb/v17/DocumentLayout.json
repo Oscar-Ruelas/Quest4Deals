@@ -1,12 +1,87 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\oscar\\Documents\\GitHub\\Quest4Deals\\",
-  "Documents": [],
+  "WorkspaceRootPath": "C:\\Users\\adria\\Desktop\\Quest4Deals\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{7FE9C367-F73F-4F6D-967A-F6DC73013F25}|quest4dealsweb.Server\\quest4dealsweb.Server.csproj|c:\\users\\adria\\desktop\\quest4deals\\quest4dealsweb.server\\api_requestor\\example.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7FE9C367-F73F-4F6D-967A-F6DC73013F25}|quest4dealsweb.Server\\quest4dealsweb.Server.csproj|solutionrelative:quest4dealsweb.server\\api_requestor\\example.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7FE9C367-F73F-4F6D-967A-F6DC73013F25}|quest4dealsweb.Server\\quest4dealsweb.Server.csproj|c:\\users\\adria\\desktop\\quest4deals\\quest4dealsweb.server\\api_requestor\\api_caller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7FE9C367-F73F-4F6D-967A-F6DC73013F25}|quest4dealsweb.Server\\quest4dealsweb.Server.csproj|solutionrelative:quest4dealsweb.server\\api_requestor\\api_caller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7FE9C367-F73F-4F6D-967A-F6DC73013F25}|quest4dealsweb.Server\\quest4dealsweb.Server.csproj|c:\\users\\adria\\desktop\\quest4deals\\quest4dealsweb.server\\api_requestor\\api_request.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7FE9C367-F73F-4F6D-967A-F6DC73013F25}|quest4dealsweb.Server\\quest4dealsweb.Server.csproj|solutionrelative:quest4dealsweb.server\\api_requestor\\api_request.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\adria\\.nuget\\packages\\microsoft.visualstudio.javascript.sdk\\1.0.2431246\\Sdk\\Sdk.targets||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
       "VerticalTabListWidth": 256,
-      "DocumentGroups": []
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Sdk.targets",
+              "DocumentMoniker": "C:\\Users\\adria\\.nuget\\packages\\microsoft.visualstudio.javascript.sdk\\1.0.2431246\\Sdk\\Sdk.targets",
+              "RelativeDocumentMoniker": "..\\..\\.nuget\\packages\\microsoft.visualstudio.javascript.sdk\\1.0.2431246\\Sdk\\Sdk.targets",
+              "ToolTip": "C:\\Users\\adria\\.nuget\\packages\\microsoft.visualstudio.javascript.sdk\\1.0.2431246\\Sdk\\Sdk.targets",
+              "RelativeToolTip": "..\\..\\.nuget\\packages\\microsoft.visualstudio.javascript.sdk\\1.0.2431246\\Sdk\\Sdk.targets",
+              "ViewState": "AgIAAAIBAAAAAAAAAAAwwBEBAACgAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003801|",
+              "WhenOpened": "2025-03-05T08:33:31.659Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Example.cs",
+              "DocumentMoniker": "C:\\Users\\adria\\Desktop\\Quest4Deals\\quest4dealsweb.Server\\API_Requestor\\Example.cs",
+              "RelativeDocumentMoniker": "quest4dealsweb.Server\\API_Requestor\\Example.cs",
+              "ToolTip": "C:\\Users\\adria\\Desktop\\Quest4Deals\\quest4dealsweb.Server\\API_Requestor\\Example.cs",
+              "RelativeToolTip": "quest4dealsweb.Server\\API_Requestor\\Example.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAYAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-05T08:26:31.462Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "API_Caller.cs",
+              "DocumentMoniker": "C:\\Users\\adria\\Desktop\\Quest4Deals\\quest4dealsweb.Server\\API_Requestor\\API_Caller.cs",
+              "RelativeDocumentMoniker": "quest4dealsweb.Server\\API_Requestor\\API_Caller.cs",
+              "ToolTip": "C:\\Users\\adria\\Desktop\\Quest4Deals\\quest4dealsweb.Server\\API_Requestor\\API_Caller.cs",
+              "RelativeToolTip": "quest4dealsweb.Server\\API_Requestor\\API_Caller.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAhAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-05T08:26:01.992Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "API_Request.cs",
+              "DocumentMoniker": "C:\\Users\\adria\\Desktop\\Quest4Deals\\quest4dealsweb.Server\\API_Requestor\\API_Request.cs",
+              "RelativeDocumentMoniker": "quest4dealsweb.Server\\API_Requestor\\API_Request.cs",
+              "ToolTip": "C:\\Users\\adria\\Desktop\\Quest4Deals\\quest4dealsweb.Server\\API_Requestor\\API_Request.cs",
+              "RelativeToolTip": "quest4dealsweb.Server\\API_Requestor\\API_Request.cs",
+              "ViewState": "AgIAABAAAAAAAAAAAAAQwAUAAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-05T08:25:32.039Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
     }
   ]
 }
