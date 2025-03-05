@@ -1,12 +1,17 @@
+// src/components/Navbar.tsx
+import { Link } from "react-router-dom";
+
 function Navbar() {
-  // Temporary style for the component to outline the container for css placement
-  return (
-    <div className="navbar">
-      <input type="search" placeholder="Search Games" />
-      <img src="../../public/logo.png" alt="Quest4Deals Logo" />
-      <a href="">Sign In</a>
-    </div>
-  );
+    return (
+        <div className="navbar">
+            <input type="search" placeholder="Search Games" />
+            <img src="../../public/logo.png" alt="Quest4Deals Logo" />
+            <Link to="/login">Sign In</Link>
+        </div>
+    );
 }
 
 export default Navbar;
+
+
+

@@ -8,11 +8,66 @@
     ".NETCoreApp,Version=v8.0": {
       "quest4dealsweb.Server/1.0.0": {
         "dependencies": {
+          "Amazon.Extensions.CognitoAuthentication": "3.0.0-preview.1",
           "Microsoft.AspNetCore.SpaProxy": "8.0.13",
           "Swashbuckle.AspNetCore": "6.6.2"
         },
         "runtime": {
           "quest4dealsweb.Server.dll": {}
+        }
+      },
+      "Amazon.Extensions.CognitoAuthentication/3.0.0-preview.1": {
+        "dependencies": {
+          "AWSSDK.CognitoIdentity": "4.0.0-preview.4",
+          "AWSSDK.CognitoIdentityProvider": "4.0.0-preview.4"
+        },
+        "runtime": {
+          "lib/net8.0/Amazon.Extensions.CognitoAuthentication.dll": {
+            "assemblyVersion": "3.0.0.0",
+            "fileVersion": "3.0.0.0"
+          }
+        }
+      },
+      "AWSSDK.CognitoIdentity/4.0.0-preview.4": {
+        "dependencies": {
+          "AWSSDK.Core": "4.0.0-preview.4",
+          "AWSSDK.SecurityToken": "4.0.0-preview.4"
+        },
+        "runtime": {
+          "lib/net8.0/AWSSDK.CognitoIdentity.dll": {
+            "assemblyVersion": "4.0.0.0",
+            "fileVersion": "4.0.0.0"
+          }
+        }
+      },
+      "AWSSDK.CognitoIdentityProvider/4.0.0-preview.4": {
+        "dependencies": {
+          "AWSSDK.Core": "4.0.0-preview.4"
+        },
+        "runtime": {
+          "lib/net8.0/AWSSDK.CognitoIdentityProvider.dll": {
+            "assemblyVersion": "4.0.0.0",
+            "fileVersion": "4.0.0.0"
+          }
+        }
+      },
+      "AWSSDK.Core/4.0.0-preview.4": {
+        "runtime": {
+          "lib/net8.0/AWSSDK.Core.dll": {
+            "assemblyVersion": "4.0.0.0",
+            "fileVersion": "4.0.0.0"
+          }
+        }
+      },
+      "AWSSDK.SecurityToken/4.0.0-preview.4": {
+        "dependencies": {
+          "AWSSDK.Core": "4.0.0-preview.4"
+        },
+        "runtime": {
+          "lib/net8.0/AWSSDK.SecurityToken.dll": {
+            "assemblyVersion": "4.0.0.0",
+            "fileVersion": "4.0.0.0"
+          }
         }
       },
       "Microsoft.AspNetCore.SpaProxy/8.0.13": {
@@ -77,6 +132,41 @@
       "type": "project",
       "serviceable": false,
       "sha512": ""
+    },
+    "Amazon.Extensions.CognitoAuthentication/3.0.0-preview.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-3HPwSevHxNdFq8oe+xEr8dr03h7rwN1s5pPJ/+61LwM/OFM2A9BOnLsfSLHPmy38yrIi6lqoI7tZroPsLFrLfQ==",
+      "path": "amazon.extensions.cognitoauthentication/3.0.0-preview.1",
+      "hashPath": "amazon.extensions.cognitoauthentication.3.0.0-preview.1.nupkg.sha512"
+    },
+    "AWSSDK.CognitoIdentity/4.0.0-preview.4": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-xvfyi9zTe6iy1H6p+FF0+00G8cViqLL7g0IabzOIr32NJQaxVpcCLG7ukfq4jWILgUi7YlNEtneZkEV2UvILMQ==",
+      "path": "awssdk.cognitoidentity/4.0.0-preview.4",
+      "hashPath": "awssdk.cognitoidentity.4.0.0-preview.4.nupkg.sha512"
+    },
+    "AWSSDK.CognitoIdentityProvider/4.0.0-preview.4": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-7ESs7ntGs/wV2qiHW/5resXHCraB6ZMGGkiJmPz008Jq8DsGwKkuFJJpEM7MwT6SQseXRZOONZtttIQ38tsngw==",
+      "path": "awssdk.cognitoidentityprovider/4.0.0-preview.4",
+      "hashPath": "awssdk.cognitoidentityprovider.4.0.0-preview.4.nupkg.sha512"
+    },
+    "AWSSDK.Core/4.0.0-preview.4": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-VeekkHkQVHoQ/5n0Bmbzh0dlfqksMLMYftijZs6zIZ3uv1JWGDTxWHNw3H7FSf1933x1DQRTLSnPbvpTwVLbxw==",
+      "path": "awssdk.core/4.0.0-preview.4",
+      "hashPath": "awssdk.core.4.0.0-preview.4.nupkg.sha512"
+    },
+    "AWSSDK.SecurityToken/4.0.0-preview.4": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-3+Bp2KZ5fAmVGMtFQlTDdvL0ksXH9aAHVGbcNU/U9hbBQBjsUUJITFPuAOWAOHocP+h4OGi8ziLF4AyM2PR9wg==",
+      "path": "awssdk.securitytoken/4.0.0-preview.4",
+      "hashPath": "awssdk.securitytoken.4.0.0-preview.4.nupkg.sha512"
     },
     "Microsoft.AspNetCore.SpaProxy/8.0.13": {
       "type": "package",

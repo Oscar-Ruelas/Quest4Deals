@@ -1,16 +1,27 @@
-import Filter from "./components/Filter";
+// src/App.tsx
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
+import Filter from "./components/Filter";
 import Dashboard from "./components/Dashboard";
+import Login from "./pages/Login";
 import "./styling/main.css";
 
 function App() {
-  return (
-    <div className="App">
-      <Navbar />
-      <Filter />
-      <Dashboard />
-    </div>
-  );
+    return (
+        <Router>
+            <Navbar />
+            <Routes>
+                <Route path="/" element={
+                    <div className="App">
+                        <Filter />
+                        <Dashboard />
+                    </div>
+                } />
+                <Route path="/login" element={<Login />} />
+            </Routes>
+        </Router>
+    );
 }
 
 export default App;
+

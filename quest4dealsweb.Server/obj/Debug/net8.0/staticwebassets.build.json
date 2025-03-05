@@ -1,13 +1,13 @@
 {
   "Version": 1,
-  "Hash": "nqu+SqQ3gEiWZsD/ouOuE07M7LUTO+eVsyXMOCYaKw8=",
+  "Hash": "dQk1YnOEd0Mr3+J6s8JG+OPZ2bIeGQio3OFerF+nZNM=",
   "Source": "quest4dealsweb.Server",
   "BasePath": "_content/quest4dealsweb.Server",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [
     {
-      "Identity": "C:\\Users\\oscar\\Documents\\GitHub\\Quest4Deals\\quest4dealsweb.client\\quest4dealsweb.client.esproj",
+      "Identity": "/Users/oscar/Documents/My Portfolio Website/Quest4Deals/quest4dealsweb.client/quest4dealsweb.client.esproj",
       "Version": 2,
       "Source": "quest4dealsweb.client",
       "GetPublishAssetsTargets": "GetCurrentProjectPublishStaticWebAssetItems",
