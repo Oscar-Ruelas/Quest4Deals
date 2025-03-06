@@ -3,7 +3,7 @@ interface Game {
   title: string;
   price: number;
   rating: string;
-  shortDescription: string;
+  short_desc: string;
 }
 
 function Gamecard({ game }: { game: Game }) {
@@ -11,9 +11,8 @@ function Gamecard({ game }: { game: Game }) {
     <div className="gamecard">
       <img src={game.image} alt="Game Image" />
       <h2>{game.title}</h2>
-      <p>{game.price}</p>
-      <p>{game.rating}</p>
-      <p>{game.shortDescription}</p>
+      <p>Lowest Price: ${game.game_info.lowest_price}</p>
+      <p className="desc">{game.game_info.short_desc}</p>
     </div>
   );
 }
