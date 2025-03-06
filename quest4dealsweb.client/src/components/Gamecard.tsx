@@ -1,9 +1,12 @@
+interface GameInfo {
+  lowest_price: number;
+  short_desc: string;
+}
+
 interface Game {
   image: string;
   title: string;
-  price: number;
-  rating: string;
-  short_desc: string;
+  game_info: GameInfo;
 }
 
 function Gamecard({ game }: { game: Game }) {
