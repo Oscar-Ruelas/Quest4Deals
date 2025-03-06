@@ -16,6 +16,7 @@ function Dashboard() {
         // Parse the response to JSON
         const data = await response.json();
         // Set the games array with the data in JSON format
+        // items is the array of games in the JSON response
         setGames(data.results.items);
         console.log("Games fetched successfully!");
       } catch (error) {
@@ -27,6 +28,7 @@ function Dashboard() {
     fetchGames();
   }, []);
 
+  // Render the Gamecard component for each game in the games array, passing the game object as a prop to the Gamecard component
   return (
     <div className="dashboard">
       {games.map((game, index) => (

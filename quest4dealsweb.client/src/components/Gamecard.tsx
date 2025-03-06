@@ -1,8 +1,10 @@
+// Inner part of Game interface because it is another object inside the Game interface for JSON data
 interface GameInfo {
   lowest_price: number;
   short_desc: string;
 }
 
+// Game interface for JSON data
 interface Game {
   image: string;
   title: string;
@@ -10,6 +12,8 @@ interface Game {
 }
 
 function Gamecard({ game }: { game: Game }) {
+  // This is accessing the game object passed as a prop to the Gamecard component and
+  // displaying the image, title, lowest price, and short description of the game in the game card
   return (
     <div className="gamecard">
       <img src={game.image} alt="Game Image" />
