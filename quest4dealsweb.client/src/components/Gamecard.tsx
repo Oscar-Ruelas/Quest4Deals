@@ -1,11 +1,19 @@
-function Gamecard() {
+interface Game {
+  image: string;
+  title: string;
+  price: number;
+  rating: string;
+  shortDescription: string;
+}
+
+function Gamecard({ game }: { game: Game }) {
   return (
     <div className="gamecard">
-      <img src="" alt="Game Image" />
-      <h2>Title</h2>
-      <p>Price</p>
-      <p>Rating</p>
-      <p>Short Description</p>
+      <img src={game.image} alt="Game Image" />
+      <h2>{game.title}</h2>
+      <p>{game.price}</p>
+      <p>{game.rating}</p>
+      <p>{game.shortDescription}</p>
     </div>
   );
 }
