@@ -1,4 +1,25 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using quest4dealsweb.Server.Data;
+
 var builder = WebApplication.CreateBuilder(args);
+
+// Get connection string from appsettings.json
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+
+if (string.IsNullOrEmpty(connectionString))
+{
+    throw new InvalidOperationException("The ConnectionString property has not been initialized. Check appsettings.json.");
+}
+
+Console.WriteLine($"Using Connection String: {connectionString}");
+
+
+// Register DbContext with SQL Server
+builder.Services.AddDbContext<DataContext>(options =>
+    options.UseSqlServer(connectionString));
+
 
 // Add services to the container.
 
