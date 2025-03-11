@@ -24,6 +24,25 @@ public class GameController: ControllerBase
         
     }
     
+    [HttpGet("user/{userId}")]
+    public async Task<ActionResult<IEnumerable<Game>>> GetUserGames(string userId)
+    {
+        var userGames = await _context.Games
+            .Where(g => g.UserId == userId) // ✅ Filter by UserId
+            .ToListAsync();
+
+        if (userGames == null || userGames.Count == 0)
+        {
+            return NotFound("No games found for this user.");
+        }
+
+        return Ok(userGames);
+    }
+
+
+
+
+    
     [HttpPost]
     public async Task<ActionResult<Game>> CreateGame(Game game)
     {
@@ -33,9 +52,13 @@ public class GameController: ControllerBase
             return BadRequest("User not found.");
         }
 
+        // Ensure the existing user from the database is used instead of a duplicate
+        game.User = user;
+
         _context.Games.Add(game);
         await _context.SaveChangesAsync();
 
         return CreatedAtAction(nameof(GetGames), new { id = game.Id }, game);
     }
+
 }
