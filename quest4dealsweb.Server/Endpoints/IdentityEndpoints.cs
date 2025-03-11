@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -16,22 +17,31 @@ public static class IdentityEndpoints
         // ✅ Register User
         identityRoutes.MapPost("/register", async ([FromBody] RegisterModel model, UserManager<User> userManager) =>
         {
+            // ✅ Check if the email or username is already taken
+            if (await userManager.FindByEmailAsync(model.Email) != null)
+                return Results.BadRequest(new { Message = "Email is already in use." });
+
+            if (await userManager.FindByNameAsync(model.UserName) != null)
+                return Results.BadRequest(new { Message = "Username is already taken." });
+
+            // ✅ Create new user object
             var user = new User
             {
                 Name = model.Name,
                 UserName = model.UserName,
-                Email = model.Email
+                Email = model.Email,
+                CreatedAt = DateTime.UtcNow
             };
 
+            // ✅ Attempt to create the user with a hashed password
             var result = await userManager.CreateAsync(user, model.Password);
 
             if (!result.Succeeded)
-            {
                 return Results.BadRequest(result.Errors);
-            }
 
             return Results.Ok(new { Message = "User registered successfully" });
         });
+
 
         // ✅ Login User (using email OR username)
         identityRoutes.MapPost("/login", async ([FromBody] LoginModel model, SignInManager<User> signInManager, UserManager<User> userManager) =>
@@ -42,28 +52,41 @@ public static class IdentityEndpoints
             if (user == null)
                 return Results.Unauthorized();
 
-            var result = await signInManager.PasswordSignInAsync(user.UserName, model.Password, isPersistent: false, lockoutOnFailure: false);
+            // ✅ Authenticate user using SignInManager
+            var result = await signInManager.PasswordSignInAsync(user.UserName, model.Password, isPersistent: true, lockoutOnFailure: false);
 
             if (!result.Succeeded)
                 return Results.Unauthorized();
 
-            // ✅ Generate JWT token
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("YourSecretKey123456"));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var token = new JwtSecurityToken(
-                issuer: "https://yourbackend.com",
-                audience: "https://yourfrontend.com",
-                claims: new List<Claim> { new Claim(ClaimTypes.Name, user.UserName) },
-                expires: DateTime.UtcNow.AddHours(1),
-                signingCredentials: creds
-            );
-
             return Results.Ok(new
             {
                 Message = "Login successful",
-                Token = new JwtSecurityTokenHandler().WriteToken(token)
+                User = new
+                {
+                    user.Id,
+                    user.UserName,
+                    user.Email
+                }
             });
         });
+
+        
+        identityRoutes.MapGet("/profile", [Authorize] async (UserManager<User> userManager, ClaimsPrincipal userClaims) =>
+        {
+            var user = await userManager.GetUserAsync(userClaims);
+
+            if (user == null)
+                return Results.Unauthorized();
+
+            return Results.Ok(new
+            {
+                Id = user.Id,
+                Name = user.Name,
+                UserName = user.UserName,
+                Email = user.Email
+            });
+        });
+
 
         // ✅ Logout User
         identityRoutes.MapPost("/logout", async (SignInManager<User> signInManager) =>

@@ -81,8 +81,8 @@ C:/Users/oscar/Documents/GitHub/Quest4Deals/quest4dealsweb.Server/obj/Debug/net8
 /Users/oscar/Documents/My Portfolio Website/Quest4Deals/quest4dealsweb.Server/obj/Debug/net8.0/quest4dealsweb.Server.pdb
 /Users/oscar/Documents/My Portfolio Website/Quest4Deals/quest4dealsweb.Server/obj/Debug/net8.0/quest4dealsweb.Server.genruntimeconfig.cache
 /Users/oscar/Documents/My Portfolio Website/Quest4Deals/quest4dealsweb.Server/obj/Debug/net8.0/ref/quest4dealsweb.Server.dll
-/Users/oscar/Documents/SCP/Quest4Deals/quest4dealsweb.Server/bin/Debug/net8.0/appsettings.Development.json
 /Users/oscar/Documents/SCP/Quest4Deals/quest4dealsweb.Server/bin/Debug/net8.0/spa.proxy.json
+/Users/oscar/Documents/SCP/Quest4Deals/quest4dealsweb.Server/bin/Debug/net8.0/appsettings.Development.json
 /Users/oscar/Documents/SCP/Quest4Deals/quest4dealsweb.Server/bin/Debug/net8.0/appsettings.json
 /Users/oscar/Documents/SCP/Quest4Deals/quest4dealsweb.Server/bin/Debug/net8.0/quest4dealsweb.Server.staticwebassets.endpoints.json
 /Users/oscar/Documents/SCP/Quest4Deals/quest4dealsweb.Server/bin/Debug/net8.0/quest4dealsweb.Server
@@ -93,6 +93,8 @@ C:/Users/oscar/Documents/GitHub/Quest4Deals/quest4dealsweb.Server/obj/Debug/net8
 /Users/oscar/Documents/SCP/Quest4Deals/quest4dealsweb.Server/bin/Debug/net8.0/Azure.Core.dll
 /Users/oscar/Documents/SCP/Quest4Deals/quest4dealsweb.Server/bin/Debug/net8.0/Azure.Identity.dll
 /Users/oscar/Documents/SCP/Quest4Deals/quest4dealsweb.Server/bin/Debug/net8.0/Humanizer.dll
+/Users/oscar/Documents/SCP/Quest4Deals/quest4dealsweb.Server/bin/Debug/net8.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll
+/Users/oscar/Documents/SCP/Quest4Deals/quest4dealsweb.Server/bin/Debug/net8.0/Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
 /Users/oscar/Documents/SCP/Quest4Deals/quest4dealsweb.Server/bin/Debug/net8.0/Microsoft.AspNetCore.SpaProxy.dll
 /Users/oscar/Documents/SCP/Quest4Deals/quest4dealsweb.Server/bin/Debug/net8.0/Microsoft.Bcl.AsyncInterfaces.dll
 /Users/oscar/Documents/SCP/Quest4Deals/quest4dealsweb.Server/bin/Debug/net8.0/Microsoft.CodeAnalysis.dll
@@ -225,5 +227,3 @@ C:/Users/oscar/Documents/GitHub/Quest4Deals/quest4dealsweb.Server/obj/Debug/net8
 /Users/oscar/Documents/SCP/Quest4Deals/quest4dealsweb.Server/obj/Debug/net8.0/quest4dealsweb.Server.pdb
 /Users/oscar/Documents/SCP/Quest4Deals/quest4dealsweb.Server/obj/Debug/net8.0/quest4dealsweb.Server.genruntimeconfig.cache
 /Users/oscar/Documents/SCP/Quest4Deals/quest4dealsweb.Server/obj/Debug/net8.0/ref/quest4dealsweb.Server.dll
-/Users/oscar/Documents/SCP/Quest4Deals/quest4dealsweb.Server/bin/Debug/net8.0/Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
-/Users/oscar/Documents/SCP/Quest4Deals/quest4dealsweb.Server/bin/Debug/net8.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll
