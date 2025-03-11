@@ -1,8 +1,11 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using quest4dealsweb.Server.Data;
-using quest4dealsweb.Server.Endpoints;
 using quest4dealsweb.Server.models;
+using quest4dealsweb.Server.Endpoints;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,12 +23,6 @@ Console.WriteLine($"Using Connection String: {connectionString}");
 builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(connectionString));
 
-// ✅ Fix: Register `TimeProvider` for Identity security stamp validation
-builder.Services.AddSingleton(TimeProvider.System);
-
-// ✅ Fix: Register `IDataProtectionProvider` for secure token handling
-builder.Services.AddDataProtection();
-
 // Configure Identity
 builder.Services.AddIdentityCore<User>(options =>
     {
@@ -33,7 +30,26 @@ builder.Services.AddIdentityCore<User>(options =>
     })
     .AddEntityFrameworkStores<DataContext>()
     .AddSignInManager()
-    .AddDefaultTokenProviders();  // ✅ Required for password reset & security features
+    .AddDefaultTokenProviders();
+
+// ✅ Configure JWT Authentication
+var key = Encoding.UTF8.GetBytes("YourSecretKey123456");
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.RequireHttpsMetadata = false;
+        options.SaveToken = true;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = "https://yourbackend.com",
+            ValidAudience = "https://yourfrontend.com",
+            IssuerSigningKey = new SymmetricSecurityKey(key)
+        };
+    });
 
 // Add authentication and authorization
 builder.Services.AddAuthorization();
@@ -43,14 +59,15 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Enable static files and authentication
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
-// ✅ Call Custom Identity API Endpoints
-app.MapIdentityRoutes();  // 💡 Now it correctly calls the separate file!
+// ✅ Enable Authentication & Authorization Middleware
+app.UseAuthentication();  // 💡 Ensures JWT authentication works
+app.UseAuthorization();
 
-// Configure middleware
+app.MapIdentityRoutes();  // ✅ Calls the custom Identity endpoints
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -58,7 +75,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseAuthorization();
 app.MapControllers();
 app.MapFallbackToFile("/index.html");
 
