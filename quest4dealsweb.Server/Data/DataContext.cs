@@ -1,29 +1,33 @@
 using quest4dealsweb.Server.models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace quest4dealsweb.Server.Data;
 
-using Microsoft.EntityFrameworkCore;
-
-public class DataContext : DbContext
+public class DataContext : IdentityDbContext<User>
 {
     public DataContext(DbContextOptions<DataContext> options) : base(options) { }
 
-    
-    public DbSet<User> Users { get; set; }
     public DbSet<Game> Games { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // Ensure that Email is unique
+        base.OnModelCreating(modelBuilder); // Ensure Identity is configured properly
+
+        // Ensure that Email is unique (already unique by default in Identity)
         modelBuilder.Entity<User>()
             .HasIndex(u => u.Email)
             .IsUnique();
 
-        // Ensure that Username is unique
+        // Ensure that UserName is unique (replaces Username)
         modelBuilder.Entity<User>()
-            .HasIndex(u => u.Username)
+            .HasIndex(u => u.UserName)
             .IsUnique();
         
+        modelBuilder.Entity<Game>()
+            .Property(g => g.Price)
+            .HasPrecision(18, 2); 
+
         modelBuilder.Entity<Game>()
             .HasOne(g => g.User)
             .WithMany()

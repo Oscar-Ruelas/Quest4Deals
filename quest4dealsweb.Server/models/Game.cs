@@ -8,6 +8,6 @@ public class Game
     public string Platform { get; set; } = string.Empty;
     public decimal Price { get; set; }
     
-    public int UserId { get; set; } // Foreign Key
+    public string UserId { get; set; } // Foreign Key
     public User User { get; set; } // Navigation Property
 }
