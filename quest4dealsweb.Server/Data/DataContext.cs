@@ -10,6 +10,7 @@ public class DataContext : DbContext
 
     
     public DbSet<User> Users { get; set; }
+    public DbSet<Game> Games { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -22,5 +23,11 @@ public class DataContext : DbContext
         modelBuilder.Entity<User>()
             .HasIndex(u => u.Username)
             .IsUnique();
+        
+        modelBuilder.Entity<Game>()
+            .HasOne(g => g.User)
+            .WithMany()
+            .HasForeignKey(g => g.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
