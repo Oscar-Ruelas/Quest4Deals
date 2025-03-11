@@ -29,9 +29,9 @@ public class DataContext : IdentityDbContext<User>
             .HasPrecision(18, 2); 
 
         modelBuilder.Entity<Game>()
-            .HasOne(g => g.User)
-            .WithMany()
+            .HasOne<User>() 
+            .WithMany()    
             .HasForeignKey(g => g.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Cascade); 
     }
 }

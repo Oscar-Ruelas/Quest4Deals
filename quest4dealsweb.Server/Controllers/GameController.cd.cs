@@ -17,12 +17,12 @@ public class GameController: ControllerBase
         _context = context;
     }
     
-    [HttpGet]
+    /*[HttpGet]
     public async Task<ActionResult<IEnumerable<Game>>> GetGames()
     {
         return await _context.Games.Include(g => g.User).ToListAsync();
         
-    }
+    }*/
     
     [HttpGet("user/{userId}")]
     public async Task<ActionResult<IEnumerable<Game>>> GetUserGames(string userId)
@@ -46,19 +46,18 @@ public class GameController: ControllerBase
     [HttpPost]
     public async Task<ActionResult<Game>> CreateGame(Game game)
     {
-        var user = await _context.Users.FindAsync(game.UserId);
-        if (user == null)
+        // ✅ Check if the User exists before adding the game
+        var userExists = await _context.Users.AnyAsync(u => u.Id == game.UserId);
+        if (!userExists)
         {
             return BadRequest("User not found.");
         }
 
-        // Ensure the existing user from the database is used instead of a duplicate
-        game.User = user;
-
-        _context.Games.Add(game);
+        _context.Games.Add(game); // ✅ No need to attach User
         await _context.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(GetGames), new { id = game.Id }, game);
+        return CreatedAtAction(nameof(GetUserGames), new { userId = game.UserId }, game);
     }
+
 
 }
