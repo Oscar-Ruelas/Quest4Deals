@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\ryanh\\OneDrive\\Desktop\\current classes\\senior projects\\Quest4Deals\\quest4dealsweb.Server\\quest4dealsweb.Server.csproj": {}
+    "/Users/oscar/Documents/SCP/Quest4Deals/quest4dealsweb.Server/quest4dealsweb.Server.csproj": {}
   },
   "projects": {
-    "C:\\Users\\ryanh\\OneDrive\\Desktop\\current classes\\senior projects\\Quest4Deals\\quest4dealsweb.Server\\quest4dealsweb.Server.csproj": {
+    "/Users/oscar/Documents/SCP/Quest4Deals/quest4dealsweb.Server/quest4dealsweb.Server.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\ryanh\\OneDrive\\Desktop\\current classes\\senior projects\\Quest4Deals\\quest4dealsweb.Server\\quest4dealsweb.Server.csproj",
+        "projectUniqueName": "/Users/oscar/Documents/SCP/Quest4Deals/quest4dealsweb.Server/quest4dealsweb.Server.csproj",
         "projectName": "quest4dealsweb.Server",
-        "projectPath": "C:\\Users\\ryanh\\OneDrive\\Desktop\\current classes\\senior projects\\Quest4Deals\\quest4dealsweb.Server\\quest4dealsweb.Server.csproj",
-        "packagesPath": "C:\\Users\\ryanh\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\ryanh\\OneDrive\\Desktop\\current classes\\senior projects\\Quest4Deals\\quest4dealsweb.Server\\obj\\",
+        "projectPath": "/Users/oscar/Documents/SCP/Quest4Deals/quest4dealsweb.Server/quest4dealsweb.Server.csproj",
+        "packagesPath": "/Users/oscar/.nuget/packages/",
+        "outputPath": "/Users/oscar/Documents/SCP/Quest4Deals/quest4dealsweb.Server/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\ryanh\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "/Users/oscar/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -37,7 +37,8 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        }
+        },
+        "SdkAnalysisLevel": "9.0.200"
       },
       "frameworks": {
         "net8.0": {
@@ -95,6 +96,20 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.13, 8.0.13]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Host.osx-arm64",
+              "version": "[8.0.13, 8.0.13]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.13, 8.0.13]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
@@ -103,7 +118,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.406/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.200/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

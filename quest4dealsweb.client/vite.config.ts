@@ -49,12 +49,12 @@ export default defineConfig({
     },
     server: {
         proxy: {
-            '^/api/': {
-                target,
+            "^/api/": {
+                target: target,
                 changeOrigin: true,
-                secure: false, // Allow self-signed SSL certs
-                ws: true, // Enable WebSocket support if needed
-                rewrite: (path) => path.replace(/^\/api/, ''),
+                secure: false, // ✅ Allow self-signed HTTPS
+                ws: true, // ✅ Enable WebSockets if needed
+                rewrite: (path) => path.replace(/^\/api/, "/api"), // ✅ Keep "/api" prefix
             }
         },
         port: parseInt(env.DEV_SERVER_PORT || '51540'),

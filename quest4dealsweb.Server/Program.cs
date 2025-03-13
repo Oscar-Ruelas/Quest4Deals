@@ -6,6 +6,18 @@ using quest4dealsweb.Server.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowViteFrontend",
+        policy =>
+        {
+            policy.WithOrigins("https://localhost:51540") // ✅ Vite dev server
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials(); // ✅ Required for authentication cookies
+        });
+});
+
 // ✅ Get connection string
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 if (string.IsNullOrEmpty(connectionString))
@@ -41,6 +53,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+app.UseCors("AllowViteFrontend");
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
