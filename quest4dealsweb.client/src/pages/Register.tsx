@@ -1,34 +1,32 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom"; // ✅ Allows navigation after login
+import { useNavigate } from "react-router-dom";
 
-const LoginComponent = () => {
+function Register() {
   const [userNameOrEmail, setUserNameOrEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate(); // ✅ Hook for redirection
 
-  const handleLogin = async () => {
+  const handleAccount = async () => {
     try {
-      const response = await fetch("/api/auth/login", {
+      const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userNameOrEmail, password }),
-        credentials: "include", // ✅ Required for cookie authentication
+        credentials: "include",
       });
 
       if (!response.ok) {
-        throw new Error("Login failed");
+        throw new Error("Account creation failed");
       }
 
       const data = await response.json();
-      console.log("Login successful:", data);
+      console.log("Account creation successful:", data);
 
-      // ✅ Store user info in localStorage
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      // ✅ Redirect user to their games page
       navigate(`/user-games/${data.user.id}`);
     } catch (error) {
-      console.error("Error during login:", error);
+      console.error("Error during account creation:", error);
     }
   };
 
@@ -46,9 +44,9 @@ const LoginComponent = () => {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-      <button onClick={handleLogin}>Login</button>
+      <button onClick={handleAccount}>Create Account</button>
     </div>
   );
-};
+}
 
-export default LoginComponent;
+export default Register;
