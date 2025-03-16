@@ -10,12 +10,12 @@ import "./styling/main.css";
 function App() {
   return (
     <Router>
-      <Navbar />
       <Routes>
         <Route
           path="/"
           element={
             <div className="App">
+              <Navbar />
               <Filter />
               <Dashboard />
             </div>

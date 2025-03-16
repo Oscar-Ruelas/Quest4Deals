@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import "../styling/register.css";
 
 function Register() {
   const [name, setName] = useState("");
@@ -76,13 +77,14 @@ function Register() {
   };
 
   return (
-    <div>
-      <h2>Register</h2>
-
+    <div className="register">
+      <img src="../../public/logo.png" alt="Quest4Deals Logo" />
+      <h1>Want to save games to view later?</h1>
+      <h2>Create an account here</h2>
+      <h3>Psst... it's free!</h3>
       {error && <p style={{ color: "red" }}>{error}</p>}
       {success && <p style={{ color: "green" }}>{success}</p>}
       {loading && <p>Creating account...</p>}
-
       <input
         type="text"
         placeholder="Full Name"
@@ -110,6 +112,9 @@ function Register() {
       <button onClick={handleAccount} disabled={loading}>
         {loading ? "Creating Account..." : "Create Account"}
       </button>
+      <Link to="/" className="home-link">
+        Go to Home
+      </Link>
     </div>
   );
 }
