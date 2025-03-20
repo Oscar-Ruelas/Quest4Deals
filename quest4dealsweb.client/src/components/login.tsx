@@ -1,17 +1,21 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import "../styling/Login.css"; 
 
-const LoginComponent = () => {
+const Login = () => {
   const [userNameOrEmail, setUserNameOrEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false); // ✅ Loading state
-  const [error, setError] = useState(""); // ✅ Error message state
+  const [keepLoggedIn, setKeepLoggedIn] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = async () => {
-    setLoading(true);  // ✅ Show loading state
-    setError("");  // ✅ Reset errors
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user") || sessionStorage.getItem("user");
+    if (storedUser) {
+      navigate(`/`);
+    }
+  }, [navigate]);
 
+  const handleLogin = async () => {
     try {
       const response = await fetch("/api/auth/login", {
         method: "POST",
@@ -21,54 +25,65 @@ const LoginComponent = () => {
       });
 
       if (!response.ok) {
-        throw new Error("Invalid username or password.");
+        throw new Error("Login failed");
       }
 
       const data = await response.json();
+      console.log("Login successful:", data);
 
-      if (!data.user) {
-        throw new Error("Login response is missing user data.");
+      if (keepLoggedIn) {
+        localStorage.setItem("user", JSON.stringify(data.user));
+      } else {
+        sessionStorage.setItem("user", JSON.stringify(data.user));
       }
 
-      // ✅ Store user info securely
-      localStorage.setItem("user", JSON.stringify(data.user));
-
-      // ✅ Redirect user to their games page
       navigate(`/user-games/${data.user.id}`);
     } catch (error) {
-      console.error("Login error:", error);
-      // @ts-ignore
-      setError(error.message || "Login failed. Please try again.");
-    } finally {
-      setLoading(false); // ✅ Hide loading state
+      console.error("Error during login:", error);
     }
   };
 
   return (
-      <div>
-        <h2>Login</h2>
+      <div className="login-page">
+        <div className="login-container">
+          <h2>Sign In</h2>
+          <input
+              type="text"
+              placeholder="Email or Username"
+              value={userNameOrEmail}
+              onChange={(e) => setUserNameOrEmail(e.target.value)}
+          />
+          <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+          />
 
-        {error && <p style={{ color: "red" }}>{error}</p>} {/* ✅ Show error */}
-        {loading && <p>Loading...</p>} {/* ✅ Show loading */}
+          <button onClick={handleLogin}>Sign In</button>
 
-        <input
-            type="text"
-            placeholder="Email or Username"
-            value={userNameOrEmail}
-            onChange={(e) => setUserNameOrEmail(e.target.value)}
-        />
-        <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-        />
-        <button onClick={handleLogin} disabled={loading}> {/* ✅ Disable button while loading */}
-          {loading ? "Logging in..." : "Login"}
-        </button>
+          <div className="login-options">
+            <div className="remember-me">
+              <input
+                  type="checkbox"
+                  id="keepLoggedIn"
+                  checked={keepLoggedIn}
+                  onChange={() => setKeepLoggedIn(!keepLoggedIn)}
+              />
+              <label htmlFor="keepLoggedIn">Remember me</label>
+            </div>
+            <a href="#" className="help-link">Need help?</a>
+          </div>
+
+          <p className="signup-text">
+            New to Quest4Deals? <a href="/register">Sign up now</a>
+          </p>
+        </div>
       </div>
   );
 };
 
-export default LoginComponent;
+export default Login;
+
+
 
