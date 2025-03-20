@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styling/Login.css"; 
+import "../styling/Login.css";
 
 const Login = () => {
   const [userNameOrEmail, setUserNameOrEmail] = useState("");
@@ -9,7 +9,8 @@ const Login = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user") || sessionStorage.getItem("user");
+    const storedUser =
+      localStorage.getItem("user") || sessionStorage.getItem("user");
     if (storedUser) {
       navigate(`/`);
     }
@@ -44,46 +45,46 @@ const Login = () => {
   };
 
   return (
-      <div className="login-page">
-        <div className="login-container">
-          <h2>Sign In</h2>
-          <input
-              type="text"
-              placeholder="Email or Username"
-              value={userNameOrEmail}
-              onChange={(e) => setUserNameOrEmail(e.target.value)}
-          />
-          <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-          />
+    <div className="login-page">
+      <div className="login-container">
+        <img src="../../public/logo.png" alt="Quest4Deals Logo" />
+        <h2>Sign In</h2>
+        <input
+          type="text"
+          placeholder="Email or Username"
+          value={userNameOrEmail}
+          onChange={(e) => setUserNameOrEmail(e.target.value)}
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
 
-          <button onClick={handleLogin}>Sign In</button>
+        <button onClick={handleLogin}>Sign In</button>
 
-          <div className="login-options">
-            <div className="remember-me">
-              <input
-                  type="checkbox"
-                  id="keepLoggedIn"
-                  checked={keepLoggedIn}
-                  onChange={() => setKeepLoggedIn(!keepLoggedIn)}
-              />
-              <label htmlFor="keepLoggedIn">Remember me</label>
-            </div>
-            <a href="#" className="help-link">Need help?</a>
+        <div className="login-options">
+          <div className="remember-me">
+            <input
+              type="checkbox"
+              id="keepLoggedIn"
+              checked={keepLoggedIn}
+              onChange={() => setKeepLoggedIn(!keepLoggedIn)}
+            />
+            <label htmlFor="keepLoggedIn">Remember me</label>
           </div>
-
-          <p className="signup-text">
-            New to Quest4Deals? <a href="/register">Sign up now</a>
-          </p>
+          <a href="#" className="help-link">
+            Need help?
+          </a>
         </div>
+
+        <p className="signup-text">
+          New to Quest4Deals? <a href="/register">Sign up now</a>
+        </p>
       </div>
+    </div>
   );
 };
 
 export default Login;
-
-
-
