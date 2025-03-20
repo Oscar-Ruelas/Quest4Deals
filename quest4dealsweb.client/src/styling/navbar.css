@@ -1,0 +1,96 @@
+/* ✅ Navbar styling */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    background: #111;
+    color: white;
+    position: relative;
+}
+
+/* ✅ Search bar styling */
+.search-bar {
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    outline: none;
+    font-size: 16px;
+}
+
+/* ✅ Logo styling */
+.logo {
+    width: 120px; /* Adjust size */
+}
+
+/* ✅ User menu container */
+.user-menu {
+    position: relative;
+    display: inline-block;
+}
+
+/* ✅ User button styling */
+.user-btn {
+    background: none;
+    color: white;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 10px;
+}
+
+/* ✅ Dropdown menu container */
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: #222;
+    border-radius: 5px;
+    width: 180px;
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    padding: 10px 0;
+    z-index: 100;
+}
+
+/* ✅ Dropdown menu items */
+.dropdown-item {
+    color: white;
+    padding: 12px;
+    text-decoration: none;
+    text-align: left;
+    display: block;
+    transition: background 0.2s;
+}
+
+/* ✅ Hover effect */
+.dropdown-item:hover {
+    background: #333;
+}
+
+/* ✅ Logout button */
+.logout-btn {
+    border: none;
+    background: none;
+    color: #00e1ff;
+    font-size: 16px;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+}
+
+/* ✅ Sign-in link styling */
+.sign-in {
+    color: white;
+    font-size: 16px;
+    text-decoration: none;
+    padding: 10px 15px;
+    background: #00e1ff;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+
+.sign-in:hover {
+    background: darkcyan;
+}

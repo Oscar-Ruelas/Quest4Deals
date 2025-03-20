@@ -62,8 +62,10 @@ public static class IdentityEndpoints
             if (user == null)
                 return Results.Unauthorized();
 
-            // ✅ Authenticate user using SignInManager
-            var result = await signInManager.PasswordSignInAsync(user.UserName, model.Password, isPersistent: true, lockoutOnFailure: false);
+            // ✅ Set isPersistent based on "Remember Me" field
+            bool rememberMe = model.RememberMe; // <- Ensure frontend sends this
+
+            var result = await signInManager.PasswordSignInAsync(user.UserName, model.Password, isPersistent: rememberMe, lockoutOnFailure: false);
 
             if (!result.Succeeded)
                 return Results.Unauthorized();
@@ -79,6 +81,7 @@ public static class IdentityEndpoints
                 }
             });
         });
+
 
         
         identityRoutes.MapGet("/profile", [Authorize] async (UserManager<User> userManager, ClaimsPrincipal userClaims) =>

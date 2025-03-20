@@ -37,7 +37,7 @@ const Login = () => {
         sessionStorage.setItem("user", JSON.stringify(data.user));
       }
 
-      navigate(`/user-games/${data.user.id}`);
+      navigate(`/`);
     } catch (error) {
       console.error("Error during login:", error);
     }
