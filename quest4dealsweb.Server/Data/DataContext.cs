@@ -9,6 +9,7 @@ public class DataContext : IdentityDbContext<User>
     public DataContext(DbContextOptions<DataContext> options) : base(options) { }
 
     public DbSet<Game> Games { get; set; }
+    public DbSet<GamePriceHistory> GamePriceHistories { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -23,15 +24,26 @@ public class DataContext : IdentityDbContext<User>
         modelBuilder.Entity<User>()
             .HasIndex(u => u.UserName)
             .IsUnique();
-        
-        modelBuilder.Entity<Game>()
-            .Property(g => g.Price)
-            .HasPrecision(18, 2); 
 
         modelBuilder.Entity<Game>()
-            .HasOne<User>() 
-            .WithMany()    
+            .Property(g => g.Price)
+            .HasPrecision(18, 2);
+
+        modelBuilder.Entity<Game>()
+            .HasOne<User>()
+            .WithMany()
             .HasForeignKey(g => g.UserId)
-            .OnDelete(DeleteBehavior.Cascade); 
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Configure GamePriceHistory
+        modelBuilder.Entity<GamePriceHistory>()
+            .Property(g => g.Price)
+            .HasPrecision(18, 2);
+
+        modelBuilder.Entity<GamePriceHistory>()
+            .HasOne(ph => ph.Game)
+            .WithMany()
+            .HasForeignKey(ph => ph.GameId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
