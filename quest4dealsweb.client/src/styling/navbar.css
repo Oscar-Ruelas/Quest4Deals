@@ -1,0 +1,58 @@
+/* ✅ User menu container */
+.user-menu {
+  position: relative;
+  display: inline-block;
+}
+
+/* ✅ User button styling */
+.user-btn {
+  background: none;
+  color: white;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 10px;
+}
+
+/* ✅ Dropdown menu container */
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: var(--secondary-color);
+  border-radius: 5px;
+  width: 180px;
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  padding: 10px 0;
+  z-index: 100;
+  border: 2px solid white;
+  color: white;
+}
+
+/* ✅ Dropdown menu items */
+.dropdown-item {
+  padding: 12px;
+  text-decoration: none;
+  text-align: left;
+  display: block;
+  transition: 0.2s;
+}
+
+/* ✅ Hover effect */
+.dropdown-item:hover {
+  background: white;
+  color: var(--secondary-color);
+}
+
+/* ✅ Logout button */
+.logout-btn {
+  border: none;
+  background: none;
+  color: white;
+  font-size: 16px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}

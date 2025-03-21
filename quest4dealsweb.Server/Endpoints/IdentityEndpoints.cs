@@ -14,17 +14,16 @@ public static class IdentityEndpoints
     {
         var identityRoutes = app.MapGroup("/api/auth");
 
-        // ✅ Register User
         identityRoutes.MapPost("/register", async ([FromBody] RegisterModel model, UserManager<User> userManager) =>
         {
-            // ✅ Check if the email or username is already taken
+            // ✅ Check if email or username already exists
             if (await userManager.FindByEmailAsync(model.Email) != null)
                 return Results.BadRequest(new { Message = "Email is already in use." });
 
             if (await userManager.FindByNameAsync(model.UserName) != null)
                 return Results.BadRequest(new { Message = "Username is already taken." });
 
-            // ✅ Create new user object
+            // ✅ Create new user
             var user = new User
             {
                 Name = model.Name,
@@ -33,14 +32,25 @@ public static class IdentityEndpoints
                 CreatedAt = DateTime.UtcNow
             };
 
-            // ✅ Attempt to create the user with a hashed password
             var result = await userManager.CreateAsync(user, model.Password);
 
             if (!result.Succeeded)
                 return Results.BadRequest(result.Errors);
 
-            return Results.Ok(new { Message = "User registered successfully" });
+            // ✅ Ensure API response includes user details
+            return Results.Ok(new
+            {
+                Message = "User registered successfully",
+                User = new
+                {
+                    user.Id,
+                    user.UserName,
+                    user.Name,
+                    user.Email
+                }
+            });
         });
+
 
 
         // ✅ Login User (using email OR username)
@@ -52,8 +62,10 @@ public static class IdentityEndpoints
             if (user == null)
                 return Results.Unauthorized();
 
-            // ✅ Authenticate user using SignInManager
-            var result = await signInManager.PasswordSignInAsync(user.UserName, model.Password, isPersistent: true, lockoutOnFailure: false);
+            // ✅ Set isPersistent based on "Remember Me" field
+            bool rememberMe = model.RememberMe; // <- Ensure frontend sends this
+
+            var result = await signInManager.PasswordSignInAsync(user.UserName, model.Password, isPersistent: rememberMe, lockoutOnFailure: false);
 
             if (!result.Succeeded)
                 return Results.Unauthorized();
@@ -69,6 +81,7 @@ public static class IdentityEndpoints
                 }
             });
         });
+
 
         
         identityRoutes.MapGet("/profile", [Authorize] async (UserManager<User> userManager, ClaimsPrincipal userClaims) =>
