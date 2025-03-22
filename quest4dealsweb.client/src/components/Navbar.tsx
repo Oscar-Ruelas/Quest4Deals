@@ -48,7 +48,7 @@ const Navbar = () => {
               <Link to="/wishlist" className="dropdown-item">
                 View Wishlist
               </Link>
-              <Link to="/edit-profile" className="dropdown-item">
+              <Link to="/edit-profile/${user?.id}" className="dropdown-item">
                 Edit Profile
               </Link>
               <button

@@ -5,6 +5,7 @@ import Filter from "./components/Filter";
 import Dashboard from "./components/Dashboard";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import EditProfilePage from "./pages/EditProfile";
 import "./styling/main.css";
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
         />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+          <Route path="/edit-profile/:userId" element={<EditProfilePage />} />
       </Routes>
     </Router>
   );
