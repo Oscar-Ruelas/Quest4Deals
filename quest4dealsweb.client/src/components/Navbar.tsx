@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import "../styling/Navbar.css";
+import "../styling/navbar.css";
 
 const Navbar = () => {
   const [user, setUser] = useState<{ id: string; userName: string } | null>(
