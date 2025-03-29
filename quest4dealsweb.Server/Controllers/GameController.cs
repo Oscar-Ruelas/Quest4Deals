@@ -28,28 +28,81 @@ public class GameController : ControllerBase
     public async Task<ActionResult<Game>> GetGame(int id)
     {
         var game = await _context.Games.FindAsync(id);
-
         if (game == null)
         {
             return NotFound("Game not found.");
         }
 
-        return Ok(game);
+        var latestPriceHistory = await _context.GamePriceHistories
+            .Where(ph => ph.GameId == id)
+            .OrderByDescending(ph => ph.RecordedAt)
+            .FirstOrDefaultAsync();
+
+        if (latestPriceHistory != null && game.Price != latestPriceHistory.Price)
+        {
+            game.Price = latestPriceHistory.Price;
+            _context.Entry(game).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+        }
+
+        // Return a custom object without UserId
+        return Ok(new
+        {
+            Id = game.Id,
+            Title = game.Title,
+            Genre = game.Genre,
+            Platform = game.Platform,
+            Price = game.Price
+        });
     }
 
     [HttpGet("user/{userId}")]
-    public async Task<ActionResult<IEnumerable<Game>>> GetUserGames(string userId)
+    public async Task<ActionResult<IEnumerable<object>>> GetUserGamesPriceHistory(string userId)
     {
+        // Get all games for this user
         var userGames = await _context.Games
             .Where(g => g.UserId == userId)
             .ToListAsync();
 
-        if (userGames == null || userGames.Count == 0)
+        if (userGames == null || !userGames.Any())
         {
             return NotFound("No games found for this user.");
         }
 
-        return Ok(userGames);
+        // Get all price histories for these games
+        var gameIds = userGames.Select(g => g.Id).ToList();
+        var priceHistories = await _context.GamePriceHistories
+            .Where(ph => gameIds.Contains(ph.GameId))
+            .OrderByDescending(ph => ph.RecordedAt)
+            .ToListAsync();
+
+        // Group games by Title, Genre, and Platform, and use the first GameId as the representative
+        var result = userGames
+            .GroupBy(g => new { g.Title, g.Genre, g.Platform })
+            .Select(group => new
+            {
+                Game = new
+                {
+                    Id = group.OrderBy(g => g.Id).First().Id, // Use the earliest GameId (e.g., 9 for DESTINY 9)
+                    Title = group.Key.Title,
+                    Genre = group.Key.Genre,
+                    Platform = group.Key.Platform,
+                    Price = group.OrderByDescending(g => g.Id).First().Price // Use the latest Price
+                },
+                PriceHistory = priceHistories
+                    .Where(ph => group.Select(g => g.Id).Contains(ph.GameId))
+                    .OrderByDescending(ph => ph.RecordedAt)
+                    .Select(ph => new
+                    {
+                        Id = ph.Id,
+                        GameId = group.OrderBy(g => g.Id).First().Id, // Rewrite GameId to match the chosen GameId
+                        Price = ph.Price,
+                        RecordedAt = ph.RecordedAt
+                    })
+                    .ToList()
+            });
+
+        return Ok(result);
     }
 
     [HttpPost]

@@ -4530,5 +4530,13 @@
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.101/PortableRuntimeIdentifierGraph.json"
       }
     }
-  }
+  },
+  "logs": [
+    {
+      "code": "Undefined",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Problem reading the cache file C:\\Users\\adria\\Desktop\\Quest4Deals\\quest4dealsweb.Server\\obj\\project.nuget.cache : Unexpected character encountered while parsing value: <. Path 'expectedPackageFiles', line 7, position 0."
+    }
+  ]
 }

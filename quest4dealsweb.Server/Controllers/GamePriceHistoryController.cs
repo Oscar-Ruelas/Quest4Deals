@@ -23,8 +23,14 @@ public class GamePriceHistoryController : ControllerBase
     [HttpGet("game/{gameId}")]
     public async Task<ActionResult<IEnumerable<GamePriceHistory>>> GetGamePriceHistory(int gameId)
     {
+        var game = await _context.Games.FindAsync(gameId);
+        if (game == null)
+        {
+            return NotFound("Game not found.");
+        }
+
         var priceHistory = await _context.GamePriceHistories
-            .Where(ph => ph.GameId == gameId)
+            .Where(ph => ph.GameId == gameId) // Simplified to single GameId
             .OrderByDescending(ph => ph.RecordedAt)
             .ToListAsync();
 
@@ -40,7 +46,6 @@ public class GamePriceHistoryController : ControllerBase
     [HttpGet("user/{userId}")]
     public async Task<ActionResult<IEnumerable<object>>> GetUserGamesPriceHistory(string userId)
     {
-        // First get all games for this user
         var userGames = await _context.Games
             .Where(g => g.UserId == userId)
             .ToListAsync();
@@ -50,43 +55,71 @@ public class GamePriceHistoryController : ControllerBase
             return NotFound("No games found for this user.");
         }
 
-        // Get the list of game IDs
         var gameIds = userGames.Select(g => g.Id).ToList();
-
-        // Get price history for all these games
         var priceHistories = await _context.GamePriceHistories
             .Where(ph => gameIds.Contains(ph.GameId))
             .OrderByDescending(ph => ph.RecordedAt)
             .ToListAsync();
 
-        // Group by game
-        var result = userGames.Select(game => new
-        {
-            Game = game,
-            PriceHistory = priceHistories
-                .Where(ph => ph.GameId == game.Id)
-                .OrderByDescending(ph => ph.RecordedAt)
-                .ToList()
-        });
+        var result = userGames
+            .GroupBy(g => new { g.Title, g.Genre, g.Platform })
+            .Select(group =>
+            {
+                var groupGameIds = group.Select(g => g.Id).ToList();
+                var latestPrice = priceHistories
+                    .Where(ph => groupGameIds.Contains(ph.GameId))
+                    .OrderByDescending(ph => ph.RecordedAt)
+                    .FirstOrDefault()?.Price ?? group.First().Price;
+
+                return new
+                {
+                    Game = new
+                    {
+                        Id = group.OrderBy(g => g.Id).First().Id,
+                        Title = group.Key.Title,
+                        Genre = group.Key.Genre,
+                        Platform = group.Key.Platform,
+                        Price = latestPrice,
+                        UserId = group.First().UserId
+                    },
+                    PriceHistory = priceHistories
+                        .Where(ph => groupGameIds.Contains(ph.GameId))
+                        .OrderByDescending(ph => ph.RecordedAt)
+                        .Select(ph => new
+                        {
+                            Id = ph.Id,
+                            GameId = group.OrderBy(g => g.Id).First().Id,
+                            Price = ph.Price,
+                            RecordedAt = ph.RecordedAt
+                        })
+                        .ToList()
+                };
+            });
 
         return Ok(result);
     }
 
     // POST: api/price-history
     [HttpPost]
-    public async Task<ActionResult<GamePriceHistory>> RecordPriceChange(GamePriceHistory priceHistory)
+    public async Task<ActionResult<GamePriceHistory>> RecordPriceChange([FromBody] GamePriceHistoryDto priceHistoryDto)
     {
-        // Validate that the game exists
-        var gameExists = await _context.Games.AnyAsync(g => g.Id == priceHistory.GameId);
-        if (!gameExists)
+        var game = await _context.Games.FindAsync(priceHistoryDto.GameId);
+        if (game == null)
         {
             return BadRequest("Game not found.");
         }
 
-        // Set the recorded time to current UTC time
-        priceHistory.RecordedAt = DateTime.UtcNow;
+        var priceHistory = new GamePriceHistory
+        {
+            GameId = priceHistoryDto.GameId,
+            Price = priceHistoryDto.Price,
+            RecordedAt = DateTime.UtcNow
+        };
 
         _context.GamePriceHistories.Add(priceHistory);
+        game.Price = priceHistoryDto.Price;
+        _context.Entry(game).State = EntityState.Modified;
+
         await _context.SaveChangesAsync();
 
         return CreatedAtAction(nameof(GetGamePriceHistory), new { gameId = priceHistory.GameId }, priceHistory);

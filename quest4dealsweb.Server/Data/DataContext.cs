@@ -37,11 +37,10 @@ public class DataContext : IdentityDbContext<User>
 
         // Configure GamePriceHistory
         modelBuilder.Entity<GamePriceHistory>()
-            .Property(g => g.Price)
-            .HasPrecision(18, 2);
+            .HasKey(ph => ph.Id);
 
         modelBuilder.Entity<GamePriceHistory>()
-            .HasOne(ph => ph.Game)
+            .HasOne<Game>() // Reference Game without navigation property
             .WithMany()
             .HasForeignKey(ph => ph.GameId)
             .OnDelete(DeleteBehavior.Cascade);
