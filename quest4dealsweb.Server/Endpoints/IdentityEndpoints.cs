@@ -60,20 +60,23 @@ public static class IdentityEndpoints
                        ?? await userManager.FindByNameAsync(model.UserNameOrEmail);
 
             if (user == null)
-                return Results.Unauthorized();
+            {
+                return Results.Json(new { message = "User not found" }, statusCode: 401);
+            }
 
-            // ✅ Set isPersistent based on "Remember Me" field
-            bool rememberMe = model.RememberMe; // <- Ensure frontend sends this
+            bool rememberMe = model.RememberMe;
 
             var result = await signInManager.PasswordSignInAsync(user.UserName, model.Password, isPersistent: rememberMe, lockoutOnFailure: false);
 
             if (!result.Succeeded)
-                return Results.Unauthorized();
+            {
+                return Results.Json(new { message = "Incorrect password" }, statusCode: 401);
+            }
 
             return Results.Ok(new
             {
-                Message = "Login successful",
-                User = new
+                message = "Login successful",
+                user = new
                 {
                     user.Id,
                     user.UserName,
@@ -81,6 +84,7 @@ public static class IdentityEndpoints
                 }
             });
         });
+
 
 
         
