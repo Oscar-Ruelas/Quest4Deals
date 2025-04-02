@@ -1,0 +1,7 @@
+{
+  "dev": {
+    "configLevel": "project",
+    "useProfile": false,
+    "awsConfigFilePath": "/Users/oscar/.amplify/awscloudformation/FPc9919oKg"
+  }
+}

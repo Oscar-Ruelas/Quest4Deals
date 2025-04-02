@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import "../styling/navbar.css";
+import "../styling/Navbar.css";
 
 const Navbar = () => {
   const [user, setUser] = useState<{ id: string; userName: string } | null>(
@@ -48,7 +48,7 @@ const Navbar = () => {
               <Link to="/wishlist" className="dropdown-item">
                 View Wishlist
               </Link>
-              <Link to="/edit-profile" className="dropdown-item">
+              <Link to="/edit-profile/${user?.id}" className="dropdown-item">
                 Edit Profile
               </Link>
               <button
