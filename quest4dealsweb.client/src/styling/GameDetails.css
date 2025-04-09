@@ -1,0 +1,37 @@
+.game-details {
+    padding: 20px;
+    background-color: var(--secondary-color);
+    border-radius: 10px;
+    color: white;
+    width: 80%;
+    margin: 20px auto;
+    font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+}
+
+.details-title {
+    font-size: 2em;
+    color: var(--highlight-color);
+    margin-bottom: 10px;
+}
+
+.details-image {
+    width: 100%;
+    max-width: 400px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.details-description {
+    font-size: 1.2em;
+    margin-bottom: 15px;
+}
+
+.details-subtitle {
+    font-size: 1.5em;
+    color: var(--highlight-color);
+    margin-bottom: 5px;
+}
+
+.details-platforms {
+    font-size: 1.2em;
+}

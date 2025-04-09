@@ -7,6 +7,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import EditProfilePage from "./pages/EditProfile";
 import "./styling/Main.css";
+import GameDetails from "./components/GameDetails.tsx";
 
 function App() {
     return (
@@ -25,6 +26,7 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/edit-profile/:userId" element={<EditProfilePage />} />
+                <Route path="/details/:id/:title" element={<GameDetails />} />
             </Routes>
         </Router>
     );
