@@ -1,40 +1,48 @@
+import Gamecard, { Game } from "./Gamecard";
+
 import { useEffect, useState } from "react";
-import Gamecard from "./Gamecard";
 
 function Dashboard() {
-  // Array for storing games given by the API requests
-  const [games, setGames] = useState([]);
+  const [games, setGames] = useState<Game[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchGames() {
       try {
-        console.log("Fetching games...");
-        // Sent request to api endpoint
-        const response = await fetch(
-          "https://www.nexarda.com/api/v3/search?type=games"
-        );
-        // Parse the response to JSON
+        setLoading(true);
+        setError(null);
+
+        const response = await fetch("/api/nexarda/games");
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
         const data = await response.json();
-        // Set the games array with the data in JSON format
-        // items is the array of games in the JSON response
-        setGames(data.results.items);
-        console.log("Games fetched successfully!");
-      } catch (error) {
-        console.error("Error fetching game data:", error);
+        const parsed = typeof data === "string" ? JSON.parse(data) : data;
+
+        setGames(parsed.results?.items || []);
+      } catch (err) {
+        console.error("Error fetching games:", err);
+        setError("Failed to load games. Please try again later.");
+      } finally {
+        setLoading(false);
       }
     }
 
-    // Call the fetchGames function within the useEffect hook to fetch the games when the component is mounted to the DOM
     fetchGames();
   }, []);
 
-  // Render the Gamecard component for each game in the games array, passing the game object as a prop to the Gamecard component
+  if (loading) return <div>Loading games...</div>;
+  if (error) return <div>{error}</div>;
+
   return (
-    <div className="dashboard">
-      {games.map((game, index) => (
-        <Gamecard key={index} game={game} />
-      ))}
-    </div>
+      <div className="dashboard">
+        {games.map((game, index) => (
+            <Gamecard key={index} game={game} />
+        ))}
+      </div>
   );
 }
 

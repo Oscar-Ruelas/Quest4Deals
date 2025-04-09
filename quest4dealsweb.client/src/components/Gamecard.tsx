@@ -1,11 +1,11 @@
 // Inner part of Game interface because it is another object inside the Game interface for JSON data
-interface GameInfo {
+export interface GameInfo {
   lowest_price: number;
   short_desc: string;
 }
 
 // Game interface for JSON data
-interface Game {
+export interface Game {
   image: string;
   title: string;
   game_info: GameInfo;
