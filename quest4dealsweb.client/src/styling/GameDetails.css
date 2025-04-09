@@ -1,11 +1,39 @@
-.game-details {
-    padding: 20px;
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    backdrop-filter: blur(10px);
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
     background-color: var(--secondary-color);
+    padding: 20px;
     border-radius: 10px;
-    color: white;
     width: 80%;
-    margin: 20px auto;
+    max-width: 800px;
+    color: white;
     font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+    position: relative;
+}
+
+.modal-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: var(--highlight-color);
+    color: white;
+    font-size: 1.2em;
+    border: none;
+    border-radius: 5px;
+    padding: 4px 10px;
+    cursor: pointer;
 }
 
 .details-title {

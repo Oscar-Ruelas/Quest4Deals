@@ -1,6 +1,7 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import "../styling/GameDetails.css";
+
 interface Platform {
     name: string;
     slug: string;
@@ -20,8 +21,10 @@ interface SearchResult {
     };
 }
 
-function GameDetails() {
+function GameDetails({ isModal = false }: { isModal?: boolean }) {
     const { title } = useParams();
+    const navigate = useNavigate();
+
     const [loading, setLoading] = useState(true);
     const [gameTitle, setGameTitle] = useState("");
     const [gameImage, setGameImage] = useState("");
@@ -32,7 +35,6 @@ function GameDetails() {
     useEffect(() => {
         async function fetchGame() {
             if (!title) {
-                console.warn("❌ No title in URL params");
                 setNotFound(true);
                 return;
             }
@@ -43,23 +45,19 @@ function GameDetails() {
             try {
                 const res = await fetch(`/api/nexarda/search?query=${encodeURIComponent(title)}`);
                 const data: SearchResult = await res.json();
-
-                console.log("🚀 API Response:", data);
-
                 const game = data?.results?.items?.[0];
+
                 if (!game) {
                     setNotFound(true);
                     return;
                 }
-
-                console.log("🎮 Platforms:", game.game_info.platforms);
 
                 setGameTitle(game.title);
                 setGameImage(game.image);
                 setGameDesc(game.game_info.short_desc);
                 setPlatforms(game.game_info.platforms || []);
             } catch (error) {
-                console.error("❌ Fetch error:", error);
+                console.error("Error fetching game details:", error);
                 setNotFound(true);
             } finally {
                 setLoading(false);
@@ -69,21 +67,46 @@ function GameDetails() {
         fetchGame();
     }, [title]);
 
-    if (loading) return <div>Loading game details...</div>;
-    if (notFound) return <div>Game not found.</div>;
+    // ESC / LEFT ARROW exit handler
+    useEffect(() => {
+        if (!isModal) return;
+
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === "Escape" || event.key === "ArrowLeft") {
+                navigate(-1);
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [isModal, navigate]);
+
+    if (loading) return <div className="game-details">Loading game details...</div>;
+    if (notFound) return <div className="game-details">Game not found.</div>;
+
+    const handleClose = () => navigate(-1);
 
     return (
-        <div className="game-details">
-            <h1>{gameTitle}</h1>
-            <img src={gameImage} alt={gameTitle} style={{ width: "200px" }} />
-            <p>{gameDesc}</p>
+        <div className={isModal ? "modal-overlay" : "game-details"}>
+            <div className={isModal ? "modal-content" : ""}>
+                {isModal && (
+                    <button className="modal-close" onClick={handleClose} aria-label="Close">
+                        ✕
+                    </button>
+                )}
+                <h1 className="details-title">{gameTitle}</h1>
+                <img className="details-image" src={gameImage} alt={gameTitle} />
+                <p className="details-description">{gameDesc}</p>
 
-            <h2>Platforms</h2>
-            {platforms.length > 0 ? (
-                <p>{platforms.map(p => p.name).join(", ")}</p>
-            ) : (
-                <p>No platforms found.</p>
-            )}
+                <h2 className="details-subtitle">Platforms</h2>
+                <p className="details-platforms">{platforms.map((p) => p.name).join(", ")}</p>
+
+                {isModal && (
+                    <div className="modal-hint">
+                        Press <kbd>Esc</kbd> or <kbd>←</kbd> to close
+                    </div>
+                )}
+            </div>
         </div>
     );
 }

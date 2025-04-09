@@ -1,5 +1,4 @@
-// Inner part of Game interface because it is another object inside the Game interface for JSON data
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 // ESRB symbol mapping
 const esrbSymbolMap: Record<string, { symbol: string; label: string }> = {
@@ -38,11 +37,13 @@ export interface Game {
 
 function Gamecard({ game }: { game: Game }) {
     const navigate = useNavigate();
+    const location = useLocation(); // ✅ Moved inside the component
 
     const handleClick = () => {
         const cleanTitle = game.title.replace(/\s*\(.*?\)\s*/g, "").trim();
-        navigate(`/details/${game.game_info.id}/${encodeURIComponent(cleanTitle)}`)
-        
+        navigate(`/details/${game.game_info.id}/${encodeURIComponent(cleanTitle)}`, {
+            state: { backgroundLocation: location },
+        });
     };
 
     const esrbRating = game.game_info.age_ratings.find((rating) =>
