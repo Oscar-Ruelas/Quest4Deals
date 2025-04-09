@@ -1,15 +1,28 @@
+/* Modal styles */
+/* Modal styles */
 .modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    backdrop-filter: blur(10px);
-    background-color: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    background-color: rgba(0, 0, 0, 0.3);
     z-index: 999;
     display: flex;
     justify-content: center;
     align-items: center;
+    /* Prevent interaction with background */
+    pointer-events: auto;
+    /* Prevent scrolling on the background */
+    overflow: hidden;
+}
+
+/* Add this to prevent body scrolling when modal is open */
+body:has(.modal-overlay) {
+    overflow: hidden;
+    height: 100vh;
+    padding-right: 15px; /* Compensate for scrollbar disappearance */
 }
 
 .modal-content {
@@ -18,9 +31,15 @@
     border-radius: 10px;
     width: 80%;
     max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
     color: white;
     font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
     position: relative;
+    /* Enable pointer events for the modal content */
+    pointer-events: auto;
+    /* Add a subtle shadow for better visibility */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .modal-close {
@@ -34,12 +53,20 @@
     border-radius: 5px;
     padding: 4px 10px;
     cursor: pointer;
+    transition: background-color 0.2s ease;
+    z-index: 1000;
 }
 
+.modal-close:hover {
+    background-color: var(--highlight-color-dark, #ff4757);
+}
+
+/* Game details styles */
 .details-title {
     font-size: 2em;
     color: var(--highlight-color);
     margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .details-image {
@@ -47,19 +74,131 @@
     max-width: 400px;
     border-radius: 10px;
     margin-bottom: 10px;
+    /* Add a subtle shadow to the image */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .details-description {
     font-size: 1.2em;
     margin-bottom: 15px;
+    line-height: 1.6;
 }
 
 .details-subtitle {
     font-size: 1.5em;
     color: var(--highlight-color);
     margin-bottom: 5px;
+    margin-top: 20px;
 }
 
 .details-platforms {
     font-size: 1.2em;
+    color: #f8f9fa;
+}
+
+/* Modal hint styles */
+.modal-hint {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 0.9em;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.modal-hint kbd {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin: 0 4px;
+}
+
+/* Fallback for browsers that don't support :has() */
+@supports not (selector(:has(*))) {
+    body.modal-open {
+        overflow: hidden;
+        height: 100vh;
+        padding-right: 15px;
+    }
+}
+
+.modal-content {
+    background-color: var(--secondary-color);
+    padding: 20px;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 800px;
+    color: white;
+    font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+    position: relative;
+    /* Enable pointer events for the modal content */
+    pointer-events: auto;
+    /* Add a subtle shadow for better visibility */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.modal-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: var(--highlight-color);
+    color: white;
+    font-size: 1.2em;
+    border: none;
+    border-radius: 5px;
+    padding: 4px 10px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.modal-close:hover {
+    background-color: var(--highlight-color-dark, #ff4757);
+}
+
+/* Game details styles */
+.details-title {
+    font-size: 2em;
+    color: var(--highlight-color);
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.details-image {
+    width: 100%;
+    max-width: 400px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    /* Add a subtle shadow to the image */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.details-description {
+    font-size: 1.2em;
+    margin-bottom: 15px;
+    line-height: 1.6;
+}
+
+.details-subtitle {
+    font-size: 1.5em;
+    color: var(--highlight-color);
+    margin-bottom: 5px;
+    margin-top: 20px;
+}
+
+.details-platforms {
+    font-size: 1.2em;
+    color: #f8f9fa;
+}
+
+/* Modal hint styles */
+.modal-hint {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 0.9em;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.modal-hint kbd {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin: 0 4px;
 }
