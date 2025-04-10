@@ -3,16 +3,13 @@ import { useEffect, useState } from "react";
 import "../styling/Navbar.css";
 
 const Navbar = () => {
-  const [user, setUser] = useState<{ id: string; userName: string } | null>(
-    null
-  );
+  const [user, setUser] = useState<{ id: string; userName: string } | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   // ✅ Check for logged-in user
   useEffect(() => {
-    const storedUser =
-      localStorage.getItem("user") || sessionStorage.getItem("user");
+    const storedUser = localStorage.getItem("user") || sessionStorage.getItem("user");
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
@@ -32,40 +29,49 @@ const Navbar = () => {
     setUser(null);
   };
 
+  // ✅ Scroll to top on logo click/touch
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
-    <div className="navbar">
-      <input type="search" placeholder="Search Games" className="search-bar" />
-      <img src="/logo.png" alt="Quest4Deals Logo" className="logo" />
+      <div className="navbar">
+        <input type="search" placeholder="Search Games" className="search-bar" />
 
-      {user ? (
-        <div className="user-menu">
-          <button onClick={() => setMenuOpen(!menuOpen)} className="user-btn">
-            {user.userName} ⌄
-          </button>
+        <img
+            src="/logo.png"
+            alt="Quest4Deals Logo"
+            className="logo"
+            onClick={scrollToTop}
+            onTouchStart={scrollToTop}
+        />
 
-          {menuOpen && (
-            <div className="dropdown-menu">
-              <Link to="/wishlist" className="dropdown-item">
-                View Wishlist
-              </Link>
-              <Link to="/edit-profile/${user?.id}" className="dropdown-item">
-                Edit Profile
-              </Link>
-              <button
-                onClick={handleLogout}
-                className="dropdown-item logout-btn"
-              >
-                Logout
+        {user ? (
+            <div className="user-menu">
+              <button onClick={() => setMenuOpen(!menuOpen)} className="user-btn">
+                {user.userName} ⌄
               </button>
+
+              {menuOpen && (
+                  <div className="dropdown-menu">
+                    <Link to="/wishlist" className="dropdown-item">
+                      View Wishlist
+                    </Link>
+                    <Link to={`/edit-profile/${user?.id}`} className="dropdown-item">
+                      Edit Profile
+                    </Link>
+                    <button onClick={handleLogout} className="dropdown-item logout-btn">
+                      Logout
+                    </button>
+                  </div>
+              )}
             </div>
-          )}
-        </div>
-      ) : (
-        <Link to="/login" className="sign-in">
-          Sign In
-        </Link>
-      )}
-    </div>
+        ) : (
+            <Link to="/login" className="sign-in">
+              Sign In
+            </Link>
+        )}
+      </div>
   );
 };
 
