@@ -6,13 +6,15 @@ function Dashboard() {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
+
   const seenGameIds = useRef<Set<number>>(new Set());
   const observer = useRef<IntersectionObserver | null>(null);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
-  const LIMIT = 60;
-
-  // Cache for preloaded data
   const prefetchCache = useRef<{ [key: number]: Game[] }>({});
+  const isFetching = useRef<boolean>(false);
+
+  const LIMIT = 60;
+  const MAX_PREFETCH_PAGES = 1;
 
   const fetchGames = useCallback(
       async (pageToFetch: number) => {
@@ -41,34 +43,35 @@ function Dashboard() {
   );
 
   const loadGames = useCallback(async () => {
+    isFetching.current = true;
     setLoading(true);
     setError(null);
 
-    // Check if the current page is already prefetched
     let newGames = prefetchCache.current[page] || [];
 
-    // If not prefetched, fetch it now
     if (newGames.length === 0) {
       newGames = await fetchGames(page);
     }
 
-    // Update the games state
     setGames((prev) => [...prev, ...newGames]);
 
-    // Prefetch the next page
-    const nextPage = page + 1;
-    if (!prefetchCache.current[nextPage]) {
-      const nextGames = await fetchGames(nextPage);
-      prefetchCache.current[nextPage] = nextGames; // Cache the next page
+    // Prefetch up to MAX_PREFETCH_PAGES ahead
+    for (let i = 1; i <= MAX_PREFETCH_PAGES; i++) {
+      const nextPage = page + i;
+      if (!prefetchCache.current[nextPage]) {
+        const nextGames = await fetchGames(nextPage);
+        prefetchCache.current[nextPage] = nextGames;
+      }
     }
 
     setLoading(false);
+    isFetching.current = false;
   }, [page, fetchGames]);
 
   useEffect(() => {
     const delay = setTimeout(() => {
       loadGames();
-    }, 100); // small buffer to smooth out fast scrolling
+    }, 100); // debounce for smoother UX
 
     return () => clearTimeout(delay);
   }, [loadGames]);
@@ -78,12 +81,14 @@ function Dashboard() {
 
     observer.current = new IntersectionObserver(
         (entries) => {
-          if (entries[0].isIntersecting && !loading) {
+          const firstEntry = entries[0];
+          if (firstEntry.isIntersecting && !loading && !isFetching.current) {
+            isFetching.current = true;
             setPage((prev) => prev + 1);
           }
         },
         {
-          rootMargin: "300px", // trigger early when user is 800px before bottom
+          rootMargin: "90px", // reduced margin for more controlled loading
         }
     );
 
@@ -94,7 +99,6 @@ function Dashboard() {
     return () => observer.current?.disconnect();
   }, [loading]);
 
-  // Key listener for "r" to scroll to top
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "r" || event.key === "R") {
