@@ -64,6 +64,18 @@ function Dashboard() {
     return () => observer.current?.disconnect();
   }, [loading]);
 
+  // Key listener for "r" to scroll to top
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "r" || event.key === "R") {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   return (
       <div className="dashboard">
         {games.map((game) => (
