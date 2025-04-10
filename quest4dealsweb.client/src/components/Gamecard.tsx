@@ -65,18 +65,21 @@ function Gamecard({ game }: { game: Game }) {
         <div className="gamecard" onClick={handleClick} style={{ cursor: "pointer" }}>
             <img src={game.image} alt="Game Image" />
             <h2>{game.title}</h2>
-            <p>Lowest Price: ${game.game_info.lowest_price}</p>
-            <p className="desc">{game.game_info.short_desc}</p>
 
-            <div className="age-rating">
-                <strong>Rating:</strong>{" "}
-                {esrb ? (
-                    `${esrb.symbol} (${esrb.label})`
-                ) : (
-                    <span style={{ color: "#aaa", fontStyle: "italic" }}>Not Rated</span>
-                )}
+            <div className="game-info">
+                <p className="lowest-price">Lowest Price: ${game.game_info.lowest_price}</p>
+                <p className="desc">{game.game_info.short_desc}</p>
+                <div className="age-rating">
+                    <strong>Rating:</strong>{" "}
+                    {esrb ? (
+                        `${esrb.symbol} (${esrb.label})`
+                    ) : (
+                        <span style={{ color: "#aaa", fontStyle: "italic" }}>Not Rated</span>
+                    )}
+                </div>
             </div>
         </div>
+
     );
 }
 
