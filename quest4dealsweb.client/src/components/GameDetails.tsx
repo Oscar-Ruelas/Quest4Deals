@@ -16,6 +16,7 @@ interface StoreOffer {
     };
     edition: string;
     price: number;
+    platform?: string; // Optional platform extracted from edition_full
 }
 
 interface SearchResult {
@@ -77,15 +78,26 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
 
                 const offers: StoreOffer[] = priceJson.prices.list
                     .filter((offer: any) => offer.available && offer.url)
-                    .map((offer: any) => ({
-                        url: offer.url,
-                        store: {
-                            name: offer.store.name,
-                            image: offer.store.image,
-                        },
-                        edition: offer.edition,
-                        price: offer.price,
-                    }));
+                    .map((offer: any) => {
+                        const editionFull: string = offer.edition_full || "";
+                        let platform = "";
+
+                        const match = editionFull.match(/FOR:(.+)$/i);
+                        if (match) {
+                            platform = match[1].trim();
+                        }
+
+                        return {
+                            url: offer.url,
+                            store: {
+                                name: offer.store.name,
+                                image: offer.store.image,
+                            },
+                            edition: offer.edition,
+                            price: offer.price,
+                            platform,
+                        };
+                    });
 
                 setStoreOffers(offers);
             } catch (error) {
@@ -168,7 +180,10 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
                                     />
                                     <div>
                                         <p className="store-name">{offer.store.name}</p>
-                                        <p className="store-edition">{offer.edition}</p>
+                                        <p className="store-edition">
+                                            {offer.edition}
+                                            {offer.platform && ` (${offer.platform})`}
+                                        </p>
                                         <p className="store-price">
                                             {offer.price === 0 ? "Free" : `$${offer.price.toFixed(2)}`}
                                         </p>
