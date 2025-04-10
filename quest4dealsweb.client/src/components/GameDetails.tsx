@@ -131,7 +131,23 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
                 <p className="details-description">{gameDesc}</p>
 
                 <h2 className="details-subtitle">Platforms</h2>
-                <p className="details-platforms">{platforms.map((p) => p.name).join(", ")}</p>
+                <p className="details-platforms">
+                    {platforms
+                        .filter((p) => !["Other", "Xbox Play Anywhere"].includes(p.name))
+                        .map((p) => {
+                            switch (p.name) {
+                                case "EA Desktop App":
+                                    return "EA";
+                                case "Epic Games Launcher":
+                                    return "Epic Games";
+                                case "Ubisoft Connect":
+                                    return "Ubisoft";
+                                default:
+                                    return p.name;
+                            }
+                        })
+                        .join(", ")}
+                </p>
 
                 {storeOffers.length > 0 && (
                     <>
