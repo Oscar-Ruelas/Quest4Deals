@@ -18,6 +18,15 @@ builder.Services.AddCors(options =>
         });
 });
 
+// Add HttpClient services with named client for Nexarda
+builder.Services.AddHttpClient("NexardaClient", client =>
+{
+    client.BaseAddress = new Uri("https://www.nexarda.com/api/v3/");
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+});
+
+builder.Services.AddMemoryCache();
+
 // ✅ Get connection string
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 if (string.IsNullOrEmpty(connectionString))

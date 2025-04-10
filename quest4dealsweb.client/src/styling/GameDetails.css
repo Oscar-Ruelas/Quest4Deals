@@ -1,0 +1,303 @@
+/* Modal styles */
+/* Modal styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    backdrop-filter: blur(4px);
+    background-color: rgba(0, 0, 0, 0.3);
+    z-index: 999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Prevent interaction with background */
+    pointer-events: auto;
+    /* Prevent scrolling on the background */
+    overflow: hidden;
+}
+
+/* Add this to prevent body scrolling when modal is open */
+body:has(.modal-overlay) {
+    overflow: hidden;
+    height: 100vh;
+    padding-right: 15px; /* Compensate for scrollbar disappearance */
+}
+
+.modal-content {
+    background-color: var(--secondary-color);
+    padding: 20px;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+    color: white;
+    font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+    position: relative;
+    /* Enable pointer events for the modal content */
+    pointer-events: auto;
+    /* Add a subtle shadow for better visibility */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.modal-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: var(--highlight-color);
+    color: white;
+    font-size: 1.2em;
+    border: none;
+    border-radius: 5px;
+    padding: 4px 10px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    z-index: 1000;
+}
+
+.modal-close:hover {
+    background-color: #ff4757;
+}
+
+/* Game details styles */
+.details-title {
+    font-size: 2em;
+    color: var(--highlight-color);
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.details-image {
+    width: 100%;
+    max-width: 400px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    /* Add a subtle shadow to the image */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.details-description {
+    font-size: 1.2em;
+    margin-bottom: 15px;
+    line-height: 1.6;
+}
+
+.details-subtitle {
+    font-size: 1.5em;
+    color: var(--highlight-color);
+    margin-bottom: 5px;
+    margin-top: 20px;
+}
+
+.details-platforms {
+    font-size: 1.2em;
+    color: #f8f9fa;
+}
+
+/* Modal hint styles */
+.modal-hint {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 0.9em;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.modal-hint kbd {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin: 0 4px;
+}
+
+/* Fallback for browsers that don't support :has() */
+@supports not (selector(:has(*))) {
+    body.modal-open {
+        overflow: hidden;
+        height: 100vh;
+        padding-right: 15px;
+    }
+}
+
+.modal-content {
+    background-color: var(--secondary-color);
+    padding: 20px;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 800px;
+    color: white;
+    font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+    position: relative;
+    /* Enable pointer events for the modal content */
+    pointer-events: auto;
+    /* Add a subtle shadow for better visibility */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.modal-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: var(--highlight-color);
+    color: white;
+    font-size: 1.2em;
+    border: none;
+    border-radius: 5px;
+    padding: 4px 10px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.modal-close:hover {
+    background-color: var(#ff4757);
+}
+
+/* Game details styles */
+.details-title {
+    font-size: 2em;
+    color: var(--highlight-color);
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.details-image {
+    width: 100%;
+    max-width: 400px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    /* Add a subtle shadow to the image */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.details-description {
+    font-size: 1.2em;
+    margin-bottom: 15px;
+    line-height: 1.6;
+}
+
+.details-subtitle {
+    font-size: 1.5em;
+    color: var(--highlight-color);
+    margin-bottom: 5px;
+    margin-top: 20px;
+}
+
+.details-platforms {
+    font-size: 1.2em;
+    color: #f8f9fa;
+}
+
+/* Modal hint styles */
+.modal-hint {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 0.9em;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.modal-hint kbd {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin: 0 4px;
+}
+
+ .store-offers {
+     display: grid;
+     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+     gap: 1.5rem;
+     margin-top: 1.5rem;
+     padding: 0.5rem;
+ }
+
+.store-offer {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    text-decoration: none;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 1rem;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    color: white;
+}
+
+.store-offer:hover {
+    transform: translateY(-3px);
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.store-logo {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    border-radius: 8px;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    transition: transform 0.3s ease;
+}
+
+.store-offer:hover .store-logo {
+    transform: scale(1.05);
+}
+
+.store-info {
+    flex: 1;
+}
+
+.store-name {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin: 0 0 0.3rem 0;
+    color: var(--highlight-color);
+}
+
+.store-edition {
+    font-size: 0.9rem;
+    margin: 0 0 0.3rem 0;
+    color: rgba(255, 255, 255, 0.8);
+    font-style: italic;
+}
+
+.store-price {
+    font-size: 1.2rem;
+    margin: 0;
+    font-weight: bold;
+    color: #4CAF50;
+}
+
+.store-price.free {
+    color: #2196F3;
+}
+
+/* Add a subtle animation for price changes */
+@keyframes priceUpdate {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.store-price.updated {
+    animation: priceUpdate 0.3s ease;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .store-offers {
+        grid-template-columns: 1fr;
+    }
+
+    .store-offer {
+        padding: 0.8rem;
+    }
+
+    .store-logo {
+        width: 50px;
+        height: 50px;
+    }
+}
