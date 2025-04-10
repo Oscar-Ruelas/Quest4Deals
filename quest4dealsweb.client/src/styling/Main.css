@@ -123,3 +123,14 @@ body {
   font-size: 1.5em;
   margin: 0;
 }
+
+.game-info p,
+.game-info .age-rating {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.lowest-price {
+  font-weight: bold;
+}
+
