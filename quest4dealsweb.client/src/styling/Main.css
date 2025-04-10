@@ -1,27 +1,55 @@
 /* This makes these colors accessible across the entire project, so we can define a color theme here and use them in styling components */
 :root {
-  --primary-color: #222222;
+  --primary-color: rgba(48, 48, 48, 0.4); /* lighter black with transparency */
   --secondary-color: #4472ca;
   --highlight-color: #f79256;
 }
 
+
+
 html,
 body {
-  background-color: var(--primary-color);
+  background-color: #0a0a0a; /* rich black */
   font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  margin: 0;
+  padding: 0;
 }
+
+.main-content {
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  background-color: var(--primary-color); /* semi-transparent glassy black */
+  border-radius: 12px;
+  padding: 20px;
+  margin: 10px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
 
 .App {
   display: grid;
   grid-template-columns: 200px 1fr 1fr 1fr;
   grid-template-rows: 50px 1fr 1fr 1fr;
+
+  background-color: var(--primary-color); /* lighter black glass */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  padding: 10px;
+  margin: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+
+
 .navbar {
-  /* Styling for positioning within parent element */
+  position: sticky;
+  top: 0;
+  z-index: 1000;
   grid-row: 1;
   grid-column: 1 / -1;
-  /* Styling within navbar */
   display: flex;
   justify-content: space-evenly;
   align-items: center;
@@ -53,11 +81,14 @@ body {
   border-radius: 10px;
 }
 
+/* ✅ UPDATED FILTER SECTION BELOW */
 .filter {
-  /* Styling for positioning within parent element */
+  position: sticky;
+  top: 60px;
+  align-self: start;
+  z-index: 100;
   grid-column: 1;
   grid-row: 2 / -1;
-  /* Styling within navbar */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -65,21 +96,21 @@ body {
   color: var(--highlight-color);
   font-size: 1.5em;
   border-radius: 10px;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
-.filter select {
-  width: 150px;
-  height: 30px;
-  border-radius: 5px;
-  border: 1px solid black;
-  margin: 10px;
-}
-
+.filter select,
 .filter button {
+  background-color: var(--secondary-color);
+  color: white;
+  border: 2px solid white;
+  border-radius: 5px;
   width: 150px;
   height: 30px;
-  border-radius: 5px;
-  border: 1px solid black;
+  margin: 10px;
+  font-size: 1rem;
+  font-family: inherit;
 }
 
 .filter button:hover {
@@ -92,6 +123,7 @@ body {
 .filter button:active {
   background-color: var(--primary-color);
 }
+/* ✅ END FILTER SECTION */
 
 .dashboard {
   grid-column: 2 / -1;
@@ -133,4 +165,3 @@ body {
 .lowest-price {
   font-weight: bold;
 }
-

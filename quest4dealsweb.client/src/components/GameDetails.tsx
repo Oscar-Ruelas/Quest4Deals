@@ -58,7 +58,6 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
             setLoadingPrices(true);
             setNotFound(false);
 
-            // Optional: check sessionStorage cache
             const cached = sessionStorage.getItem(`game-${title}`);
             if (cached) {
                 const parsed = JSON.parse(cached);
@@ -84,14 +83,12 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
 
                 const gameId = game.game_info.id;
 
-                // Set UI details right away
                 setGameTitle(game.title);
                 setGameImage(game.image);
                 setGameDesc(game.game_info.short_desc);
                 setPlatforms(game.game_info.platforms || []);
                 setLoadingDetails(false);
 
-                // Fetch prices in parallel
                 const priceRes = await fetch(`/api/nexarda/prices?id=${gameId}`);
                 const priceData = await priceRes.json();
                 const priceJson = typeof priceData === "string" ? JSON.parse(priceData) : priceData;
@@ -122,7 +119,6 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
                 setStoreOffers(offers);
                 setLoadingPrices(false);
 
-                // Save to sessionStorage for faster future loads
                 sessionStorage.setItem(
                     `game-${title}`,
                     JSON.stringify({
@@ -158,6 +154,21 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
         return () => window.removeEventListener("keydown", handleKeyDown);
     }, [isModal, navigate]);
 
+    // ✅ Clean focus when returning from external tab (like a store offer)
+    useEffect(() => {
+        if (!isModal) return;
+
+        const cleanReturnFocus = () => {
+            const active = document.activeElement;
+            if (active instanceof HTMLAnchorElement) {
+                active.blur();
+            }
+        };
+
+        window.addEventListener("focus", cleanReturnFocus);
+        return () => window.removeEventListener("focus", cleanReturnFocus);
+    }, [isModal]);
+
     const handleClose = () => navigate(-1);
 
     if (notFound) return <div className="game-details">Game not found.</div>;
@@ -173,7 +184,6 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
 
                 {loadingDetails ? (
                     <div className="game-details">
-                        {/* Replace this block with a styled skeleton loader if preferred */}
                         <p>Loading game details...</p>
                     </div>
                 ) : (
@@ -255,3 +265,4 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
 }
 
 export default GameDetails;
+
