@@ -1,5 +1,3 @@
-
-
 using System.Text.Json;
 
 namespace quest4dealsweb.Server.Controllers;
@@ -28,12 +26,9 @@ public class NexardaController : ControllerBase
     {
         try
         {
-            string cacheKey = $"games_page_{page}_limit_{limit}";
+            var cacheKey = $"games_page_{page}_limit_{limit}";
 
-            if (_cache.TryGetValue(cacheKey, out string? cachedContent))
-            {
-                return Ok(cachedContent);
-            }
+            if (_cache.TryGetValue(cacheKey, out string? cachedContent)) return Ok(cachedContent);
 
             var client = _httpClientFactory.CreateClient("NexardaClient");
             var response = await client.GetAsync($"search?type=games&page={page}&limit={limit}");
@@ -52,17 +47,111 @@ public class NexardaController : ControllerBase
         }
     }
 
+    [HttpGet("games/filter")]
+    public async Task<IActionResult> FilterGames(
+        [FromQuery] string? genre = null,
+        [FromQuery] string? platform = null,
+        [FromQuery] string? priceSort = null, // use "asc" or "desc" for finding lowest/highest price or highest/lowest price
+        [FromQuery] int page = 1,
+        [FromQuery] int limit = 60)
+    {
+        try
+        {
+            var cacheKey = $"games_filter_{genre}_{platform}_{priceSort}_page_{page}_limit_{limit}";
+
+            if (_cache.TryGetValue(cacheKey, out string? cachedContent)) return Ok(cachedContent);
+
+            var client = _httpClientFactory.CreateClient("NexardaClient");
+
+            var queryParts = new List<string> { "type=games", $"page={page}", $"limit={limit}" };
+            if (!string.IsNullOrWhiteSpace(genre)) queryParts.Add($"game.genres={Uri.EscapeDataString(genre)}");
+
+            var queryString = string.Join("&", queryParts);
+            var response = await client.GetAsync($"search?{queryString}");
+            response.EnsureSuccessStatusCode();
+            var content = await response.Content.ReadAsStringAsync();
+
+            var data = JsonSerializer.Deserialize<JsonElement>(content);
+            var items = data.GetProperty("results").GetProperty("items").EnumerateArray();
+
+            // Filter by platform
+            var filteredItems = items
+                .Where(item =>
+                {
+                    if (!string.IsNullOrWhiteSpace(platform))
+                    {
+                        if (!item.GetProperty("game_info").TryGetProperty("platforms", out var platforms))
+                            return false;
+
+                        return platforms.EnumerateArray()
+                            .Any(p => string.Equals(p.GetProperty("slug").GetString(), platform,
+                                StringComparison.OrdinalIgnoreCase));
+                    }
+
+                    return true;
+                })
+                .ToList();
+
+            // Sort by lowest price
+            if (priceSort?.ToLower() == "asc")
+                filteredItems = filteredItems
+                    .OrderBy(item => item.GetProperty("game_info").GetProperty("lowest_price").GetDecimal())
+                    .ToList();
+            else if (priceSort?.ToLower() == "desc")
+                filteredItems = filteredItems
+                    .OrderByDescending(item => item.GetProperty("game_info").GetProperty("lowest_price").GetDecimal())
+                    .ToList();
+
+            // Pagination after filtering/sorting
+            var pagedItems = filteredItems
+                .Skip((page - 1) * limit)
+                .Take(limit)
+                .ToList();
+
+            // Extract metadata for result
+            var success = data.GetProperty("success");
+            var message = data.GetProperty("message");
+            var pageValue = page;
+            var pagesValue = (int)Math.Ceiling((double)filteredItems.Count / limit);
+
+            var resultObject = new
+            {
+                success,
+                message,
+                results = new
+                {
+                    page = pageValue,
+                    pages = pagesValue,
+                    shown = pagedItems.Count,
+                    total = filteredItems.Count,
+                    items = pagedItems
+                }
+            };
+
+            var modifiedContent = JsonSerializer.Serialize(resultObject);
+
+            var cacheOptions = new MemoryCacheEntryOptions()
+                .SetSlidingExpiration(TimeSpan.FromMinutes(10));
+
+            _cache.Set(cacheKey, modifiedContent, cacheOptions);
+
+            return Ok(modifiedContent);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
+    }
+
+
     [HttpGet("product")]
     public async Task<IActionResult> GetProduct([FromQuery] string id, [FromQuery] string type = "game")
     {
         try
         {
-            string cacheKey = $"product_{type}_{id}";
+            var cacheKey = $"product_{type}_{id}";
 
-            if (_cache.TryGetValue(cacheKey, out string? cachedContent))
-            {
-                return Ok(cachedContent);
-            }
+            if (_cache.TryGetValue(cacheKey, out string? cachedContent)) return Ok(cachedContent);
 
             var client = _httpClientFactory.CreateClient("NexardaClient");
             var response = await client.GetAsync($"product?type={type}&id={id}");
@@ -86,12 +175,9 @@ public class NexardaController : ControllerBase
     {
         try
         {
-            string cacheKey = "retailers";
+            var cacheKey = "retailers";
 
-            if (_cache.TryGetValue(cacheKey, out string? cachedContent))
-            {
-                return Ok(cachedContent);
-            }
+            if (_cache.TryGetValue(cacheKey, out string? cachedContent)) return Ok(cachedContent);
 
             var client = _httpClientFactory.CreateClient("NexardaClient");
             var response = await client.GetAsync("retailers");
@@ -105,7 +191,7 @@ public class NexardaController : ControllerBase
             var allowedUsStoreNames = new[]
             {
                 "Best Buy", "GameStop", "Walmart", "Target", "GameFly",
-                "Steam", "Epic Games Store", "Humble Store", "PlayStation Store", "PlayStation Direct", 
+                "Steam", "Epic Games Store", "Humble Store", "PlayStation Store", "PlayStation Direct",
                 "Microsoft Store", "Nintendo eShop", "Kohl's"
             };
 
@@ -142,12 +228,9 @@ public class NexardaController : ControllerBase
     {
         try
         {
-            string cacheKey = $"search_{query}_{type}_{page}_{limit}";
+            var cacheKey = $"search_{query}_{type}_{page}_{limit}";
 
-            if (_cache.TryGetValue(cacheKey, out string? cachedContent))
-            {
-                return Ok(cachedContent);
-            }
+            if (_cache.TryGetValue(cacheKey, out string? cachedContent)) return Ok(cachedContent);
 
             var client = _httpClientFactory.CreateClient("NexardaClient");
             var response = await client.GetAsync(
@@ -167,77 +250,73 @@ public class NexardaController : ControllerBase
         }
     }
 
-   [HttpGet("prices")]
-public async Task<IActionResult> GetProductPrices(
-    [FromQuery] string id, 
-    [FromQuery] string type = "game", 
-    [FromQuery] string currency = "USD")
-{
-    try
+    [HttpGet("prices")]
+    public async Task<IActionResult> GetProductPrices(
+        [FromQuery] string id,
+        [FromQuery] string type = "game",
+        [FromQuery] string currency = "USD")
     {
-        string cacheKey = $"prices_{type}_{id}_{currency}";
-
-        if (_cache.TryGetValue(cacheKey, out string? cachedContent))
+        try
         {
-            return Ok(cachedContent);
-        }
+            var cacheKey = $"prices_{type}_{id}_{currency}";
 
-        var client = _httpClientFactory.CreateClient("NexardaClient");
-        var response = await client.GetAsync($"prices?type={type}&id={id}&currency={currency}");
-        response.EnsureSuccessStatusCode();
+            if (_cache.TryGetValue(cacheKey, out string? cachedContent)) return Ok(cachedContent);
 
-        var content = await response.Content.ReadAsStringAsync();
+            var client = _httpClientFactory.CreateClient("NexardaClient");
+            var response = await client.GetAsync($"prices?type={type}&id={id}&currency={currency}");
+            response.EnsureSuccessStatusCode();
 
-        // Deserialize response into dynamic object
-        using var doc = JsonDocument.Parse(content);
-        var root = doc.RootElement;
+            var content = await response.Content.ReadAsStringAsync();
 
-        var allowedUsStoreNames = new[]
-        {
-            "Best Buy", "Target","Walmart", "GameStop",
-            "GameFly", "PlayStation Store", "Epic Games Store", "Steam", "Humble Store",
-            "Microsoft Store", "Nintendo eShop", "GOG", "Ubisoft Store"
-        };
+            // Deserialize response into dynamic object
+            using var doc = JsonDocument.Parse(content);
+            var root = doc.RootElement;
 
-        // Copy metadata info
-        var filteredResult = new
-        {
-            success = root.GetProperty("success").GetBoolean(),
-            message = root.GetProperty("message").GetString(),
-            info = root.GetProperty("info"),
-            prices = new
+            var allowedUsStoreNames = new[]
             {
-                currency = root.GetProperty("prices").GetProperty("currency").GetString(),
-                lowest = root.GetProperty("prices").GetProperty("lowest").GetDecimal(),
-                highest = root.GetProperty("prices").GetProperty("highest").GetDecimal(),
-                stores = root.GetProperty("prices").GetProperty("stores").GetInt32(),
-                offers = root.GetProperty("prices").GetProperty("offers").GetInt32(),
-                editions = root.GetProperty("prices").GetProperty("editions"),
-                regions = root.GetProperty("prices").GetProperty("regions"),
-                list = root.GetProperty("prices").GetProperty("list")
-                    .EnumerateArray()
-                    .Where(entry => 
-                        entry.TryGetProperty("store", out var store) &&
-                        store.TryGetProperty("name", out var name) &&
-                        allowedUsStoreNames.Contains(name.GetString())
-                    ).ToList()
-            }
-        };
+                "Best Buy", "Target", "Walmart", "GameStop",
+                "GameFly", "PlayStation Store", "Epic Games Store", "Steam", "Humble Store",
+                "Microsoft Store", "Nintendo eShop", "GOG", "Ubisoft Store"
+            };
 
-        var filteredJson = JsonSerializer.Serialize(filteredResult, new JsonSerializerOptions
+            // Copy metadata info
+            var filteredResult = new
+            {
+                success = root.GetProperty("success").GetBoolean(),
+                message = root.GetProperty("message").GetString(),
+                info = root.GetProperty("info"),
+                prices = new
+                {
+                    currency = root.GetProperty("prices").GetProperty("currency").GetString(),
+                    lowest = root.GetProperty("prices").GetProperty("lowest").GetDecimal(),
+                    highest = root.GetProperty("prices").GetProperty("highest").GetDecimal(),
+                    stores = root.GetProperty("prices").GetProperty("stores").GetInt32(),
+                    offers = root.GetProperty("prices").GetProperty("offers").GetInt32(),
+                    editions = root.GetProperty("prices").GetProperty("editions"),
+                    regions = root.GetProperty("prices").GetProperty("regions"),
+                    list = root.GetProperty("prices").GetProperty("list")
+                        .EnumerateArray()
+                        .Where(entry =>
+                            entry.TryGetProperty("store", out var store) &&
+                            store.TryGetProperty("name", out var name) &&
+                            allowedUsStoreNames.Contains(name.GetString())
+                        ).ToList()
+                }
+            };
+
+            var filteredJson = JsonSerializer.Serialize(filteredResult, new JsonSerializerOptions
+            {
+                WriteIndented = true
+            });
+
+            var cacheOptions = new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMinutes(5));
+            _cache.Set(cacheKey, filteredJson, cacheOptions);
+
+            return Ok(filteredJson);
+        }
+        catch (Exception ex)
         {
-            WriteIndented = true
-        });
-
-        var cacheOptions = new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMinutes(5));
-        _cache.Set(cacheKey, filteredJson, cacheOptions);
-
-        return Ok(filteredJson);
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
     }
-    catch (Exception ex)
-    {
-        return StatusCode(500, $"Internal server error: {ex.Message}");
-    }
-}
-
 }
