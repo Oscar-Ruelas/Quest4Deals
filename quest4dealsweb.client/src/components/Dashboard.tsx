@@ -13,7 +13,7 @@ function Dashboard() {
   const prefetchCache = useRef<{ [key: number]: Game[] }>({});
   const isFetching = useRef<boolean>(false);
 
-  const LIMIT = 60;
+  const LIMIT = 20;
   const MAX_PREFETCH_PAGES = 1;
 
   const fetchGames = useCallback(
