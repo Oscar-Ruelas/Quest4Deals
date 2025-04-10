@@ -8,12 +8,23 @@ interface Platform {
     icon: string;
 }
 
+interface StoreOffer {
+    url: string;
+    store: {
+        name: string;
+        image: string;
+    };
+    edition: string;
+    price: number;
+}
+
 interface SearchResult {
     results: {
         items: {
             title: string;
             image: string;
             game_info: {
+                id: number;
                 short_desc: string;
                 platforms: Platform[];
             };
@@ -30,6 +41,7 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
     const [gameImage, setGameImage] = useState("");
     const [gameDesc, setGameDesc] = useState("");
     const [platforms, setPlatforms] = useState<Platform[]>([]);
+    const [storeOffers, setStoreOffers] = useState<StoreOffer[]>([]);
     const [notFound, setNotFound] = useState(false);
 
     useEffect(() => {
@@ -52,10 +64,30 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
                     return;
                 }
 
+                const gameId = game.game_info.id;
+
                 setGameTitle(game.title);
                 setGameImage(game.image);
                 setGameDesc(game.game_info.short_desc);
                 setPlatforms(game.game_info.platforms || []);
+
+                const priceRes = await fetch(`/api/nexarda/prices?id=${gameId}`);
+                const priceData = await priceRes.json();
+                const priceJson = typeof priceData === "string" ? JSON.parse(priceData) : priceData;
+
+                const offers: StoreOffer[] = priceJson.prices.list
+                    .filter((offer: any) => offer.available && offer.url)
+                    .map((offer: any) => ({
+                        url: offer.url,
+                        store: {
+                            name: offer.store.name,
+                            image: offer.store.image,
+                        },
+                        edition: offer.edition,
+                        price: offer.price,
+                    }));
+
+                setStoreOffers(offers);
             } catch (error) {
                 console.error("Error fetching game details:", error);
                 setNotFound(true);
@@ -67,12 +99,11 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
         fetchGame();
     }, [title]);
 
-    // ESC / LEFT ARROW exit handler
     useEffect(() => {
         if (!isModal) return;
 
         const handleKeyDown = (event: KeyboardEvent) => {
-            if (event.key === "Escape" || event.key === "ArrowLeft") {
+            if (event.key === "Escape" || event.key === "Enter") {
                 navigate(-1);
             }
         };
@@ -94,6 +125,7 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
                         ✕
                     </button>
                 )}
+
                 <h1 className="details-title">{gameTitle}</h1>
                 <img className="details-image" src={gameImage} alt={gameTitle} />
                 <p className="details-description">{gameDesc}</p>
@@ -101,9 +133,39 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
                 <h2 className="details-subtitle">Platforms</h2>
                 <p className="details-platforms">{platforms.map((p) => p.name).join(", ")}</p>
 
+                {storeOffers.length > 0 && (
+                    <>
+                        <h2 className="details-subtitle">Available Offers</h2>
+                        <div className="store-offers">
+                            {storeOffers.map((offer, index) => (
+                                <a
+                                    key={index}
+                                    href={offer.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="store-offer"
+                                >
+                                    <img
+                                        src={offer.store.image}
+                                        alt={offer.store.name}
+                                        className="store-logo"
+                                    />
+                                    <div>
+                                        <p className="store-name">{offer.store.name}</p>
+                                        <p className="store-edition">{offer.edition}</p>
+                                        <p className="store-price">
+                                            {offer.price === 0 ? "Free" : `$${offer.price.toFixed(2)}`}
+                                        </p>
+                                    </div>
+                                </a>
+                            ))}
+                        </div>
+                    </>
+                )}
+
                 {isModal && (
                     <div className="modal-hint">
-                        Press <kbd>Esc</kbd> or <kbd>←</kbd> to close
+                        Press <kbd>Esc</kbd> or <kbd>Enter</kbd> to close
                     </div>
                 )}
             </div>
