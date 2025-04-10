@@ -67,7 +67,9 @@ function Gamecard({ game }: { game: Game }) {
             <h2>{game.title}</h2>
 
             <div className="game-info">
-                <p className="lowest-price">Lowest Price: ${game.game_info.lowest_price}</p>
+                <p className="lowest-price">
+                    Lowest Price: {game.game_info.lowest_price === 0 ? "Free" : `$${game.game_info.lowest_price}`}
+                </p>
                 <p className="desc">{game.game_info.short_desc}</p>
                 <div className="age-rating">
                     <strong>Rating:</strong>{" "}
@@ -79,7 +81,6 @@ function Gamecard({ game }: { game: Game }) {
                 </div>
             </div>
         </div>
-
     );
 }
 
