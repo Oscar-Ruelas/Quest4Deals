@@ -58,7 +58,7 @@ body:has(.modal-overlay) {
 }
 
 .modal-close:hover {
-    background-color: var(--highlight-color-dark, #ff4757);
+    background-color: #ff4757;
 }
 
 /* Game details styles */
@@ -150,7 +150,7 @@ body:has(.modal-overlay) {
 }
 
 .modal-close:hover {
-    background-color: var(--highlight-color-dark, #ff4757);
+    background-color: var(#ff4757);
 }
 
 /* Game details styles */
