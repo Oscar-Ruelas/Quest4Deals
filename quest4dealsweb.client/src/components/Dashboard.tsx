@@ -11,51 +11,81 @@ function Dashboard() {
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   const LIMIT = 60;
 
-  const fetchGames = useCallback(async () => {
+  // Cache for preloaded data
+  const prefetchCache = useRef<{ [key: number]: Game[] }>({});
+
+  const fetchGames = useCallback(
+      async (pageToFetch: number) => {
+        try {
+          const response = await fetch(`/api/nexarda/games?page=${pageToFetch}&limit=${LIMIT}`);
+          if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+          const data = await response.json();
+          const parsed = typeof data === "string" ? JSON.parse(data) : data;
+
+          const newGames = parsed.results?.items?.filter((game: Game) => {
+            const id = game.game_info.id;
+            if (seenGameIds.current.has(id)) return false;
+            seenGameIds.current.add(id);
+            return true;
+          }) || [];
+
+          return newGames;
+        } catch (err) {
+          console.error("Error fetching games:", err);
+          setError("Failed to load games. Please try again later.");
+          return [];
+        }
+      },
+      [LIMIT]
+  );
+
+  const loadGames = useCallback(async () => {
     setLoading(true);
     setError(null);
 
-    try {
-      const response = await fetch(`/api/nexarda/games?page=${page}&limit=${LIMIT}`);
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    // Check if the current page is already prefetched
+    let newGames = prefetchCache.current[page] || [];
 
-      const data = await response.json();
-      const parsed = typeof data === "string" ? JSON.parse(data) : data;
-
-      const newGames = parsed.results?.items?.filter((game: Game) => {
-        const id = game.game_info.id;
-        if (seenGameIds.current.has(id)) return false;
-        seenGameIds.current.add(id);
-        return true;
-      }) || [];
-
-      setGames(prev => [...prev, ...newGames]);
-    } catch (err) {
-      console.error("Error fetching games:", err);
-      setError("Failed to load games. Please try again later.");
-    } finally {
-      setLoading(false);
+    // If not prefetched, fetch it now
+    if (newGames.length === 0) {
+      newGames = await fetchGames(page);
     }
-  }, [page]);
+
+    // Update the games state
+    setGames((prev) => [...prev, ...newGames]);
+
+    // Prefetch the next page
+    const nextPage = page + 1;
+    if (!prefetchCache.current[nextPage]) {
+      const nextGames = await fetchGames(nextPage);
+      prefetchCache.current[nextPage] = nextGames; // Cache the next page
+    }
+
+    setLoading(false);
+  }, [page, fetchGames]);
 
   useEffect(() => {
     const delay = setTimeout(() => {
-      fetchGames();
+      loadGames();
     }, 100); // small buffer to smooth out fast scrolling
 
     return () => clearTimeout(delay);
-  }, [fetchGames]);
+  }, [loadGames]);
 
   useEffect(() => {
     if (observer.current) observer.current.disconnect();
 
-    observer.current = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting && !loading) {
-        setPage(prev => prev + 1);
-      }
-    }, {
-      rootMargin: '300px', // trigger early when user is 300px before bottom
-    });
+    observer.current = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting && !loading) {
+            setPage((prev) => prev + 1);
+          }
+        },
+        {
+          rootMargin: "300px", // trigger early when user is 800px before bottom
+        }
+    );
 
     if (sentinelRef.current) {
       observer.current.observe(sentinelRef.current);
