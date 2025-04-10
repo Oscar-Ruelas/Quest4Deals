@@ -196,7 +196,7 @@ public async Task<IActionResult> GetProductPrices(
         {
             "Best Buy", "Target","Walmart", "GameStop",
             "GameFly", "PlayStation Store", "Epic Games Store", "Steam", "Humble Store",
-            "Microsoft Store", "Nintendo eShop", "GOG"
+            "Microsoft Store", "Nintendo eShop", "GOG", "Ubisoft Store"
         };
 
         // Copy metadata info
