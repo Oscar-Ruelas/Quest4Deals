@@ -37,7 +37,7 @@ export interface Game {
 
 function Gamecard({ game }: { game: Game }) {
     const navigate = useNavigate();
-    const location = useLocation(); // ✅ Moved inside the component
+    const location = useLocation();
 
     const handleClick = () => {
         const cleanTitle = game.title.replace(/\s*\(.*?\)\s*/g, "").trim();
@@ -61,6 +61,11 @@ function Gamecard({ game }: { game: Game }) {
         }
     }
 
+    const shortDescription =
+        game.game_info.short_desc.length > 100
+            ? game.game_info.short_desc.slice(0, 97) + "..."
+            : game.game_info.short_desc;
+
     return (
         <div className="gamecard" onClick={handleClick} style={{ cursor: "pointer" }}>
             <img src={game.image} alt="Game Image" />
@@ -70,7 +75,7 @@ function Gamecard({ game }: { game: Game }) {
                 <p className="lowest-price">
                     Lowest Price: {game.game_info.lowest_price === 0 ? "Free" : `$${game.game_info.lowest_price}`}
                 </p>
-                <p className="desc">{game.game_info.short_desc}</p>
+                <p className="desc">{shortDescription}</p>
                 <div className="age-rating">
                     <strong>Rating:</strong>{" "}
                     {esrb ? (
