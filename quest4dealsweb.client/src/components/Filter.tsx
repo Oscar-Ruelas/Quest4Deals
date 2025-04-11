@@ -82,8 +82,8 @@ function Filter({ filters, setFilters, setIsFiltered, onReload }: FilterProps) {
         onChange={(e) => handleFilterChange("price", e.target.value)}
       >
         <option value="PriceOrder">Price Order By</option>
-        <option value="Low_High">Lowest to Highest</option>
-        <option value="High_Low">Highest to Lowest</option>
+        <option value="asc">Lowest to Highest</option>
+        <option value="desc">Highest to Lowest</option>
         <option value="Free">Free</option>
       </select>
       <button type="submit" onClick={handleApplyButton}>

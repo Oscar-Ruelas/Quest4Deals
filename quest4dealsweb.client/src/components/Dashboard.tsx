@@ -29,7 +29,11 @@ function Dashboard({ isFiltered, filters }: DashboardProps) {
     async (pageToFetch: number) => {
       try {
         const response = await fetch(
-          `/api/nexarda/games?page=${pageToFetch}&limit=${LIMIT}`
+          isFiltered
+            ? `/api/nexarda/games/filter?genre=${filters.genre.toLowerCase()}&platform=${filters.platform.toLowerCase()}&priceSort=${
+                filters.price
+              }&page=${pageToFetch}&limit=${LIMIT}`
+            : `/api/nexarda/games?page=${pageToFetch}&limit=${LIMIT}`
         );
         if (!response.ok)
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -44,22 +48,6 @@ function Dashboard({ isFiltered, filters }: DashboardProps) {
             seenGameIds.current.add(id);
             return true;
           }) || [];
-        // filter the games if isFiltered is true, else we just return normal games
-        if (isFiltered) {
-          console.log("Filtering games based on filters:", filters);
-          const filteredGames = newGames.filter((game: Game) => {
-            const { platform } = filters;
-            const gamePlatforms = game.game_info.platforms.map((p) =>
-              p.name.toLowerCase()
-            );
-            const isPlatformMatch = gamePlatforms.includes(
-              platform.toLowerCase()
-            );
-            return isPlatformMatch;
-          });
-          return filteredGames;
-        }
-
         return newGames;
       } catch (err) {
         console.error("Error fetching games:", err);
