@@ -1,7 +1,16 @@
 import Gamecard, { Game } from "./Gamecard";
 import { useEffect, useState, useRef, useCallback } from "react";
 
-function Dashboard() {
+interface DashboardProps {
+  isFiltered: boolean;
+  filters: {
+    platform: string;
+    genre: string;
+    price: string;
+  };
+}
+
+function Dashboard({ isFiltered, filters }: DashboardProps) {
   const [games, setGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -17,29 +26,48 @@ function Dashboard() {
   const MAX_PREFETCH_PAGES = 1;
 
   const fetchGames = useCallback(
-      async (pageToFetch: number) => {
-        try {
-          const response = await fetch(`/api/nexarda/games?page=${pageToFetch}&limit=${LIMIT}`);
-          if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    async (pageToFetch: number) => {
+      try {
+        const response = await fetch(
+          `/api/nexarda/games?page=${pageToFetch}&limit=${LIMIT}`
+        );
+        if (!response.ok)
+          throw new Error(`HTTP error! status: ${response.status}`);
 
-          const data = await response.json();
-          const parsed = typeof data === "string" ? JSON.parse(data) : data;
+        const data = await response.json();
+        const parsed = typeof data === "string" ? JSON.parse(data) : data;
 
-          const newGames = parsed.results?.items?.filter((game: Game) => {
+        const newGames =
+          parsed.results?.items?.filter((game: Game) => {
             const id = game.game_info.id;
             if (seenGameIds.current.has(id)) return false;
             seenGameIds.current.add(id);
             return true;
           }) || [];
-
-          return newGames;
-        } catch (err) {
-          console.error("Error fetching games:", err);
-          setError("Failed to load games. Please try again later.");
-          return [];
+        // filter the games if isFiltered is true, else we just return normal games
+        if (isFiltered) {
+          console.log("Filtering games based on filters:", filters);
+          const filteredGames = newGames.filter((game: Game) => {
+            const { platform } = filters;
+            const gamePlatforms = game.game_info.platforms.map((p) =>
+              p.name.toLowerCase()
+            );
+            const isPlatformMatch = gamePlatforms.includes(
+              platform.toLowerCase()
+            );
+            return isPlatformMatch;
+          });
+          return filteredGames;
         }
-      },
-      [LIMIT]
+
+        return newGames;
+      } catch (err) {
+        console.error("Error fetching games:", err);
+        setError("Failed to load games. Please try again later.");
+        return [];
+      }
+    },
+    [LIMIT, isFiltered, filters]
   );
 
   const loadGames = useCallback(async () => {
@@ -80,16 +108,16 @@ function Dashboard() {
     if (observer.current) observer.current.disconnect();
 
     observer.current = new IntersectionObserver(
-        (entries) => {
-          const firstEntry = entries[0];
-          if (firstEntry.isIntersecting && !loading && !isFetching.current) {
-            isFetching.current = true;
-            setPage((prev) => prev + 1);
-          }
-        },
-        {
-          rootMargin: "90px", // reduced margin for more controlled loading
+      (entries) => {
+        const firstEntry = entries[0];
+        if (firstEntry.isIntersecting && !loading && !isFetching.current) {
+          isFetching.current = true;
+          setPage((prev) => prev + 1);
         }
+      },
+      {
+        rootMargin: "90px", // reduced margin for more controlled loading
+      }
     );
 
     if (sentinelRef.current) {
@@ -111,15 +139,15 @@ function Dashboard() {
   }, []);
 
   return (
-      <div className="dashboard">
-        {games.map((game) => (
-            <Gamecard key={game.game_info.id} game={game} />
-        ))}
+    <div className="dashboard">
+      {games.map((game) => (
+        <Gamecard key={game.game_info.id} game={game} />
+      ))}
 
-        <div ref={sentinelRef} style={{ height: "100px" }} />
-        {loading && <p>Loading more games...</p>}
-        {error && <p style={{ color: "red" }}>{error}</p>}
-      </div>
+      <div ref={sentinelRef} style={{ height: "100px" }} />
+      {loading && <p>Loading more games...</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
+    </div>
   );
 }
 
