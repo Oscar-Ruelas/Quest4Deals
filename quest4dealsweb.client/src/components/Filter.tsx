@@ -55,10 +55,11 @@ function Filter({ filters, setFilters, setIsFiltered, onReload }: FilterProps) {
         onChange={(e) => handleFilterChange("platform", e.target.value)}
       >
         <option value="All">Platform</option>
-        <option value="PC">PC</option>
+        <option value="steam">Steam</option>
+        <option value="epic-games">Epic Games</option>
         <option value="Playstation">Playstation</option>
         <option value="Xbox">Xbox</option>
-        <option value="Switch">Switch</option>
+        <option value="Nintendo">Nintendo</option>
       </select>
       <select
         name="genre"

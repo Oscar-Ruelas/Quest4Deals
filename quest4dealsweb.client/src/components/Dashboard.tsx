@@ -48,6 +48,7 @@ function Dashboard({ isFiltered, filters }: DashboardProps) {
             seenGameIds.current.add(id);
             return true;
           }) || [];
+        console.log(newGames);
         return newGames;
       } catch (err) {
         console.error("Error fetching games:", err);
