@@ -84,7 +84,6 @@ function Filter({ filters, setFilters, setIsFiltered, onReload }: FilterProps) {
         <option value="PriceOrder">Price Order By</option>
         <option value="asc">Lowest to Highest</option>
         <option value="desc">Highest to Lowest</option>
-        <option value="Free">Free</option>
       </select>
       <button type="submit" onClick={handleApplyButton}>
         Apply
