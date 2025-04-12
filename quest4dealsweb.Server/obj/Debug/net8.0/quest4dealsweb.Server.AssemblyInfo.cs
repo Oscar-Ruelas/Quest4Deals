@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("quest4dealsweb.Server")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0636b7d1cd9c5b09e37b04df9982c3489f7d9413")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+11323d875066e23a56d54c2c1622d1c75c5c9ad8")]
 [assembly: System.Reflection.AssemblyProductAttribute("quest4dealsweb.Server")]
 [assembly: System.Reflection.AssemblyTitleAttribute("quest4dealsweb.Server")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

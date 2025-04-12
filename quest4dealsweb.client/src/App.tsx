@@ -30,6 +30,9 @@ function AppRoutes() {
   const [isFiltered, setIsFiltered] = useState(false);
   // State for reload key
   const [reloadKey, setReloadKey] = useState(0);
+  // state for the search input and whether the user is searching or not
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
 
   const handleReloadDashboard = () => {
     setReloadKey((prev) => prev + 1);
@@ -43,7 +46,11 @@ function AppRoutes() {
           path="/"
           element={
             <div className="App">
-              <Navbar />
+              <Navbar
+                setSearchQuery={setSearchQuery}
+                setIsSearching={setIsSearching}
+                onReload={handleReloadDashboard}
+              />
               <Filter
                 filters={filters}
                 setFilters={setFilters}
@@ -54,6 +61,8 @@ function AppRoutes() {
                 isFiltered={isFiltered}
                 filters={filters}
                 key={reloadKey}
+                isSearching={isSearching}
+                searchQuery={searchQuery}
               />
             </div>
           }

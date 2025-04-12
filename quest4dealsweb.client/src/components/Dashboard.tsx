@@ -8,9 +8,16 @@ interface DashboardProps {
     genre: string;
     price: string;
   };
+  isSearching: boolean;
+  searchQuery: string;
 }
 
-function Dashboard({ isFiltered, filters }: DashboardProps) {
+function Dashboard({
+  isFiltered,
+  filters,
+  isSearching,
+  searchQuery,
+}: DashboardProps) {
   const [games, setGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -28,13 +35,19 @@ function Dashboard({ isFiltered, filters }: DashboardProps) {
   const fetchGames = useCallback(
     async (pageToFetch: number) => {
       try {
-        const response = await fetch(
-          isFiltered
-            ? `/api/nexarda/games/filter?genre=${filters.genre.toLowerCase()}&platform=${filters.platform.toLowerCase()}&priceSort=${
-                filters.price
-              }&page=${pageToFetch}&limit=${LIMIT}`
-            : `/api/nexarda/games?page=${pageToFetch}&limit=${LIMIT}`
-        );
+        let url = "";
+
+        if (isFiltered) {
+          url = `/api/nexarda/games/filter?genre=${filters.genre.toLowerCase()}&platform=${filters.platform.toLowerCase()}&priceSort=${
+            filters.price
+          }&page=${pageToFetch}&limit=${LIMIT}`;
+        } else if (isSearching) {
+          url = `/api/nexarda/search?query=${searchQuery}`;
+        } else {
+          url = `/api/nexarda/games?page=${pageToFetch}&limit=${LIMIT}`;
+        }
+
+        const response = await fetch(url);
         if (!response.ok)
           throw new Error(`HTTP error! status: ${response.status}`);
 
@@ -56,7 +69,7 @@ function Dashboard({ isFiltered, filters }: DashboardProps) {
         return [];
       }
     },
-    [LIMIT, isFiltered, filters]
+    [LIMIT, isFiltered, filters, isSearching, searchQuery]
   );
 
   const loadGames = useCallback(async () => {
