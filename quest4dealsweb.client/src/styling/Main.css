@@ -127,7 +127,9 @@ body {
   grid-row: 2 / -1;
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-evenly;
+  gap: 10px;
+  padding: 10px;
+  justify-content: flex-start;
 }
 
 .gamecard {
