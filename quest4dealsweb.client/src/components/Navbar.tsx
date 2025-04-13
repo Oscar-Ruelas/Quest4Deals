@@ -54,6 +54,12 @@ const Navbar = ({ setIsSearching, setSearchQuery, onReload }: NavbarProps) => {
     onReload();
   };
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      handleSearchButton();
+    }
+  };
+
   return (
     <div className="navbar">
       <input
@@ -61,6 +67,7 @@ const Navbar = ({ setIsSearching, setSearchQuery, onReload }: NavbarProps) => {
         placeholder="Search Games"
         className="search-bar"
         onChange={(e) => setSearchQuery(e.target.value)}
+        onKeyDown={handleKeyDown}
       />
       <button type="submit" onClick={handleSearchButton}>
         Search
