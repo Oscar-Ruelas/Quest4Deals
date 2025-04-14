@@ -5,8 +5,6 @@
   --highlight-color: #f79256;
 }
 
-
-
 html,
 body {
   background-color: #0a0a0a; /* rich black */
@@ -26,7 +24,6 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-
 .App {
   display: grid;
   grid-template-columns: 200px 1fr 1fr 1fr;
@@ -41,8 +38,6 @@ body {
   margin: 10px;
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
-
-
 
 .navbar {
   position: sticky;
@@ -101,7 +96,8 @@ body {
 }
 
 .filter select,
-.filter button {
+.filter button,
+.navbar button {
   background-color: var(--secondary-color);
   color: white;
   border: 2px solid white;
@@ -113,7 +109,8 @@ body {
   font-family: inherit;
 }
 
-.filter button:hover {
+.filter button:hover,
+.navbar button:hover {
   background-color: var(--highlight-color);
   color: white;
   transition: 0.1s;
@@ -130,7 +127,9 @@ body {
   grid-row: 2 / -1;
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-evenly;
+  gap: 10px;
+  padding: 10px;
+  justify-content: flex-start;
 }
 
 .gamecard {
