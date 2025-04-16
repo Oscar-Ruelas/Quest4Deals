@@ -33,6 +33,7 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
 
     const [loading, setLoading] = useState(true);
     const [gameTitle, setGameTitle] = useState("");
+    const [gameId, setGameId] = useState<number | null>(null);
     const [gameImage, setGameImage] = useState("");
     const [gameDesc, setGameDesc] = useState("");
     const [platforms, setPlatforms] = useState<Platform[]>([]);
@@ -72,33 +73,18 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
                     return;
                 }
 
-                const gameId = game.game_info.id;
-                console.log("Found game ID:", gameId);
+                const foundGameId = game.game_info.id;
+                setGameId(foundGameId);
+                console.log("Found game ID:", foundGameId);
 
                 setGameTitle(game.title);
                 setGameImage(game.image);
                 setGameDesc(game.game_info.short_desc);
                 setPlatforms(game.game_info.platforms || []);
 
-                // Fetch price history
-                console.log("Fetching price history for game ID:", gameId);
-                try {
-                    const historyRes = await fetch(`/api/price-history/${gameId}`);
-                    if (historyRes.ok) {
-                        const historyData = await historyRes.json();
-                        console.log("Received price history:", historyData);
-                        setPriceHistory(historyData || []);
-                    } else {
-                        console.log("No price history available:", historyRes.status);
-                        setPriceHistory([]);
-                    }
-                } catch (historyErr) {
-                    console.error("Error fetching price history:", historyErr);
-                    setPriceHistory([]);
-                }
-
-                console.log("Fetching price data for game ID:", gameId);
-                const priceRes = await fetch(`/api/nexarda/prices?id=${gameId}`);
+                // Fetch prices
+                console.log("Fetching price data for game ID:", foundGameId);
+                const priceRes = await fetch(`/api/nexarda/prices?id=${foundGameId}`);
 
                 if (!priceRes.ok) {
                     throw new Error(`Error fetching price data: ${priceRes.status}`);
@@ -107,18 +93,20 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
                 const priceData = await priceRes.json();
                 console.log("Received price data:", priceData);
 
-                const priceJson = typeof priceData === "string" ? JSON.parse(priceData) : priceData;
+                let offers: StoreOffer[] = [];
 
-                if (priceJson && priceJson.prices && Array.isArray(priceJson.prices.list)) {
-                    const offers: StoreOffer[] = priceJson.prices.list
+                if (priceData && priceData.prices && priceData.prices.list) {
+                    offers = priceData.prices.list
                         .filter((offer: any) => offer.available && offer.url)
                         .map((offer: any) => {
-                            const editionFull: string = offer.edition_full || "";
+                            const editionFull = offer.edition_full || "";
                             let platform = "";
 
-                            const match = editionFull.match(/FOR:(.+)$/i);
-                            if (match) {
-                                platform = match[1].trim();
+                            if (editionFull) {
+                                const match = editionFull.match(/FOR:(.+)$/i);
+                                if (match) {
+                                    platform = match[1].trim();
+                                }
                             }
 
                             return {
@@ -127,22 +115,46 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
                                     name: offer.store.name,
                                     image: offer.store.image,
                                 },
-                                edition: offer.edition,
+                                edition: offer.edition || "Standard Edition",
                                 price: offer.price,
                                 platform,
                             };
                         });
 
                     console.log("Processed store offers:", offers);
-                    setStoreOffers(offers);
-                } else {
-                    console.log("No valid price data found");
-                    setStoreOffers([]);
                 }
+
+                setStoreOffers(offers);
+
+                // Check if we have any offers to track
+                if (offers && offers.length > 0) {
+                    console.log("Creating price history from current offers");
+
+                    // Find lowest price offer
+                    const lowestOffer = offers.reduce(
+                        (lowest, current) => current.price < lowest.price ? current : lowest,
+                        offers[0]
+                    );
+
+                    // Create a price history entry with today's date and the lowest price
+                    const priceHistoryEntry: PriceHistoryItem = {
+                        id: 0, // Will be assigned by server
+                        gameId: foundGameId,
+                        price: lowestOffer.price,
+                        recordedAt: new Date().toISOString()
+                    };
+
+                    // Set the history display with our new entry
+                    setPriceHistory([priceHistoryEntry]);
+
+                    console.log("Created price history entry:", priceHistoryEntry);
+                } else {
+                    console.log("No offers available to create price history");
+                }
+
             } catch (err) {
                 console.error("Error in fetchGame:", err);
                 setError(err instanceof Error ? err.message : "Unknown error occurred");
-                setNotFound(true);
             } finally {
                 setLoading(false);
             }
@@ -210,6 +222,18 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
             </div>
         );
     }
+
+    // Find the lowest price from store offers
+    const getLowestPrice = () => {
+        if (storeOffers.length === 0) return null;
+
+        return storeOffers.reduce(
+            (min, offer) => offer.price < min ? offer.price : min,
+            storeOffers[0].price
+        );
+    };
+
+    const lowestPrice = getLowestPrice();
 
     return (
         <div className={isModal ? "modal-overlay" : "game-details-container"}>
@@ -297,77 +321,42 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
                 <div className="price-history-section">
                     <h2 className="details-subtitle">Price History</h2>
 
-                    {priceHistory.length > 0 ? (
+                    {lowestPrice !== null ? (
                         <div className="price-history-content">
-                            {/* Price Stats */}
-                            {priceStats && (
-                                <div className="price-stats">
-                                    <div className="stat-item">
-                                        <span className="stat-label">Lowest Price</span>
-                                        <span className="stat-value">${priceStats.lowestPrice.toFixed(2)}</span>
-                                    </div>
-                                    <div className="stat-item">
-                                        <span className="stat-label">Highest Price</span>
-                                        <span className="stat-value">${priceStats.highestPrice.toFixed(2)}</span>
-                                    </div>
-                                    <div className="stat-item">
-                                        <span className="stat-label">Current Price</span>
-                                        <span className="stat-value">${priceStats.currentPrice.toFixed(2)}</span>
-                                    </div>
-                                    <div className="stat-item">
-                                        <span className="stat-label">Average Price</span>
-                                        <span className="stat-value">${priceStats.averagePrice.toFixed(2)}</span>
-                                    </div>
+                            {/* Basic Price Info */}
+                            <div className="price-stats">
+                                <div className="stat-item">
+                                    <span className="stat-label">Current Best Price</span>
+                                    <span className="stat-value">${lowestPrice.toFixed(2)}</span>
                                 </div>
-                            )}
-
-                            {/* Visual price history */}
-                            <div className="price-history-visual">
-                                {priceHistory.map((item, index) => {
-                                    // Calculate the height percentage based on price relative to highest price
-                                    const heightPercent = priceStats
-                                        ? (item.price / priceStats.highestPrice) * 100
-                                        : 0;
-
-                                    return (
-                                        <div className="price-bar-container" key={index}>
-                                            <div
-                                                className="price-bar"
-                                                style={{ height: `${heightPercent}%` }}
-                                                title={`$${item.price.toFixed(2)} - ${new Date(item.recordedAt).toLocaleDateString()}`}
-                                            ></div>
-                                            <div className="price-date">
-                                                {new Date(item.recordedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                                            </div>
+                                {priceStats && (
+                                    <>
+                                        <div className="stat-item">
+                                            <span className="stat-label">Lowest Tracked Price</span>
+                                            <span className="stat-value">${priceStats.lowestPrice.toFixed(2)}</span>
                                         </div>
-                                    );
-                                })}
+                                        <div className="stat-item">
+                                            <span className="stat-label">Highest Tracked Price</span>
+                                            <span className="stat-value">${priceStats.highestPrice.toFixed(2)}</span>
+                                        </div>
+                                        <div className="stat-item">
+                                            <span className="stat-label">Average Price</span>
+                                            <span className="stat-value">${priceStats.averagePrice.toFixed(2)}</span>
+                                        </div>
+                                    </>
+                                )}
                             </div>
 
-                            {/* Price history table */}
-                            <div className="price-history-table-container">
-                                <h3>Detailed Price History</h3>
-                                <table className="price-history-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Date</th>
-                                            <th>Price</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {priceHistory.map((item, index) => (
-                                            <tr key={index}>
-                                                <td>{new Date(item.recordedAt).toLocaleDateString()}</td>
-                                                <td>${item.price.toFixed(2)}</td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
+                            {/* Price History Message */}
+                            <div className="new-price-tracking">
+                                <p>We've started tracking prices for this game.</p>
+                                <p>The current best price is <strong>${lowestPrice.toFixed(2)}</strong>.</p>
+                                <p>Check back later to see price trend information!</p>
                             </div>
                         </div>
                     ) : (
                         <p className="no-price-history">
-                            No price history available for this game yet. We'll start tracking prices now.
+                            No price information available for this game.
                         </p>
                     )}
                 </div>

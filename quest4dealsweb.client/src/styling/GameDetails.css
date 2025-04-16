@@ -264,77 +264,21 @@
     color: #4ade80;
 }
 
-.price-history-visual {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-around;
-    height: 200px;
-    margin: 30px 0;
-    padding: 0 10px;
-    border-bottom: 1px solid #4b5563;
-    position: relative;
-}
-
-.price-bar-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    flex: 1;
-    max-width: 40px;
-    margin: 0 5px;
-}
-
-.price-bar {
-    width: 100%;
-    background-color: #3b82f6;
-    border-radius: 3px 3px 0 0;
-    transition: height 0.3s ease;
-}
-
-.price-date {
-    font-size: 0.7rem;
-    color: #94a3b8;
-    margin-top: 5px;
+.new-price-tracking {
     text-align: center;
-    transform: rotate(-45deg);
-    white-space: nowrap;
-    transform-origin: top right;
-    position: relative;
-    top: 15px;
-    right: -5px;
+    padding: 25px 0;
+    line-height: 1.6;
+    color: #e2e8f0;
+    font-size: 1.1rem;
 }
 
-.price-history-table-container {
-    margin-top: 30px;
-    overflow-x: auto;
-}
-
-    .price-history-table-container h3 {
-        font-size: 1.1rem;
-        margin-bottom: 10px;
-        color: #e2e8f0;
+    .new-price-tracking p {
+        margin: 10px 0;
     }
 
-.price-history-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-    .price-history-table th,
-    .price-history-table td {
-        padding: 10px;
-        text-align: left;
-        border-bottom: 1px solid #4b5563;
-    }
-
-    .price-history-table th {
-        font-weight: 600;
-        color: #e2e8f0;
-        background-color: #374151;
-    }
-
-    .price-history-table tr:last-child td {
-        border-bottom: none;
+    .new-price-tracking strong {
+        color: #4ade80;
+        font-weight: 700;
     }
 
 .no-price-history {
@@ -382,15 +326,5 @@
 
     .price-stats {
         grid-template-columns: 1fr 1fr;
-    }
-
-    .price-history-visual {
-        height: 150px;
-        overflow-x: auto;
-        justify-content: flex-start;
-    }
-
-    .price-bar-container {
-        min-width: 30px;
     }
 }
