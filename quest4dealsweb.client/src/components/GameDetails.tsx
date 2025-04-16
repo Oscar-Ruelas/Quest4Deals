@@ -33,7 +33,7 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
 
     const [loading, setLoading] = useState(true);
     const [gameTitle, setGameTitle] = useState("");
-    const [gameId, setGameId] = useState<number | null>(null);
+    //const [gameId, setGameId] = useState<number | null>(null);
     const [gameImage, setGameImage] = useState("");
     const [gameDesc, setGameDesc] = useState("");
     const [platforms, setPlatforms] = useState<Platform[]>([]);
