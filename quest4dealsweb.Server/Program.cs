@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using quest4dealsweb.Server.Data;
 using quest4dealsweb.Server.models;
 using quest4dealsweb.Server.Endpoints;
+using quest4dealsweb.Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -82,6 +83,10 @@ builder.Services.AddAuthorization();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<PriceHistoryService>();
+builder.Services.AddScoped<quest4dealsweb.Server.Services.PriceHistoryService>();
+
+
 
 var app = builder.Build();
 
