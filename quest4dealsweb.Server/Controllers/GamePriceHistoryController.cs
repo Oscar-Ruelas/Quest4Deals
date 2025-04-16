@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+/*using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using quest4dealsweb.Server.Data;
 using quest4dealsweb.Server.models;
@@ -170,4 +170,4 @@ public class GamePriceHistoryController : ControllerBase
 
         return Ok(stats);
     }
-}
+}*/
