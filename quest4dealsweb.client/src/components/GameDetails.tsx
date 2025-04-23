@@ -3,6 +3,55 @@ import { useEffect, useState } from "react";
 import "../styling/GameDetails.css";
 import WatchlistButton from './WatchlistButton';
 
+// In-memory cache for game data
+const gameCache = new Map();
+
+function LoadingMessage() {
+    return (
+        <div className="modal-overlay" style={{ backgroundColor: 'rgba(0, 0, 0, 0.8)' }}>
+            <div
+                className="modal-content"
+                style={{
+                    width: 'auto',
+                    minWidth: '300px',
+                    textAlign: 'center',
+                    padding: '40px',
+                    backgroundColor: '#1f2937'
+                }}
+            >
+                <div className="loading-spinner" style={{
+                    marginBottom: '20px'
+                }}>
+                    <div style={{
+                        width: '40px',
+                        height: '40px',
+                        margin: '0 auto',
+                        border: '4px solid #3b82f6',
+                        borderTop: '4px solid transparent',
+                        borderRadius: '50%',
+                        animation: 'spin 1s linear infinite'
+                    }}></div>
+                </div>
+                <div style={{
+                    fontSize: '1.25rem',
+                    color: '#ffffff',
+                    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+                }}>
+                    Getting Game Info...
+                </div>
+            </div>
+            <style>
+                {`
+                    @keyframes spin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
+                    }
+                `}
+            </style>
+        </div>
+    );
+}
+
 interface Platform {
     name: string;
     slug: string;
@@ -71,6 +120,18 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
                 return;
             }
 
+            // Check cache first
+            if (gameCache.has(title)) {
+                const cached = gameCache.get(title);
+                setGameInfo(cached.gameInfo);
+                setStoreOffers(cached.storeOffers);
+                setPriceHistory(cached.priceHistory);
+                setNotFound(false);
+                setError(null);
+                setLoading(false);
+                return;
+            }
+
             setLoading(true);
             setNotFound(false);
 
@@ -99,14 +160,15 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
                 }
 
                 // Update game info
-                setGameInfo({
+                const newGameInfo = {
                     id: game.game_info.id,
                     title: game.title,
                     image: game.image,
                     description: game.game_info.short_desc,
                     platforms: game.game_info.platforms || [],
                     genres: genres
-                });
+                };
+                setGameInfo(newGameInfo);
 
                 // Fetch prices
                 const priceRes = await fetch(`/api/nexarda/prices?id=${game.game_info.id}`);
@@ -144,10 +206,10 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
                             };
                         });
                 }
-
                 setStoreOffers(offers);
 
                 // Price history logic: track lowest offer
+                let newPriceHistory: PriceHistoryItem[] = [];
                 if (offers && offers.length > 0) {
                     const lowestOffer = offers.reduce(
                         (lowest, current) => current.price < lowest.price ? current : lowest,
@@ -161,10 +223,18 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
                         recordedAt: new Date().toISOString()
                     };
 
-                    setPriceHistory([priceHistoryEntry]);
+                    newPriceHistory = [priceHistoryEntry];
+                    setPriceHistory(newPriceHistory);
                 } else {
                     setPriceHistory([]);
                 }
+
+                // Save to cache
+                gameCache.set(title, {
+                    gameInfo: newGameInfo,
+                    storeOffers: offers,
+                    priceHistory: newPriceHistory
+                });
 
             } catch (err) {
                 console.error("Error in fetchGame:", err);
@@ -226,7 +296,7 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
     const validStoreOffers = getValidStoreOffers();
 
     if (loading) {
-        return <div className="game-details loading">Loading game details...</div>;
+        return <LoadingMessage />;
     }
 
     if (error) {
