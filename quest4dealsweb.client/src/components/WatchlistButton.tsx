@@ -13,6 +13,7 @@ function WatchlistButton({ id, title, platform, currentPrice }: WatchlistButtonP
     const [isInWatchlist, setIsInWatchlist] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [getNotified, setGetNotified] = useState(true);
 
     useEffect(() => {
         if (id) {
@@ -36,6 +37,7 @@ function WatchlistButton({ id, title, platform, currentPrice }: WatchlistButtonP
 
             const data = await response.json();
             setIsInWatchlist(data.isWatchlisted);
+            setGetNotified(data.getNotified);
         } catch (error) {
             console.error('Error checking watchlist status:', error);
             setError('Failed to check watchlist status');
@@ -62,8 +64,9 @@ function WatchlistButton({ id, title, platform, currentPrice }: WatchlistButtonP
                     gameTitle: title,
                     platform: platform,
                     currentPrice: currentPrice || 0,
+                    getNotified: getNotified,
                 }),
-                credentials: 'include', // Important for authentication
+                credentials: 'include',
             });
 
             if (!response.ok) {
@@ -83,6 +86,30 @@ function WatchlistButton({ id, title, platform, currentPrice }: WatchlistButtonP
         }
     };
 
+    const toggleNotification = async () => {
+        if (!id || !isInWatchlist) return;
+
+        try {
+            const response = await fetch(`/api/watchlist/notify/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(!getNotified),
+                credentials: 'include',
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update notification setting');
+            }
+
+            setGetNotified(!getNotified);
+        } catch (error) {
+            console.error('Error updating notification setting:', error);
+            setError('Failed to update notification setting');
+        }
+    };
+
     return (
         <div className="watchlist-button-container">
             <button
@@ -98,6 +125,20 @@ function WatchlistButton({ id, title, platform, currentPrice }: WatchlistButtonP
                     </>
                 )}
             </button>
+
+            {isInWatchlist && (
+                <div className="notification-toggle">
+                    <label>
+                        <input
+                            type="checkbox"
+                            checked={getNotified}
+                            onChange={toggleNotification}
+                        />
+                        Get price notifications
+                    </label>
+                </div>
+            )}
+
             {error && (
                 <div className="watchlist-error">
                     {error}

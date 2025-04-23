@@ -29,6 +29,16 @@ public class DataContext : IdentityDbContext<User>
             .Property(g => g.Price)
             .HasPrecision(18, 2);
 
+        // Configure GetNotified default value
+        modelBuilder.Entity<Game>()
+            .Property(g => g.GetNotified)
+            .HasDefaultValue(true);
+
+        // Add a composite index on ExternalGameId and UserId to ensure uniqueness
+        modelBuilder.Entity<Game>()
+            .HasIndex(g => new { g.ExternalGameId, g.UserId })
+            .IsUnique();
+
         modelBuilder.Entity<Game>()
             .HasOne<User>()
             .WithMany()

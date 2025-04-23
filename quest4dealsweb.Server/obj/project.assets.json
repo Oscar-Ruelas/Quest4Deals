@@ -4418,19 +4418,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\oscar\\.nuget\\packages\\": {}
+    "/Users/oscar/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\oscar\\Documents\\SCP\\Quest4Deals\\quest4dealsweb.Server\\quest4dealsweb.Server.csproj",
+      "projectUniqueName": "/Users/oscar/Documents/SCP/Quest4Deals/quest4dealsweb.Server/quest4dealsweb.Server.csproj",
       "projectName": "quest4dealsweb.Server",
-      "projectPath": "C:\\Users\\oscar\\Documents\\SCP\\Quest4Deals\\quest4dealsweb.Server\\quest4dealsweb.Server.csproj",
-      "packagesPath": "C:\\Users\\oscar\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\oscar\\Documents\\SCP\\Quest4Deals\\quest4dealsweb.Server\\obj\\",
+      "projectPath": "/Users/oscar/Documents/SCP/Quest4Deals/quest4dealsweb.Server/quest4dealsweb.Server.csproj",
+      "packagesPath": "/Users/oscar/.nuget/packages/",
+      "outputPath": "/Users/oscar/Documents/SCP/Quest4Deals/quest4dealsweb.Server/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\oscar\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "/Users/oscar/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -4454,7 +4454,7 @@
         "auditLevel": "low",
         "auditMode": "direct"
       },
-      "SdkAnalysisLevel": "9.0.100"
+      "SdkAnalysisLevel": "9.0.200"
     },
     "frameworks": {
       "net8.0": {
@@ -4515,19 +4515,15 @@
         "downloadDependencies": [
           {
             "name": "Microsoft.AspNetCore.App.Ref",
-            "version": "[8.0.12, 8.0.12]"
+            "version": "[8.0.13, 8.0.13]"
           },
           {
-            "name": "Microsoft.NETCore.App.Host.win-x64",
-            "version": "[8.0.12, 8.0.12]"
+            "name": "Microsoft.NETCore.App.Host.osx-arm64",
+            "version": "[8.0.13, 8.0.13]"
           },
           {
             "name": "Microsoft.NETCore.App.Ref",
-            "version": "[8.0.12, 8.0.12]"
-          },
-          {
-            "name": "Microsoft.WindowsDesktop.App.Ref",
-            "version": "[8.0.12, 8.0.12]"
+            "version": "[8.0.13, 8.0.13]"
           }
         ],
         "frameworkReferences": {
@@ -4538,7 +4534,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.102/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.200/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

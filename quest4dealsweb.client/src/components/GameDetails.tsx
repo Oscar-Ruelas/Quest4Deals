@@ -28,16 +28,27 @@ interface PriceHistoryItem {
     recordedAt: string;
 }
 
+interface GameInfo {
+    id: number;
+    title: string;
+    image: string;
+    description: string;
+    platforms: Platform[];
+}
+
 function GameDetails({ isModal = false }: { isModal?: boolean }) {
     const { id, title } = useParams();
     const navigate = useNavigate();
 
+    // State management
     const [loading, setLoading] = useState(true);
-    const [gameTitle, setGameTitle] = useState("");
-    const [gameId, setGameId] = useState<number | null>(null);
-    const [gameImage, setGameImage] = useState("");
-    const [gameDesc, setGameDesc] = useState("");
-    const [platforms, setPlatforms] = useState<Platform[]>([]);
+    const [gameInfo, setGameInfo] = useState<GameInfo>({
+        id: 0,
+        title: "",
+        image: "",
+        description: "",
+        platforms: []
+    });
     const [storeOffers, setStoreOffers] = useState<StoreOffer[]>([]);
     const [priceHistory, setPriceHistory] = useState<PriceHistoryItem[]>([]);
     const [notFound, setNotFound] = useState(false);
@@ -74,18 +85,18 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
                     return;
                 }
 
-                const foundGameId = game.game_info.id;
-                setGameId(foundGameId);
-                console.log("Found game ID:", foundGameId);
-
-                setGameTitle(game.title);
-                setGameImage(game.image);
-                setGameDesc(game.game_info.short_desc);
-                setPlatforms(game.game_info.platforms || []);
+                // Update game info
+                setGameInfo({
+                    id: game.game_info.id,
+                    title: game.title,
+                    image: game.image,
+                    description: game.game_info.short_desc,
+                    platforms: game.game_info.platforms || []
+                });
 
                 // Fetch prices
-                console.log("Fetching price data for game ID:", foundGameId);
-                const priceRes = await fetch(`/api/nexarda/prices?id=${foundGameId}`);
+                console.log("Fetching price data for game ID:", game.game_info.id);
+                const priceRes = await fetch(`/api/nexarda/prices?id=${game.game_info.id}`);
 
                 if (!priceRes.ok) {
                     throw new Error(`Error fetching price data: ${priceRes.status}`);
@@ -96,7 +107,7 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
 
                 let offers: StoreOffer[] = [];
 
-                if (priceData && priceData.prices && priceData.prices.list) {
+                if (priceData?.prices?.list) {
                     offers = priceData.prices.list
                         .filter((offer: any) => offer.available && offer.url)
                         .map((offer: any) => {
@@ -137,7 +148,7 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
 
                     const priceHistoryEntry: PriceHistoryItem = {
                         id: 0,
-                        gameId: foundGameId,
+                        gameId: game.game_info.id,
                         price: lowestOffer.price,
                         recordedAt: new Date().toISOString()
                     };
@@ -178,26 +189,33 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
         if (!priceHistory || priceHistory.length === 0) return null;
 
         const prices = priceHistory.map(item => item.price);
-        const lowestPrice = Math.min(...prices);
-        const highestPrice = Math.max(...prices);
-        const currentPrice = prices[prices.length - 1];
-        const averagePrice = prices.reduce((sum, price) => sum + price, 0) / prices.length;
-
         return {
-            lowestPrice,
-            highestPrice,
-            currentPrice,
-            averagePrice
+            lowestPrice: Math.min(...prices),
+            highestPrice: Math.max(...prices),
+            currentPrice: prices[prices.length - 1],
+            averagePrice: prices.reduce((sum, price) => sum + price, 0) / prices.length
         };
     };
 
     const getLowestPrice = () => {
         if (storeOffers.length === 0) return null;
-
         return storeOffers.reduce(
             (min, offer) => offer.price < min ? offer.price : min,
             storeOffers[0].price
         );
+    };
+
+    const formatPlatformName = (platformName: string) => {
+        switch (platformName) {
+            case "EA Desktop App":
+                return "EA";
+            case "Epic Games Launcher":
+                return "Epic Games";
+            case "Ubisoft Connect":
+                return "Ubisoft";
+            default:
+                return platformName;
+        }
     };
 
     const priceStats = calculatePriceStats();
@@ -235,40 +253,29 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
                 )}
 
                 <div className="details-header">
-                    <h1 className="details-title">{gameTitle}</h1>
+                    <h1 className="details-title">{gameInfo.title}</h1>
                     <WatchlistButton
-                        id={gameId}
-                        title={gameTitle}
-                        platform={platforms.map(p => p.name).join(', ')}
+                        id={gameInfo.id}
+                        title={gameInfo.title}
+                        platform={gameInfo.platforms.map(p => p.name).join(', ')}
                         currentPrice={getLowestPrice()}
                     />
                 </div>
 
                 <div className="details-main">
                     <div className="details-image-container">
-                        <img className="details-image" src={gameImage} alt={gameTitle} />
+                        <img className="details-image" src={gameInfo.image} alt={gameInfo.title} />
                     </div>
 
                     <div className="details-info">
-                        <div className="details-description">{gameDesc}</div>
+                        <div className="details-description">{gameInfo.description}</div>
 
                         <div className="details-platforms-container">
                             <h2 className="details-subtitle">Platforms</h2>
                             <p className="details-platforms">
-                                {platforms
+                                {gameInfo.platforms
                                     .filter((p) => !["Other", "Xbox Play Anywhere"].includes(p.name))
-                                    .map((p) => {
-                                        switch (p.name) {
-                                            case "EA Desktop App":
-                                                return "EA";
-                                            case "Epic Games Launcher":
-                                                return "Epic Games";
-                                            case "Ubisoft Connect":
-                                                return "Ubisoft";
-                                            default:
-                                                return p.name;
-                                        }
-                                    })
+                                    .map(p => formatPlatformName(p.name))
                                     .join(", ")}
                             </p>
                         </div>
