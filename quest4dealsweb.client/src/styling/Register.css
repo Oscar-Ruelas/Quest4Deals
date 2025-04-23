@@ -52,3 +52,49 @@
   color: var(--highlight-color);
   text-decoration: underline;
 }
+
+@media screen and (max-width: 768px) {
+  .register {
+    padding: 2em;
+    width: 90%;
+    margin: 20px auto;
+  }
+
+  .register input,
+  .register button {
+    width: 80%;
+    font-size: 16px; /* More readable font size on mobile */
+  }
+
+  .register img {
+    width: 200px;
+  }
+
+  .register h2 {
+    font-size: 1.5em;
+    margin-bottom: 15px;
+  }
+
+  .home-link {
+    font-size: 16px;
+    margin-top: 15px;
+    padding: 10px;
+  }
+}
+
+/* Small mobile styles */
+@media screen and (max-width: 480px) {
+  .register {
+    padding: 1.5em;
+    width: 95%;
+  }
+
+  .register input,
+  .register button {
+    width: 90%;
+  }
+
+  .register img {
+    width: 150px;
+  }
+}
