@@ -1,4 +1,3 @@
-// src/components/GameDetails.tsx
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import "../styling/GameDetails.css";
@@ -38,10 +37,9 @@ interface GameInfo {
 }
 
 function GameDetails({ isModal = false }: { isModal?: boolean }) {
-    const { id, title } = useParams();
+    const { title } = useParams();
     const navigate = useNavigate();
 
-    // State management
     const [loading, setLoading] = useState(true);
     const [gameInfo, setGameInfo] = useState<GameInfo>({
         id: 0,
@@ -56,9 +54,17 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
     const [notFound, setNotFound] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        console.log("GameDetails mounted with ID:", id, "and title:", title);
+    // Filter out demos, free trials, and games with no price
+    const getValidStoreOffers = () => {
+        return storeOffers.filter(offer =>
+            offer.price > 0 &&
+            offer.platform &&
+            !offer.edition.toLowerCase().includes('demo') &&
+            !offer.edition.toLowerCase().includes('trial')
+        );
+    };
 
+    useEffect(() => {
         async function fetchGame() {
             if (!title) {
                 setNotFound(true);
@@ -69,7 +75,6 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
             setNotFound(false);
 
             try {
-                console.log("Fetching game data for title:", title);
                 const res = await fetch(`/api/nexarda/search?query=${encodeURIComponent(title)}`);
 
                 if (!res.ok) {
@@ -77,12 +82,9 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
                 }
 
                 const data = await res.json();
-                console.log("Search results:", data);
-
                 const game = data?.results?.items?.[0];
 
                 if (!game) {
-                    console.log("Game not found in search results");
                     setNotFound(true);
                     return;
                 }
@@ -107,7 +109,6 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
                 });
 
                 // Fetch prices
-                console.log("Fetching price data for game ID:", game.game_info.id);
                 const priceRes = await fetch(`/api/nexarda/prices?id=${game.game_info.id}`);
 
                 if (!priceRes.ok) {
@@ -115,8 +116,6 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
                 }
 
                 const priceData = await priceRes.json();
-                console.log("Received price data:", priceData);
-
                 let offers: StoreOffer[] = [];
 
                 if (priceData?.prices?.list) {
@@ -144,15 +143,12 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
                                 platform,
                             };
                         });
-
-                    console.log("Processed store offers:", offers);
                 }
 
                 setStoreOffers(offers);
 
+                // Price history logic: track lowest offer
                 if (offers && offers.length > 0) {
-                    console.log("Creating price history from current offers");
-
                     const lowestOffer = offers.reduce(
                         (lowest, current) => current.price < lowest.price ? current : lowest,
                         offers[0]
@@ -166,9 +162,8 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
                     };
 
                     setPriceHistory([priceHistoryEntry]);
-                    console.log("Created price history entry:", priceHistoryEntry);
                 } else {
-                    console.log("No offers available to create price history");
+                    setPriceHistory([]);
                 }
 
             } catch (err) {
@@ -197,41 +192,38 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
 
     const handleClose = () => navigate(-1);
 
+    // Calculate price history stats
     const calculatePriceStats = () => {
         if (!priceHistory || priceHistory.length === 0) return null;
 
         const prices = priceHistory.map(item => item.price);
+        const lowestPrice = Math.min(...prices);
+        const highestPrice = Math.max(...prices);
+        const currentPrice = prices[prices.length - 1];
+        const averagePrice = prices.reduce((sum, price) => sum + price, 0) / prices.length;
+
         return {
-            lowestPrice: Math.min(...prices),
-            highestPrice: Math.max(...prices),
-            currentPrice: prices[prices.length - 1],
-            averagePrice: prices.reduce((sum, price) => sum + price, 0) / prices.length
+            lowestPrice,
+            highestPrice,
+            currentPrice,
+            averagePrice
         };
     };
 
+    const priceStats = calculatePriceStats();
+
+    // Find the lowest price from store offers
     const getLowestPrice = () => {
-        if (storeOffers.length === 0) return null;
-        return storeOffers.reduce(
+        const validOffers = getValidStoreOffers();
+        if (validOffers.length === 0) return null;
+        return validOffers.reduce(
             (min, offer) => offer.price < min ? offer.price : min,
-            storeOffers[0].price
+            validOffers[0].price
         );
     };
 
-    const formatPlatformName = (platformName: string) => {
-        switch (platformName) {
-            case "EA Desktop App":
-                return "EA";
-            case "Epic Games Launcher":
-                return "Epic Games";
-            case "Ubisoft Connect":
-                return "Ubisoft";
-            default:
-                return platformName;
-        }
-    };
-
-    const priceStats = calculatePriceStats();
     const lowestPrice = getLowestPrice();
+    const validStoreOffers = getValidStoreOffers();
 
     if (loading) {
         return <div className="game-details loading">Loading game details...</div>;
@@ -269,8 +261,7 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
                     <WatchlistButton
                         id={gameInfo.id}
                         title={gameInfo.title}
-                        platform={gameInfo.platforms.map(p => p.name).join(', ')}
-                        currentPrice={getLowestPrice()}
+                        storeOffers={validStoreOffers}
                         genre={gameInfo.genres.join(', ')}
                     />
                 </div>
@@ -297,7 +288,18 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
                             <p className="details-platforms">
                                 {gameInfo.platforms
                                     .filter((p) => !["Other", "Xbox Play Anywhere"].includes(p.name))
-                                    .map(p => formatPlatformName(p.name))
+                                    .map((p) => {
+                                        switch (p.name) {
+                                            case "EA Desktop App":
+                                                return "EA";
+                                            case "Epic Games Launcher":
+                                                return "Epic Games";
+                                            case "Ubisoft Connect":
+                                                return "Ubisoft";
+                                            default:
+                                                return p.name;
+                                        }
+                                    })
                                     .join(", ")}
                             </p>
                         </div>
@@ -307,9 +309,9 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
                 <div className="details-offers">
                     <h2 className="details-subtitle">Store Offers</h2>
 
-                    {storeOffers.length > 0 ? (
+                    {validStoreOffers.length > 0 ? (
                         <div className="store-offers-grid">
-                            {storeOffers.map((offer, index) => (
+                            {validStoreOffers.map((offer, index) => (
                                 <div className="store-offer" key={index}>
                                     <div className="store-info">
                                         <img
@@ -344,6 +346,7 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
                     )}
                 </div>
 
+                {/* Price History Section */}
                 <div className="price-history-section">
                     <h2 className="details-subtitle">Price History</h2>
 

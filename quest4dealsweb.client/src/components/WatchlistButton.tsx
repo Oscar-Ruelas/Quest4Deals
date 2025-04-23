@@ -2,47 +2,137 @@
 import { useNavigate } from 'react-router-dom';
 import '../styling/WatchlistButton.css';
 
+interface StoreOffer {
+    url: string;
+    store: {
+        name: string;
+        image: string;
+    };
+    edition: string;
+    price: number;
+    platform?: string;
+}
+
 interface WatchlistButtonProps {
     id: number | null;
     title: string;
-    platform: string;
-    currentPrice: number | null;
-    genre: string;  // Add genre prop
+    storeOffers: StoreOffer[];
+    genre: string;
 }
 
-function WatchlistButton({ id, title, platform, currentPrice, genre }: WatchlistButtonProps) {
+function WatchlistButton({ id, title, storeOffers, genre }: WatchlistButtonProps) {
     const [isInWatchlist, setIsInWatchlist] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [getNotified, setGetNotified] = useState(true);
+    const [selectedPlatform, setSelectedPlatform] = useState<string>('');
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const navigate = useNavigate();
 
+    // Check if user is authenticated
     useEffect(() => {
-        checkWatchlistStatus();
-    }, [id]);
+        const checkAuth = () => {
+            const user = localStorage.getItem('user') || sessionStorage.getItem('user');
+            setIsAuthenticated(!!user);
+            return !!user;
+        };
+
+        if (checkAuth()) {
+            checkWatchlistStatus();
+        }
+    }, []);
+
+    // Get valid platforms with prices (excluding demos and free trials)
+    const getPlatformsWithPrices = () => {
+        const platformPrices = new Map<string, number>();
+        storeOffers.forEach(offer => {
+            if (
+                offer.price > 0 &&
+                offer.platform && // This ensures offer.platform is a string, not undefined
+                !offer.edition.toLowerCase().includes('demo') &&
+                !offer.edition.toLowerCase().includes('trial')
+            ) {
+                // Now offer.platform is guaranteed to be a string
+                const currentPrice = platformPrices.get(offer.platform);
+                if (!currentPrice || offer.price < currentPrice) {
+                    platformPrices.set(offer.platform, offer.price);
+                }
+            }
+        });
+        return platformPrices;
+    };
+
+    // Set default platform if only one is available
+    useEffect(() => {
+        if (isAuthenticated && !isInWatchlist) {
+            const platformPrices = getPlatformsWithPrices();
+            if (platformPrices.size === 1) {
+                setSelectedPlatform(Array.from(platformPrices.keys())[0]);
+            }
+        }
+    }, [isAuthenticated, isInWatchlist]);
 
     const checkWatchlistStatus = async () => {
         if (!id) return;
 
         try {
+            setIsLoading(true);
             const response = await fetch(`/api/watchlist/check/${id}`, {
                 credentials: 'include'
             });
 
-            if (response.ok) {
-                const data = await response.json();
-                setIsInWatchlist(data.isWatchlisted);
-                setGetNotified(data.getNotified);
-            } else if (response.status === 401) {
-                navigate('/login');
+            if (!response.ok) {
+                if (response.status === 401) {
+                    handleUnauthorized();
+                    return;
+                }
+                throw new Error('Failed to check watchlist status');
+            }
+
+            const data = await response.json();
+            setIsInWatchlist(data.isWatchlisted);
+            setGetNotified(data.getNotified);
+            if (data.platform) {
+                setSelectedPlatform(data.platform);
             }
         } catch (err) {
             console.error('Error checking watchlist status:', err);
+            setError('Failed to check watchlist status');
+        } finally {
+            setIsLoading(false);
         }
     };
 
+    const handleUnauthorized = () => {
+        setIsAuthenticated(false);
+        localStorage.removeItem('user');
+        sessionStorage.removeItem('user');
+        navigate('/login');
+    };
+
+    const getCurrentPrice = (): number => {
+        const platformPrices = getPlatformsWithPrices();
+        return platformPrices.get(selectedPlatform) || 0;
+    };
+
+    const handleWatchlistClick = () => {
+        if (!isAuthenticated) {
+            navigate('/login');
+            return;
+        }
+        toggleWatchlist();
+    };
+
     const toggleWatchlist = async () => {
-        if (!id) return;
+        if (!id) {
+            setError('Invalid game ID');
+            return;
+        }
+
+        if (!selectedPlatform && getPlatformsWithPrices().size > 1) {
+            setError('Please select a platform');
+            return;
+        }
 
         setIsLoading(true);
         setError(null);
@@ -59,24 +149,27 @@ function WatchlistButton({ id, title, platform, currentPrice, genre }: Watchlist
                 },
                 body: JSON.stringify({
                     gameTitle: title,
-                    platform: platform,
-                    currentPrice: currentPrice || 0,
-                    genre: genre,  // Add genre
+                    platform: selectedPlatform,
+                    currentPrice: getCurrentPrice(),
+                    genre: genre,
                     getNotified: getNotified,
                 }),
                 credentials: 'include',
             });
 
-            if (response.ok) {
-                setIsInWatchlist(!isInWatchlist);
-            } else if (response.status === 401) {
-                navigate('/login');
-            } else {
+            if (!response.ok) {
+                if (response.status === 401) {
+                    handleUnauthorized();
+                    return;
+                }
                 const data = await response.json();
-                setError(data.message || 'Failed to update watchlist');
+                throw new Error(data.message || 'Failed to update watchlist');
             }
+
+            setIsInWatchlist(!isInWatchlist);
+            setError(null);
         } catch (err) {
-            setError('Failed to update watchlist');
+            setError(err instanceof Error ? err.message : 'Failed to update watchlist');
             console.error('Error updating watchlist:', err);
         } finally {
             setIsLoading(false);
@@ -84,7 +177,7 @@ function WatchlistButton({ id, title, platform, currentPrice, genre }: Watchlist
     };
 
     const toggleNotification = async () => {
-        if (!id || !isInWatchlist) return;
+        if (!id || !isInWatchlist || !isAuthenticated) return;
 
         setIsLoading(true);
         setError(null);
@@ -95,44 +188,80 @@ function WatchlistButton({ id, title, platform, currentPrice, genre }: Watchlist
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(!getNotified),
+                body: JSON.stringify({
+                    getNotified: !getNotified,
+                    platform: selectedPlatform
+                }),
                 credentials: 'include',
             });
 
-            if (response.ok) {
-                setGetNotified(!getNotified);
-            } else if (response.status === 401) {
-                navigate('/login');
-            } else {
+            if (!response.ok) {
+                if (response.status === 401) {
+                    handleUnauthorized();
+                    return;
+                }
                 const data = await response.json();
-                setError(data.message || 'Failed to update notification setting');
+                throw new Error(data.message || 'Failed to update notification setting');
             }
+
+            setGetNotified(!getNotified);
+            setError(null);
         } catch (err) {
-            setError('Failed to update notification setting');
+            setError(err instanceof Error ? err.message : 'Failed to update notification setting');
             console.error('Error updating notification setting:', err);
         } finally {
             setIsLoading(false);
         }
     };
 
+    const platformPrices = getPlatformsWithPrices();
+
     return (
         <div className="watchlist-button-container">
+            {isAuthenticated && platformPrices.size > 1 && !isInWatchlist && (
+                <div className="platform-selector">
+                    <select
+                        value={selectedPlatform}
+                        onChange={(e) => {
+                            setSelectedPlatform(e.target.value);
+                            setError(null);
+                        }}
+                        className="platform-select"
+                        aria-label="Select Platform"
+                    >
+                        <option value="">Select Platform</option>
+                        {Array.from(platformPrices.entries()).map(([platform, price]) => (
+                            <option key={platform} value={platform}>
+                                {platform} - ${price.toFixed(2)}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+            )}
+
             <button
                 className={`watchlist-button ${isInWatchlist ? 'in-watchlist' : ''}`}
-                onClick={toggleWatchlist}
-                disabled={isLoading || !id}
+                onClick={handleWatchlistClick}
+                disabled={
+                    isLoading ||
+                    !id ||
+                    (!selectedPlatform && platformPrices.size > 1 && isAuthenticated)
+                }
+                aria-label={isInWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist'}
             >
                 {isLoading ? (
-                    <span className="loading-spinner"></span>
+                    <span className="loading-spinner" aria-label="Loading"></span>
                 ) : (
                     <>
-                        <i className={`fas ${isInWatchlist ? 'fa-check' : 'fa-plus'}`}></i>
-                        {isInWatchlist ? 'In Watchlist' : 'Add to Watchlist'}
+                        <i className={`fas ${isInWatchlist ? 'fa-check' : 'fa-plus'}`} aria-hidden="true"></i>
+                        {isAuthenticated
+                            ? (isInWatchlist ? 'In Watchlist' : 'Add to Watchlist')
+                            : 'Sign in to Add to Watchlist'}
                     </>
                 )}
             </button>
 
-            {isInWatchlist && (
+            {isAuthenticated && isInWatchlist && (
                 <div className="notification-toggle">
                     <label className="notification-label">
                         <input
@@ -140,6 +269,7 @@ function WatchlistButton({ id, title, platform, currentPrice, genre }: Watchlist
                             checked={getNotified}
                             onChange={toggleNotification}
                             disabled={isLoading}
+                            aria-label="Toggle Notifications"
                         />
                         <span className="notification-text">
                             {getNotified ? 'Notifications On' : 'Notifications Off'}
@@ -148,7 +278,11 @@ function WatchlistButton({ id, title, platform, currentPrice, genre }: Watchlist
                 </div>
             )}
 
-            {error && <div className="error-message">{error}</div>}
+            {error && (
+                <div className="error-message" role="alert">
+                    {error}
+                </div>
+            )}
         </div>
     );
 }
