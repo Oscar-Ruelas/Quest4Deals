@@ -36,7 +36,8 @@ public class WatchlistController : ControllerBase
 
         return Ok(new { 
             isWatchlisted = game != null,
-            getNotified = game?.GetNotified ?? true 
+            getNotified = game?.GetNotified ?? true,
+            genre = game?.Genre ?? string.Empty
         });
     }
 
@@ -67,8 +68,9 @@ public class WatchlistController : ControllerBase
                 Title = gameDto.GameTitle,
                 Platform = gameDto.Platform,
                 Price = gameDto.CurrentPrice,
+                Genre = gameDto.Genre,
                 UserId = user.Id,
-                GetNotified = gameDto.GetNotified  // Use the value from DTO
+                GetNotified = gameDto.GetNotified
             };
 
             _context.Games.Add(game);
@@ -167,6 +169,7 @@ public class WatchlistController : ControllerBase
                     g.Title,
                     g.Platform,
                     g.Price,
+                    g.Genre,
                     g.GetNotified
                 })
                 .ToListAsync();
@@ -186,5 +189,6 @@ public class WatchlistGameDto
     public string GameTitle { get; set; } = string.Empty;
     public string Platform { get; set; } = string.Empty;
     public decimal CurrentPrice { get; set; }
-    public bool GetNotified { get; set; } = true;  // Added with default value true
+    public string Genre { get; set; } = string.Empty;
+    public bool GetNotified { get; set; } = true;
 }

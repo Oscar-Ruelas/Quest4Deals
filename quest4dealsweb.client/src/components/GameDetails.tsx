@@ -34,6 +34,7 @@ interface GameInfo {
     image: string;
     description: string;
     platforms: Platform[];
+    genres: string[];
 }
 
 function GameDetails({ isModal = false }: { isModal?: boolean }) {
@@ -47,7 +48,8 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
         title: "",
         image: "",
         description: "",
-        platforms: []
+        platforms: [],
+        genres: []
     });
     const [storeOffers, setStoreOffers] = useState<StoreOffer[]>([]);
     const [priceHistory, setPriceHistory] = useState<PriceHistoryItem[]>([]);
@@ -85,13 +87,23 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
                     return;
                 }
 
+                // Fetch genres from RAWG
+                const genresRes = await fetch(`/api/rawg/genres/${encodeURIComponent(game.title)}`);
+                let genres: string[] = [];
+
+                if (genresRes.ok) {
+                    const genresData = await genresRes.json();
+                    genres = genresData.genres || [];
+                }
+
                 // Update game info
                 setGameInfo({
                     id: game.game_info.id,
                     title: game.title,
                     image: game.image,
                     description: game.game_info.short_desc,
-                    platforms: game.game_info.platforms || []
+                    platforms: game.game_info.platforms || [],
+                    genres: genres
                 });
 
                 // Fetch prices
@@ -259,6 +271,7 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
                         title={gameInfo.title}
                         platform={gameInfo.platforms.map(p => p.name).join(', ')}
                         currentPrice={getLowestPrice()}
+                        genre={gameInfo.genres.join(', ')}
                     />
                 </div>
 
@@ -269,6 +282,15 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
 
                     <div className="details-info">
                         <div className="details-description">{gameInfo.description}</div>
+
+                        <div className="details-genres-container">
+                            <h2 className="details-subtitle">Genres</h2>
+                            <p className="details-genres">
+                                {gameInfo.genres.length > 0
+                                    ? gameInfo.genres.join(", ")
+                                    : "No genre information available"}
+                            </p>
+                        </div>
 
                         <div className="details-platforms-container">
                             <h2 className="details-subtitle">Platforms</h2>

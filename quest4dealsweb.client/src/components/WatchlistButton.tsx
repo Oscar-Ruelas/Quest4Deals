@@ -1,5 +1,5 @@
-﻿// src/components/WatchlistButton.tsx
-import { useState, useEffect } from 'react';
+﻿import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../styling/WatchlistButton.css';
 
 interface WatchlistButtonProps {
@@ -7,40 +7,37 @@ interface WatchlistButtonProps {
     title: string;
     platform: string;
     currentPrice: number | null;
+    genre: string;  // Add genre prop
 }
 
-function WatchlistButton({ id, title, platform, currentPrice }: WatchlistButtonProps) {
+function WatchlistButton({ id, title, platform, currentPrice, genre }: WatchlistButtonProps) {
     const [isInWatchlist, setIsInWatchlist] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [getNotified, setGetNotified] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
-        if (id) {
-            checkWatchlistStatus();
-        }
+        checkWatchlistStatus();
     }, [id]);
 
     const checkWatchlistStatus = async () => {
         if (!id) return;
 
         try {
-            const response = await fetch(`/api/watchlist/check/${id}`);
+            const response = await fetch(`/api/watchlist/check/${id}`, {
+                credentials: 'include'
+            });
 
-            if (!response.ok) {
-                if (response.status === 401) {
-                    setError('Please log in to use the watchlist');
-                    return;
-                }
-                throw new Error('Failed to check watchlist status');
+            if (response.ok) {
+                const data = await response.json();
+                setIsInWatchlist(data.isWatchlisted);
+                setGetNotified(data.getNotified);
+            } else if (response.status === 401) {
+                navigate('/login');
             }
-
-            const data = await response.json();
-            setIsInWatchlist(data.isWatchlisted);
-            setGetNotified(data.getNotified);
-        } catch (error) {
-            console.error('Error checking watchlist status:', error);
-            setError('Failed to check watchlist status');
+        } catch (err) {
+            console.error('Error checking watchlist status:', err);
         }
     };
 
@@ -64,23 +61,23 @@ function WatchlistButton({ id, title, platform, currentPrice }: WatchlistButtonP
                     gameTitle: title,
                     platform: platform,
                     currentPrice: currentPrice || 0,
+                    genre: genre,  // Add genre
                     getNotified: getNotified,
                 }),
                 credentials: 'include',
             });
 
-            if (!response.ok) {
-                if (response.status === 401) {
-                    throw new Error('Please log in to use the watchlist');
-                }
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to update watchlist');
+            if (response.ok) {
+                setIsInWatchlist(!isInWatchlist);
+            } else if (response.status === 401) {
+                navigate('/login');
+            } else {
+                const data = await response.json();
+                setError(data.message || 'Failed to update watchlist');
             }
-
-            setIsInWatchlist(!isInWatchlist);
-        } catch (error) {
-            console.error('Error updating watchlist:', error);
-            setError(error instanceof Error ? error.message : 'Failed to update watchlist');
+        } catch (err) {
+            setError('Failed to update watchlist');
+            console.error('Error updating watchlist:', err);
         } finally {
             setIsLoading(false);
         }
@@ -88,6 +85,9 @@ function WatchlistButton({ id, title, platform, currentPrice }: WatchlistButtonP
 
     const toggleNotification = async () => {
         if (!id || !isInWatchlist) return;
+
+        setIsLoading(true);
+        setError(null);
 
         try {
             const response = await fetch(`/api/watchlist/notify/${id}`, {
@@ -99,14 +99,19 @@ function WatchlistButton({ id, title, platform, currentPrice }: WatchlistButtonP
                 credentials: 'include',
             });
 
-            if (!response.ok) {
-                throw new Error('Failed to update notification setting');
+            if (response.ok) {
+                setGetNotified(!getNotified);
+            } else if (response.status === 401) {
+                navigate('/login');
+            } else {
+                const data = await response.json();
+                setError(data.message || 'Failed to update notification setting');
             }
-
-            setGetNotified(!getNotified);
-        } catch (error) {
-            console.error('Error updating notification setting:', error);
+        } catch (err) {
             setError('Failed to update notification setting');
+            console.error('Error updating notification setting:', err);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -118,43 +123,32 @@ function WatchlistButton({ id, title, platform, currentPrice }: WatchlistButtonP
                 disabled={isLoading || !id}
             >
                 {isLoading ? (
-                    <span className="loading-spinner">...</span>
+                    <span className="loading-spinner"></span>
                 ) : (
                     <>
-                        {isInWatchlist ? '★ Remove from Watchlist' : '☆ Add to Watchlist'}
+                        <i className={`fas ${isInWatchlist ? 'fa-check' : 'fa-plus'}`}></i>
+                        {isInWatchlist ? 'In Watchlist' : 'Add to Watchlist'}
                     </>
                 )}
             </button>
 
             {isInWatchlist && (
                 <div className="notification-toggle">
-                    <label>
+                    <label className="notification-label">
                         <input
                             type="checkbox"
                             checked={getNotified}
                             onChange={toggleNotification}
+                            disabled={isLoading}
                         />
-                        Get price notifications
+                        <span className="notification-text">
+                            {getNotified ? 'Notifications On' : 'Notifications Off'}
+                        </span>
                     </label>
                 </div>
             )}
 
-            {error && (
-                <div className="watchlist-error">
-                    {error}
-                    {error !== 'Please log in to use the watchlist' && (
-                        <button
-                            className="retry-button"
-                            onClick={() => {
-                                setError(null);
-                                checkWatchlistStatus();
-                            }}
-                        >
-                            Retry
-                        </button>
-                    )}
-                </div>
-            )}
+            {error && <div className="error-message">{error}</div>}
         </div>
     );
 }
