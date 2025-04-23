@@ -327,4 +327,25 @@
     .price-stats {
         grid-template-columns: 1fr 1fr;
     }
+
+    .watchlist-section {
+        margin-top: 30px;
+        text-align: center;
+    }
+
+    .watchlist-button {
+        padding: 10px 20px;
+        font-weight: 600;
+        background-color: #10b981;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+
+    .watchlist-button:disabled {
+        background-color: #6b7280;
+        cursor: not-allowed;
+    }
+
 }
