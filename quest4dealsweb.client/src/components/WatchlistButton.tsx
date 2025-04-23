@@ -48,11 +48,10 @@ function WatchlistButton({ id, title, storeOffers, genre }: WatchlistButtonProps
         storeOffers.forEach(offer => {
             if (
                 offer.price > 0 &&
-                offer.platform && // This ensures offer.platform is a string, not undefined
+                offer.platform &&
                 !offer.edition.toLowerCase().includes('demo') &&
                 !offer.edition.toLowerCase().includes('trial')
             ) {
-                // Now offer.platform is guaranteed to be a string
                 const currentPrice = platformPrices.get(offer.platform);
                 if (!currentPrice || offer.price < currentPrice) {
                     platformPrices.set(offer.platform, offer.price);
@@ -107,6 +106,8 @@ function WatchlistButton({ id, title, storeOffers, genre }: WatchlistButtonProps
         setIsAuthenticated(false);
         localStorage.removeItem('user');
         sessionStorage.removeItem('user');
+        // Store current path before redirecting
+        sessionStorage.setItem('returnTo', window.location.pathname);
         navigate('/login');
     };
 
@@ -117,6 +118,8 @@ function WatchlistButton({ id, title, storeOffers, genre }: WatchlistButtonProps
 
     const handleWatchlistClick = () => {
         if (!isAuthenticated) {
+            // Store current path before redirecting to login
+            sessionStorage.setItem('returnTo', window.location.pathname);
             navigate('/login');
             return;
         }
@@ -142,18 +145,21 @@ function WatchlistButton({ id, title, storeOffers, genre }: WatchlistButtonProps
                 ? `/api/watchlist/remove/${id}`
                 : `/api/watchlist/add/${id}`;
 
+            // Always send the full request body, even for remove
+            const requestBody = {
+                gameTitle: title,
+                platform: selectedPlatform,
+                currentPrice: getCurrentPrice(),
+                genre: genre,
+                getNotified: getNotified
+            };
+
             const response = await fetch(endpoint, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    gameTitle: title,
-                    platform: selectedPlatform,
-                    currentPrice: getCurrentPrice(),
-                    genre: genre,
-                    getNotified: getNotified,
-                }),
+                body: JSON.stringify(requestBody),
                 credentials: 'include',
             });
 

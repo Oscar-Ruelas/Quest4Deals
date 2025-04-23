@@ -208,7 +208,7 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
                 }
                 setStoreOffers(offers);
 
-                // Price history logic: track lowest offer
+                // Price history logic
                 let newPriceHistory: PriceHistoryItem[] = [];
                 if (offers && offers.length > 0) {
                     const lowestOffer = offers.reduce(
@@ -247,20 +247,22 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
         fetchGame();
     }, [title]);
 
+    const handleClose = () => {
+        navigate('/');
+    };
+
     useEffect(() => {
         if (!isModal) return;
 
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.key === "Escape" || event.key === "Enter") {
-                navigate(-1);
+                handleClose();
             }
         };
 
         window.addEventListener("keydown", handleKeyDown);
         return () => window.removeEventListener("keydown", handleKeyDown);
-    }, [isModal, navigate]);
-
-    const handleClose = () => navigate(-1);
+    }, [isModal]);
 
     // Calculate price history stats
     const calculatePriceStats = () => {
@@ -328,17 +330,19 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
 
                 <div className="details-header">
                     <h1 className="details-title">{gameInfo.title}</h1>
-                    <WatchlistButton
-                        id={gameInfo.id}
-                        title={gameInfo.title}
-                        storeOffers={validStoreOffers}
-                        genre={gameInfo.genres.join(', ')}
-                    />
                 </div>
 
                 <div className="details-main">
                     <div className="details-image-container">
                         <img className="details-image" src={gameInfo.image} alt={gameInfo.title} />
+                        <div className="watchlist-section">
+                            <WatchlistButton
+                                id={gameInfo.id}
+                                title={gameInfo.title}
+                                storeOffers={validStoreOffers}
+                                genre={gameInfo.genres.join(', ')}
+                            />
+                        </div>
                     </div>
 
                     <div className="details-info">
@@ -416,7 +420,6 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
                     )}
                 </div>
 
-                {/* Price History Section */}
                 <div className="price-history-section">
                     <h2 className="details-subtitle">Price History</h2>
 

@@ -11,10 +11,12 @@ const Login = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedUser =
-        localStorage.getItem("user") || sessionStorage.getItem("user");
+    const storedUser = localStorage.getItem("user") || sessionStorage.getItem("user");
     if (storedUser) {
-      navigate(`/`);
+      // If user is already logged in, redirect to return path or home
+      const returnPath = sessionStorage.getItem('returnTo') || '/';
+      sessionStorage.removeItem('returnTo'); // Clean up
+      navigate(returnPath);
     }
   }, [navigate]);
 
@@ -51,7 +53,12 @@ const Login = () => {
         sessionStorage.setItem("user", JSON.stringify(data.user));
       }
 
-      setTimeout(() => navigate(`/`), 1000); // delay to show "Logging in..."
+      // Get the return path and navigate back
+      const returnPath = sessionStorage.getItem('returnTo') || '/';
+      sessionStorage.removeItem('returnTo'); // Clean up
+
+      // Short delay to show "Logging in..." message
+      setTimeout(() => navigate(returnPath), 1000);
     } catch (error) {
       console.error("Error during login:", error);
       setErrorMessage("An error occurred. Please try again.");

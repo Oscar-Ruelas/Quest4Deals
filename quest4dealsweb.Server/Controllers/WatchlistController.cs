@@ -9,7 +9,7 @@ namespace quest4dealsweb.Server.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize] // Require authentication for all endpoints
+[Authorize]
 public class WatchlistController : ControllerBase
 {
     private readonly DataContext _context;
@@ -100,7 +100,7 @@ public class WatchlistController : ControllerBase
 
     // Update notification setting
     [HttpPut("notify/{id}")]
-    public async Task<IActionResult> UpdateNotificationSetting(int id, [FromBody] dynamic body)
+    public async Task<IActionResult> UpdateNotificationSetting(int id, [FromBody] WatchlistGameDto gameDto)
     {
         try
         {
@@ -111,22 +111,19 @@ public class WatchlistController : ControllerBase
                 return Unauthorized(new { message = "User not authenticated" });
             }
 
-            bool getNotified = body.getNotified;
-            string platform = body.platform;
-
             var game = await _context.Games
-                .FirstOrDefaultAsync(g => g.ExternalGameId == id && g.UserId == user.Id && g.Platform == platform);
+                .FirstOrDefaultAsync(g => g.ExternalGameId == id && g.UserId == user.Id && g.Platform == gameDto.Platform);
 
             if (game == null)
             {
-                _logger.LogWarning($"UpdateNotificationSetting: Game {id} not found for user {user.Id} on platform {platform}");
+                _logger.LogWarning($"UpdateNotificationSetting: Game {id} not found for user {user.Id} on platform {gameDto.Platform}");
                 return NotFound(new { message = "Game not found in watchlist" });
             }
 
-            game.GetNotified = getNotified;
+            game.GetNotified = gameDto.GetNotified;
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation($"UpdateNotificationSetting: Updated for game {id}, user {user.Id}, platform {platform}");
+            _logger.LogInformation($"UpdateNotificationSetting: Updated for game {id}, user {user.Id}, platform {gameDto.Platform}");
 
             return Ok(new { message = "Notification setting updated" });
         }
@@ -139,7 +136,7 @@ public class WatchlistController : ControllerBase
 
     // Remove from watchlist
     [HttpPost("remove/{id}")]
-    public async Task<IActionResult> RemoveFromWatchlist(int id, [FromBody] dynamic body)
+    public async Task<IActionResult> RemoveFromWatchlist(int id, [FromBody] WatchlistGameDto gameDto)
     {
         try
         {
@@ -150,21 +147,19 @@ public class WatchlistController : ControllerBase
                 return Unauthorized(new { message = "User not authenticated" });
             }
 
-            string platform = body?.platform ?? string.Empty;
-
             var game = await _context.Games
-                .FirstOrDefaultAsync(g => g.ExternalGameId == id && g.UserId == user.Id && g.Platform == platform);
+                .FirstOrDefaultAsync(g => g.ExternalGameId == id && g.UserId == user.Id && g.Platform == gameDto.Platform);
 
             if (game == null)
             {
-                _logger.LogWarning($"RemoveFromWatchlist: Game {id} not found for user {user.Id} on platform {platform}");
+                _logger.LogWarning($"RemoveFromWatchlist: Game {id} not found for user {user.Id} on platform {gameDto.Platform}");
                 return NotFound(new { message = "Game not found in watchlist" });
             }
 
             _context.Games.Remove(game);
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation($"RemoveFromWatchlist: Game {id} removed for user {user.Id} on platform {platform}");
+            _logger.LogInformation($"RemoveFromWatchlist: Game {id} removed for user {user.Id} on platform {gameDto.Platform}");
 
             return Ok(new { message = "Game removed from watchlist" });
         }
@@ -211,7 +206,7 @@ public class WatchlistController : ControllerBase
     }
 }
 
-// DTO for adding to watchlist
+// DTO for watchlist operations
 public class WatchlistGameDto
 {
     public string GameTitle { get; set; } = string.Empty;
