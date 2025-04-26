@@ -7,19 +7,20 @@ using quest4dealsweb.Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// CORS: Allow Vite frontend with credentials
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowViteFrontend",
         policy =>
         {
-            policy.WithOrigins("https://localhost:51540") // ✅ Vite dev server
-                .AllowAnyMethod()
-                .AllowAnyHeader()
-                .AllowCredentials(); // ✅ Required for authentication cookies
+            policy.WithOrigins("https://localhost:51540") // Vite dev server
+                  .AllowAnyMethod()
+                  .AllowAnyHeader()
+                  .AllowCredentials();
         });
 });
 
-// Add HttpClient services with named client for Nexarda
+// HttpClient for Nexarda API
 builder.Services.AddHttpClient("NexardaClient", client =>
 {
     client.BaseAddress = new Uri("https://www.nexarda.com/api/v3/");
@@ -28,18 +29,16 @@ builder.Services.AddHttpClient("NexardaClient", client =>
 
 builder.Services.AddMemoryCache();
 
-// ✅ Get connection string
+// Database connection
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 if (string.IsNullOrEmpty(connectionString))
 {
     throw new InvalidOperationException("The ConnectionString property has not been initialized. Check appsettings.json.");
 }
-
-// ✅ Register DbContext with SQL Server
 builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(connectionString));
 
-// ✅ Configure Identity with Cookie Authentication (DO NOT manually add .AddCookie())
+// Identity configuration
 builder.Services.AddIdentity<User, IdentityRole>(options =>
     {
         options.User.RequireUniqueEmail = true;
@@ -48,36 +47,39 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
     .AddSignInManager()
     .AddDefaultTokenProviders();
 
-// ✅ Configure Cookie Authentication (NO NEED to call `AddAuthentication().AddCookie()`)
+// Cookie authentication configuration
 builder.Services.ConfigureApplicationCookie(options =>
 {
-    options.LoginPath = "/api/auth/login";  
+    options.LoginPath = "/api/auth/login";
     options.AccessDeniedPath = "/api/auth/access-denied";
-    
-    options.ExpireTimeSpan = TimeSpan.FromMinutes(60); // Default session timeout
+    options.Cookie.Name = ".Quest4Deals.Auth";
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SameSite = SameSiteMode.Lax; // Lax is usually best for SPA+API
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
     options.SlidingExpiration = true;
-
     options.Events = new Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationEvents
     {
+        OnRedirectToLogin = context =>
+        {
+            context.Response.StatusCode = 401;
+            return Task.CompletedTask;
+        },
         OnSigningIn = async context =>
         {
             var rememberMe = context.Properties.IsPersistent;
             if (!rememberMe)
             {
-                // ✅ Set session cookie (cleared when browser is closed)
                 context.CookieOptions.Expires = null;
             }
             else
             {
-                // ✅ Set persistent cookie (remembered after browser close)
-                context.CookieOptions.Expires = DateTimeOffset.UtcNow.AddDays(7); // Or any duration
+                context.CookieOptions.Expires = DateTimeOffset.UtcNow.AddDays(7);
             }
-
             await Task.CompletedTask;
         }
     };
 });
-
 
 builder.Services.AddAuthorization();
 builder.Services.AddControllers();
@@ -86,20 +88,16 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<PriceHistoryService>();
 builder.Services.AddScoped<quest4dealsweb.Server.Services.PriceHistoryService>();
 
-
-
 var app = builder.Build();
 
 app.UseCors("AllowViteFrontend");
-
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
-// ✅ Enable Authentication & Authorization Middleware
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapIdentityRoutes();  // ✅ Calls custom Identity endpoints
+app.MapIdentityRoutes();
 
 if (app.Environment.IsDevelopment())
 {
