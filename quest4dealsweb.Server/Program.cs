@@ -4,9 +4,6 @@ using quest4dealsweb.Server.Data;
 using quest4dealsweb.Server.models;
 using quest4dealsweb.Server.Endpoints;
 using quest4dealsweb.Server.Services;
-using EmailSender;
-
-EmailSender.Program.TestEmailSending();
 
 var builder = WebApplication.CreateBuilder(args);
 

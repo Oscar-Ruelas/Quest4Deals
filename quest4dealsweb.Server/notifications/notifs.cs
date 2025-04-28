@@ -1,51 +1,49 @@
 using System;
 using System.Threading.Tasks;
+
 // Remove the System.Net.Mail import to avoid conflicts with MailKit
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using MimeKit;
 
-namespace EmailSender
+namespace quest4dealsweb.Server.notifications
 {
     class Program
     {
         // Email configuration with your specified values
         private static readonly string SmtpServer = "smtp.gmail.com";
         private static readonly int SmtpPort = 587;
+
         private static readonly string SmtpUsername = "quest4deals.notification@gmail.com";
         private static readonly string SmtpPassword = "ynwc mamy hrci sytz";
         private static readonly string SenderEmail = "quest4deals.notification@gmail.com";
+        private static readonly string SenderName = "Quest4Deals";
+
         private static readonly string RecipientEmail = "adrianlfudge@gmail.com";
 
         // Email contents
-        private static readonly string SenderName = "Quest4Deals";
         private static readonly string EmailHeader = "Saved Game Price Change Notification";
         private static readonly string EmailBody = "<p>Your saved game <GAME> has hit the price threshold of <PRICE_THRESHOLD> that you set on the <PLATFORM> platform</p>";
 
         // Changed the name to Main to make it the program entry point
         // Add this new method to your class
-        public static void TestEmailSending()
+        public static void SendEmail(string recipientEmail, string emailHeader, string emailBody)
         {
-            Console.WriteLine("Email Test Starting...");
+            if(recipientEmail == null || emailBody == null || emailBody == null) { Console.WriteLine("Invalid Parameters in SendEmail");  return; }
 
             try
             {
                 // This line runs the task synchronously
                 SendEmailAsync(
-                    RecipientEmail,
-                    EmailHeader,
-                    EmailBody).GetAwaiter().GetResult();
-
-                Console.WriteLine("Email sent successfully!");
+                    recipientEmail,
+                    emailHeader,
+                    emailBody).GetAwaiter().GetResult();
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error sending email: {ex.Message}");
                 Console.WriteLine(ex.StackTrace);
             }
-
-            Console.WriteLine("Press any key to continue...");
-            Console.ReadKey();
         }
 
 
