@@ -11,7 +11,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Script Include="src\App.tsx" />
-    <Script Include="src\components\Navbar.tsx" />
     <Script Include="src\pages\WatchlistContentPage.tsx" />
   </ItemGroup>
 </Project>

@@ -90,7 +90,7 @@ const Navbar = ({ setIsSearching, setSearchQuery, onReload }: NavbarProps) => {
           {menuOpen && (
             <div className="dropdown-menu">
               <Link to="/watchlist" className="dropdown-item">
-                View Wishlist
+                View Watchlist
               </Link>
               <Link to={`/edit-profile/${user?.id}`} className="dropdown-item">
                 Edit Profile
@@ -98,6 +98,7 @@ const Navbar = ({ setIsSearching, setSearchQuery, onReload }: NavbarProps) => {
               <button
                 onClick={handleLogout}
                 className="dropdown-item logout-btn"
+                id="logout-btn"
               >
                 Logout
               </button>

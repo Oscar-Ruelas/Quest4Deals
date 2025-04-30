@@ -70,8 +70,8 @@ function AppRoutes() {
         />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/watchlist" element={<WatchlistContentPage />} />
         <Route path="/edit-profile/:userId" element={<EditProfilePage />} />
+        <Route path={"/watchlist"} element={<WatchlistContentPage />} />
         {/* fallback if user visits details directly */}
         <Route
           path="/details/:id/:title"
