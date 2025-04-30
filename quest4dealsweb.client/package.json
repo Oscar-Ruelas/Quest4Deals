@@ -12,6 +12,7 @@
   "dependencies": {
     "@aws-amplify/ui-react": "^6.9.3",
     "aws-amplify": "^6.13.3",
+    "axios": "^1.9.0",
     "chart.js": "^4.4.9",
     "oidc-client-ts": "^3.1.0",
     "react": "^19.0.0",
