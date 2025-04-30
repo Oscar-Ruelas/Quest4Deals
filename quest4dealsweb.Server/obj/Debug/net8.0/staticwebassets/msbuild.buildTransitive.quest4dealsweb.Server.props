@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="../buildMultiTargeting/quest4dealsweb.Server.props" />
-</Project>
