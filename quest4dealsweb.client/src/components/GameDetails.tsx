@@ -1,7 +1,56 @@
-// src/components/GameDetails.tsx
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import "../styling/GameDetails.css";
+import WatchlistButton from './WatchlistButton';
+
+// In-memory cache for game data
+const gameCache = new Map();
+
+function LoadingMessage() {
+    return (
+        <div className="modal-overlay" style={{ backgroundColor: 'rgba(0, 0, 0, 0.8)' }}>
+            <div
+                className="modal-content"
+                style={{
+                    width: 'auto',
+                    minWidth: '300px',
+                    textAlign: 'center',
+                    padding: '40px',
+                    backgroundColor: '#1f2937'
+                }}
+            >
+                <div className="loading-spinner" style={{
+                    marginBottom: '20px'
+                }}>
+                    <div style={{
+                        width: '40px',
+                        height: '40px',
+                        margin: '0 auto',
+                        border: '4px solid #3b82f6',
+                        borderTop: '4px solid transparent',
+                        borderRadius: '50%',
+                        animation: 'spin 1s linear infinite'
+                    }}></div>
+                </div>
+                <div style={{
+                    fontSize: '1.25rem',
+                    color: '#ffffff',
+                    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+                }}>
+                    Getting Game Info...
+                </div>
+            </div>
+            <style>
+                {`
+                    @keyframes spin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
+                    }
+                `}
+            </style>
+        </div>
+    );
+}
 
 interface Platform {
     name: string;
@@ -27,29 +76,59 @@ interface PriceHistoryItem {
     recordedAt: string;
 }
 
+interface GameInfo {
+    id: number;
+    title: string;
+    image: string;
+    description: string;
+    platforms: Platform[];
+    genres: string[];
+}
+
 function GameDetails({ isModal = false }: { isModal?: boolean }) {
-    const { id, title } = useParams();
+    const { title } = useParams();
     const navigate = useNavigate();
 
     const [loading, setLoading] = useState(true);
-    const [gameTitle, setGameTitle] = useState("");
-    const [gameId, setGameId] = useState<number | null>(null);
-    const [gameImage, setGameImage] = useState("");
-    const [gameDesc, setGameDesc] = useState("");
-    const [platforms, setPlatforms] = useState<Platform[]>([]);
+    const [gameInfo, setGameInfo] = useState<GameInfo>({
+        id: 0,
+        title: "",
+        image: "",
+        description: "",
+        platforms: [],
+        genres: []
+    });
     const [storeOffers, setStoreOffers] = useState<StoreOffer[]>([]);
     const [priceHistory, setPriceHistory] = useState<PriceHistoryItem[]>([]);
     const [notFound, setNotFound] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    if (gameId) {  }
+    // Filter out demos, free trials, and games with no price
+    const getValidStoreOffers = () => {
+        return storeOffers.filter(offer =>
+            offer.price > 0 &&
+            offer.platform &&
+            !offer.edition.toLowerCase().includes('demo') &&
+            !offer.edition.toLowerCase().includes('trial')
+        );
+    };
 
     useEffect(() => {
-        console.log("GameDetails mounted with ID:", id, "and title:", title);
-
         async function fetchGame() {
             if (!title) {
                 setNotFound(true);
+                return;
+            }
+
+            // Check cache first
+            if (gameCache.has(title)) {
+                const cached = gameCache.get(title);
+                setGameInfo(cached.gameInfo);
+                setStoreOffers(cached.storeOffers);
+                setPriceHistory(cached.priceHistory);
+                setNotFound(false);
+                setError(null);
+                setLoading(false);
                 return;
             }
 
@@ -57,7 +136,6 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
             setNotFound(false);
 
             try {
-                console.log("Fetching game data for title:", title);
                 const res = await fetch(`/api/nexarda/search?query=${encodeURIComponent(title)}`);
 
                 if (!res.ok) {
@@ -65,39 +143,44 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
                 }
 
                 const data = await res.json();
-                console.log("Search results:", data);
-
                 const game = data?.results?.items?.[0];
 
                 if (!game) {
-                    console.log("Game not found in search results");
                     setNotFound(true);
                     return;
                 }
 
-                const foundGameId = game.game_info.id;
-                setGameId(foundGameId);
-                console.log("Found game ID:", foundGameId);
+                // Fetch genres from RAWG
+                const genresRes = await fetch(`/api/rawg/genres/${encodeURIComponent(game.title)}`);
+                let genres: string[] = [];
 
-                setGameTitle(game.title);
-                setGameImage(game.image);
-                setGameDesc(game.game_info.short_desc);
-                setPlatforms(game.game_info.platforms || []);
+                if (genresRes.ok) {
+                    const genresData = await genresRes.json();
+                    genres = genresData.genres || [];
+                }
+
+                // Update game info
+                const newGameInfo = {
+                    id: game.game_info.id,
+                    title: game.title,
+                    image: game.image,
+                    description: game.game_info.short_desc,
+                    platforms: game.game_info.platforms || [],
+                    genres: genres
+                };
+                setGameInfo(newGameInfo);
 
                 // Fetch prices
-                console.log("Fetching price data for game ID:", foundGameId);
-                const priceRes = await fetch(`/api/nexarda/prices?id=${foundGameId}`);
+                const priceRes = await fetch(`/api/nexarda/prices?id=${game.game_info.id}`);
 
                 if (!priceRes.ok) {
                     throw new Error(`Error fetching price data: ${priceRes.status}`);
                 }
 
                 const priceData = await priceRes.json();
-                console.log("Received price data:", priceData);
-
                 let offers: StoreOffer[] = [];
 
-                if (priceData && priceData.prices && priceData.prices.list) {
+                if (priceData?.prices?.list) {
                     offers = priceData.prices.list
                         .filter((offer: any) => offer.available && offer.url)
                         .map((offer: any) => {
@@ -122,37 +205,36 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
                                 platform,
                             };
                         });
-
-                    console.log("Processed store offers:", offers);
                 }
-
                 setStoreOffers(offers);
 
-                // Check if we have any offers to track
+                // Price history logic
+                let newPriceHistory: PriceHistoryItem[] = [];
                 if (offers && offers.length > 0) {
-                    console.log("Creating price history from current offers");
-
-                    // Find lowest price offer
                     const lowestOffer = offers.reduce(
                         (lowest, current) => current.price < lowest.price ? current : lowest,
                         offers[0]
                     );
 
-                    // Create a price history entry with today's date and the lowest price
                     const priceHistoryEntry: PriceHistoryItem = {
-                        id: 0, // Will be assigned by server
-                        gameId: foundGameId,
+                        id: 0,
+                        gameId: game.game_info.id,
                         price: lowestOffer.price,
                         recordedAt: new Date().toISOString()
                     };
 
-                    // Set the history display with our new entry
-                    setPriceHistory([priceHistoryEntry]);
-
-                    console.log("Created price history entry:", priceHistoryEntry);
+                    newPriceHistory = [priceHistoryEntry];
+                    setPriceHistory(newPriceHistory);
                 } else {
-                    console.log("No offers available to create price history");
+                    setPriceHistory([]);
                 }
+
+                // Save to cache
+                gameCache.set(title, {
+                    gameInfo: newGameInfo,
+                    storeOffers: offers,
+                    priceHistory: newPriceHistory
+                });
 
             } catch (err) {
                 console.error("Error in fetchGame:", err);
@@ -165,20 +247,22 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
         fetchGame();
     }, [title]);
 
+    const handleClose = () => {
+        navigate('/');
+    };
+
     useEffect(() => {
         if (!isModal) return;
 
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.key === "Escape" || event.key === "Enter") {
-                navigate(-1);
+                handleClose();
             }
         };
 
         window.addEventListener("keydown", handleKeyDown);
         return () => window.removeEventListener("keydown", handleKeyDown);
-    }, [isModal, navigate]);
-
-    const handleClose = () => navigate(-1);
+    }, [isModal]);
 
     // Calculate price history stats
     const calculatePriceStats = () => {
@@ -200,12 +284,23 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
 
     const priceStats = calculatePriceStats();
 
-    // Render loading state
+    // Find the lowest price from store offers
+    const getLowestPrice = () => {
+        const validOffers = getValidStoreOffers();
+        if (validOffers.length === 0) return null;
+        return validOffers.reduce(
+            (min, offer) => offer.price < min ? offer.price : min,
+            validOffers[0].price
+        );
+    };
+
+    const lowestPrice = getLowestPrice();
+    const validStoreOffers = getValidStoreOffers();
+
     if (loading) {
-        return <div className="game-details loading">Loading game details...</div>;
+        return <LoadingMessage />;
     }
 
-    // Render error state
     if (error) {
         return (
             <div className="game-details error">
@@ -215,7 +310,6 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
         );
     }
 
-    // Render not found state
     if (notFound) {
         return (
             <div className="game-details not-found">
@@ -224,18 +318,6 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
             </div>
         );
     }
-
-    // Find the lowest price from store offers
-    const getLowestPrice = () => {
-        if (storeOffers.length === 0) return null;
-
-        return storeOffers.reduce(
-            (min, offer) => offer.price < min ? offer.price : min,
-            storeOffers[0].price
-        );
-    };
-
-    const lowestPrice = getLowestPrice();
 
     return (
         <div className={isModal ? "modal-overlay" : "game-details-container"}>
@@ -246,20 +328,39 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
                     </button>
                 )}
 
-                <h1 className="details-title">{gameTitle}</h1>
+                <div className="details-header">
+                    <h1 className="details-title">{gameInfo.title}</h1>
+                </div>
 
                 <div className="details-main">
                     <div className="details-image-container">
-                        <img className="details-image" src={gameImage} alt={gameTitle} />
+                        <img className="details-image" src={gameInfo.image} alt={gameInfo.title} />
+                        <div className="watchlist-section">
+                            <WatchlistButton
+                                id={gameInfo.id}
+                                title={gameInfo.title}
+                                storeOffers={validStoreOffers}
+                                genre={gameInfo.genres.join(', ')}
+                            />
+                        </div>
                     </div>
 
                     <div className="details-info">
-                        <div className="details-description">{gameDesc}</div>
+                        <div className="details-description">{gameInfo.description}</div>
+
+                        <div className="details-genres-container">
+                            <h2 className="details-subtitle">Genres</h2>
+                            <p className="details-genres">
+                                {gameInfo.genres.length > 0
+                                    ? gameInfo.genres.join(", ")
+                                    : "No genre information available"}
+                            </p>
+                        </div>
 
                         <div className="details-platforms-container">
                             <h2 className="details-subtitle">Platforms</h2>
                             <p className="details-platforms">
-                                {platforms
+                                {gameInfo.platforms
                                     .filter((p) => !["Other", "Xbox Play Anywhere"].includes(p.name))
                                     .map((p) => {
                                         switch (p.name) {
@@ -282,9 +383,9 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
                 <div className="details-offers">
                     <h2 className="details-subtitle">Store Offers</h2>
 
-                    {storeOffers.length > 0 ? (
+                    {validStoreOffers.length > 0 ? (
                         <div className="store-offers-grid">
-                            {storeOffers.map((offer, index) => (
+                            {validStoreOffers.map((offer, index) => (
                                 <div className="store-offer" key={index}>
                                     <div className="store-info">
                                         <img
@@ -319,13 +420,11 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
                     )}
                 </div>
 
-                {/* Price History Section */}
                 <div className="price-history-section">
                     <h2 className="details-subtitle">Price History</h2>
 
                     {lowestPrice !== null ? (
                         <div className="price-history-content">
-                            {/* Basic Price Info */}
                             <div className="price-stats">
                                 <div className="stat-item">
                                     <span className="stat-label">Current Best Price</span>
@@ -349,7 +448,6 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
                                 )}
                             </div>
 
-                            {/* Price History Message */}
                             <div className="new-price-tracking">
                                 <p>We've started tracking prices for this game.</p>
                                 <p>The current best price is <strong>${lowestPrice.toFixed(2)}</strong>.</p>
@@ -374,4 +472,3 @@ function GameDetails({ isModal = false }: { isModal?: boolean }) {
 }
 
 export default GameDetails;
-
