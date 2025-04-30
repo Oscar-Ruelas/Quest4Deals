@@ -98,6 +98,7 @@ const Navbar = ({ setIsSearching, setSearchQuery, onReload }: NavbarProps) => {
               <button
                 onClick={handleLogout}
                 className="dropdown-item logout-btn"
+                id="logout-btn"
               >
                 Logout
               </button>

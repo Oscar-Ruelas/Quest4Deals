@@ -1,74 +1,85 @@
 /* src/styling/edit-profile.css */
 
 .edit-profile-container {
-    display: flex;
-    color: white;
-    background-color: var(--secondary-color);
-    border-radius: 10px;
-    padding: 5em;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: larger;
+  display: flex;
+  color: white;
+  background-color: var(--secondary-color);
+  border-radius: 10px;
+  padding: 5em;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: larger;
 }
 
 .edit-profile-container h2 {
-    margin-bottom: 20px;
+  margin-bottom: 20px;
 }
 
 .edit-profile-container input {
-    margin: 10px;
-    padding: 10px;
-    border-radius: 5px;
-    width: 25%;
-    border: none;
+  margin: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  width: 25%;
+  border: none;
 }
 
 .edit-profile-container button {
-    margin: 10px;
-    padding: 10px;
-    border-radius: 5px;
-    width: 25%;
-    border: 2px white solid;
-    background-color: var(--secondary-color);
-    color: white;
-    font-size: larger;
+  margin: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  width: 25%;
+  border: 2px white solid;
+  background-color: var(--secondary-color);
+  color: white;
+  font-size: larger;
 }
 
 .edit-profile-container button:hover {
-    background-color: white;
-    color: var(--secondary-color);
-    cursor: pointer;
-    transition: 0.3s;
+  background-color: white;
+  color: var(--secondary-color);
+  cursor: pointer;
+  transition: 0.3s;
 }
 
 .edit-profile-container .success {
-    color: lightgreen;
-    font-weight: bold;
-    margin-top: 10px;
+  color: lightgreen;
+  font-weight: bold;
+  margin-top: 10px;
 }
 
 .edit-profile-container .error {
-    color: #ff6b6b;
-    font-weight: bold;
-    margin-top: 10px;
+  color: #ff6b6b;
+  font-weight: bold;
+  margin-top: 10px;
 }
 
 .delete-btn {
-    margin-top: 20px;
-    padding: 10px;
-    width: 25%;
-    border: 2px solid #ff6b6b;
-    background-color: transparent;
-    color: #ff6b6b;
-    font-size: larger;
-    border-radius: 5px;
+  margin-top: 20px;
+  padding: 10px;
+  width: 25%;
+  border: 2px solid #ff6b6b;
+  background-color: transparent;
+  color: #ff6b6b;
+  font-size: larger;
+  border-radius: 5px;
 }
 
 .delete-btn:hover {
-    background-color: #ff6b6b;
-    color: white;
-    cursor: pointer;
-    transition: 0.3s;
+  background-color: #ff6b6b;
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
 }
 
+@media screen and (max-width: 768px) {
+  .edit-profile-container input {
+    width: 100%;
+  }
+  .edit-profile-container button {
+    width: 100%;
+  }
+  .edit-profile-container {
+    height: 100vh;
+  }
+}

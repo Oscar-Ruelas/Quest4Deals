@@ -12,6 +12,9 @@
   font-size: 16px;
   cursor: pointer;
   padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* ✅ Dropdown menu container */
@@ -40,19 +43,13 @@
   transition: 0.2s;
 }
 
+#logout-btn {
+  display: flex;
+  align-items: center;
+}
+
 /* ✅ Hover effect */
 .dropdown-item:hover {
   background: white;
   color: var(--secondary-color);
-}
-
-/* ✅ Logout button */
-.logout-btn {
-  border: none;
-  background: none;
-  color: white;
-  font-size: 16px;
-  width: 100%;
-  text-align: left;
-  cursor: pointer;
 }
