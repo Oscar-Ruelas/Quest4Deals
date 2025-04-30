@@ -74,9 +74,7 @@
             "related": ".xml"
           }
         },
-        "frameworkReferences": [
-          "Microsoft.AspNetCore.App"
-        ]
+        "frameworkReferences": ["Microsoft.AspNetCore.App"]
       },
       "Microsoft.AspNetCore.Cryptography.Internal/8.0.0": {
         "type": "package",
@@ -132,9 +130,7 @@
         "runtime": {
           "lib/net8.0/Microsoft.AspNetCore.SpaProxy.dll": {}
         },
-        "frameworkReferences": [
-          "Microsoft.AspNetCore.App"
-        ],
+        "frameworkReferences": ["Microsoft.AspNetCore.App"],
         "build": {
           "build/Microsoft.AspNetCore.SpaProxy.targets": {}
         }
@@ -1037,9 +1033,7 @@
             "related": ".pdb;.xml"
           }
         },
-        "frameworkReferences": [
-          "Microsoft.AspNetCore.App"
-        ]
+        "frameworkReferences": ["Microsoft.AspNetCore.App"]
       },
       "Swashbuckle.AspNetCore.SwaggerGen/6.4.0": {
         "type": "package",
@@ -1069,9 +1063,7 @@
             "related": ".pdb;.xml"
           }
         },
-        "frameworkReferences": [
-          "Microsoft.AspNetCore.App"
-        ]
+        "frameworkReferences": ["Microsoft.AspNetCore.App"]
       },
       "System.CodeDom/4.4.0": {
         "type": "package",
@@ -4418,23 +4410,21 @@
     ]
   },
   "packageFolders": {
-    "/Users/oscar/.nuget/packages/": {}
+    "C:\\Users\\ryanh\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/oscar/Documents/SCP/Quest4Deals/quest4dealsweb.Server/quest4dealsweb.Server.csproj",
+      "projectUniqueName": "C:\\Users\\ryanh\\OneDrive\\Desktop\\current classes\\senior projects\\Quest4Deals\\quest4dealsweb.Server\\quest4dealsweb.Server.csproj",
       "projectName": "quest4dealsweb.Server",
-      "projectPath": "/Users/oscar/Documents/SCP/Quest4Deals/quest4dealsweb.Server/quest4dealsweb.Server.csproj",
-      "packagesPath": "/Users/oscar/.nuget/packages/",
-      "outputPath": "/Users/oscar/Documents/SCP/Quest4Deals/quest4dealsweb.Server/obj/",
+      "projectPath": "C:\\Users\\ryanh\\OneDrive\\Desktop\\current classes\\senior projects\\Quest4Deals\\quest4dealsweb.Server\\quest4dealsweb.Server.csproj",
+      "packagesPath": "C:\\Users\\ryanh\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\ryanh\\OneDrive\\Desktop\\current classes\\senior projects\\Quest4Deals\\quest4dealsweb.Server\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/Users/oscar/.nuget/NuGet/NuGet.Config"
+        "C:\\Users\\ryanh\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
-      "originalTargetFrameworks": [
-        "net8.0"
-      ],
+      "originalTargetFrameworks": ["net8.0"],
       "sources": {
         "https://api.nuget.org/v3/index.json": {}
       },
@@ -4445,16 +4435,13 @@
         }
       },
       "warningProperties": {
-        "warnAsError": [
-          "NU1605"
-        ]
+        "warnAsError": ["NU1605"]
       },
       "restoreAuditProperties": {
         "enableAudit": "true",
         "auditLevel": "low",
         "auditMode": "direct"
-      },
-      "SdkAnalysisLevel": "9.0.200"
+      }
     },
     "frameworks": {
       "net8.0": {
@@ -4534,7 +4521,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.200/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.406/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

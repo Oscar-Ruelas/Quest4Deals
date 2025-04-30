@@ -164,3 +164,50 @@ body {
 .lowest-price {
   font-weight: bold;
 }
+
+@media screen and (max-width: 1024px) {
+  .navbar img {
+    width: 100px;
+    height: auto;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .App {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .navbar {
+    flex-direction: column;
+    align-items: center;
+    position: static;
+  }
+
+  .gamecard {
+    width: 100%;
+  }
+
+  .navbar input {
+    width: 80%;
+    margin: 10px 0;
+  }
+
+  .navbar img {
+    width: 100px;
+    height: auto;
+    order: -1;
+    margin-top: 5px;
+  }
+
+  .filter {
+    margin-top: 10px;
+    width: 100%;
+    position: static;
+  }
+
+  .dashboard {
+    grid-column: 1 / -1;
+    grid-row: auto;
+  }
+}
