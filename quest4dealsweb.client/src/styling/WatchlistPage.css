@@ -120,3 +120,19 @@
     padding: 5rem;
     font-size: 1.2rem;
 }
+
+.back-button {
+    background-color: #4b5563;
+    color: white;
+    font-weight: 600;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: none;
+    font-size: 1rem;
+    transition: background 0.2s;
+}
+
+.back-button:hover {
+    background-color: #374151;
+}

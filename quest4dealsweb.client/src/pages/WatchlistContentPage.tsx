@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import "../styling/WatchlisttPage.css"
+import { useNavigate } from "react-router-dom";
+import "../styling/WatchlistPage.css";
 
 interface WatchlistGame {
     externalGameId: number;
@@ -14,6 +15,7 @@ interface WatchlistGame {
 const WatchlistPage = () => {
     const [games, setGames] = useState<WatchlistGame[]>([]);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
     const fetchWatchlist = async () => {
         try {
@@ -71,13 +73,17 @@ const WatchlistPage = () => {
         fetchWatchlist();
     }, []);
 
-    if (loading) return <div>Loading watchlist...</div>;
+    if (loading) {
+        return <div className="watchlist-loading">Loading watchlist...</div>;
+    }
 
-    if (games.length === 0) return <div>Your watchlist is empty.</div>;
+    if (games.length === 0) {
+        return <div className="watchlist-empty">Your watchlist is empty.</div>;
+    }
 
     return (
         <div className="watchlist-container">
-            <h2 className="watchlist-title">Your Watchlist</h2>
+            <h2 className="watchlist-title">My Watchlist</h2>
             <div className="watchlist-grid">
                 {games.map((game) => (
                     <div key={`${game.externalGameId}-${game.platform}`} className="watchlist-card">
@@ -102,9 +108,14 @@ const WatchlistPage = () => {
                     </div>
                 ))}
             </div>
+
+            <div style={{ textAlign: "center", marginTop: "2rem" }}>
+                <button className="back-button" onClick={() => navigate("/")}>
+                    ← Return to Home
+                </button>
+            </div>
         </div>
     );
-
 };
 
 export default WatchlistPage;
