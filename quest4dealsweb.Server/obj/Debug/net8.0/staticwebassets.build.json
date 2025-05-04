@@ -1,13 +1,13 @@
 {
   "Version": 1,
-  "Hash": "/2mWlP4l9EM2mZzxAl3xcQ0W8fLaSIsOHIDWqo1C9d0=",
+  "Hash": "tUuXxzKMFstN1yDBn/ckiUd8Biqgyc9IKD81fkl/+5M=",
   "Source": "quest4dealsweb.Server",
   "BasePath": "_content/quest4dealsweb.Server",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [
     {
-      "Identity": "C:\\Users\\ryanh\\OneDrive\\Desktop\\current classes\\senior projects\\Quest4Deals\\quest4dealsweb.client\\quest4dealsweb.client.esproj",
+      "Identity": "/Users/oscar/Documents/Quest4Deals/quest4dealsweb.client/quest4dealsweb.client.esproj",
       "Version": 2,
       "Source": "quest4dealsweb.client",
       "GetPublishAssetsTargets": "GetCurrentProjectPublishStaticWebAssetItems",
@@ -19,5 +19,6 @@
     }
   ],
   "DiscoveryPatterns": [],
-  "Assets": []
+  "Assets": [],
+  "Endpoints": []
 }

@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\ryanh\\OneDrive\\Desktop\\current classes\\senior projects\\Quest4Deals\\quest4dealsweb.Server\\quest4dealsweb.Server.csproj": {}
+    "/Users/oscar/Documents/Quest4Deals/quest4dealsweb.Server/quest4dealsweb.Server.csproj": {}
   },
   "projects": {
-    "C:\\Users\\ryanh\\OneDrive\\Desktop\\current classes\\senior projects\\Quest4Deals\\quest4dealsweb.Server\\quest4dealsweb.Server.csproj": {
+    "/Users/oscar/Documents/Quest4Deals/quest4dealsweb.Server/quest4dealsweb.Server.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\ryanh\\OneDrive\\Desktop\\current classes\\senior projects\\Quest4Deals\\quest4dealsweb.Server\\quest4dealsweb.Server.csproj",
+        "projectUniqueName": "/Users/oscar/Documents/Quest4Deals/quest4dealsweb.Server/quest4dealsweb.Server.csproj",
         "projectName": "quest4dealsweb.Server",
-        "projectPath": "C:\\Users\\ryanh\\OneDrive\\Desktop\\current classes\\senior projects\\Quest4Deals\\quest4dealsweb.Server\\quest4dealsweb.Server.csproj",
-        "packagesPath": "C:\\Users\\ryanh\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\ryanh\\OneDrive\\Desktop\\current classes\\senior projects\\Quest4Deals\\quest4dealsweb.Server\\obj\\",
+        "projectPath": "/Users/oscar/Documents/Quest4Deals/quest4dealsweb.Server/quest4dealsweb.Server.csproj",
+        "packagesPath": "/Users/oscar/.nuget/packages/",
+        "outputPath": "/Users/oscar/Documents/Quest4Deals/quest4dealsweb.Server/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\ryanh\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "/Users/oscar/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -37,12 +37,8 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-<<<<<<< HEAD
-        }
-=======
         },
         "SdkAnalysisLevel": "9.0.200"
->>>>>>> 8f30f595efe20c3cea18310091adfb6a1f387f48
       },
       "frameworks": {
         "net8.0": {
@@ -122,11 +118,7 @@
               "privateAssets": "all"
             }
           },
-<<<<<<< HEAD
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.406/PortableRuntimeIdentifierGraph.json"
-=======
           "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.200/PortableRuntimeIdentifierGraph.json"
->>>>>>> 8f30f595efe20c3cea18310091adfb6a1f387f48
         }
       }
     }

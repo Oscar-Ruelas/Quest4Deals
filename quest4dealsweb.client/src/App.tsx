@@ -15,6 +15,7 @@ import EditProfilePage from "./pages/EditProfile";
 import GameDetails from "./components/GameDetails";
 import "./styling/Main.css";
 import { useState } from "react";
+import WatchlistContentPage from "./pages/WatchlistContentPage.tsx";
 
 function AppRoutes() {
   const location = useLocation();
@@ -70,6 +71,7 @@ function AppRoutes() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/edit-profile/:userId" element={<EditProfilePage />} />
+        <Route path={"/watchlist"} element={<WatchlistContentPage />} />
         {/* fallback if user visits details directly */}
         <Route
           path="/details/:id/:title"

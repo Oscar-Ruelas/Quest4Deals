@@ -89,8 +89,8 @@ const Navbar = ({ setIsSearching, setSearchQuery, onReload }: NavbarProps) => {
 
           {menuOpen && (
             <div className="dropdown-menu">
-              <Link to="/wishlist" className="dropdown-item">
-                View Wishlist
+              <Link to="/watchlist" className="dropdown-item">
+                View Watchlist
               </Link>
               <Link to={`/edit-profile/${user?.id}`} className="dropdown-item">
                 Edit Profile
