@@ -1,7 +1,7 @@
 /* This makes these colors accessible across the entire project, so we can define a color theme here and use them in styling components */
 :root {
-  --primary-color: rgba(48, 48, 48, 0.4); /* lighter black with transparency */
-  --secondary-color: #4472ca;
+  --primary-color: #1f2937; /* lighter black with transparency */
+  --secondary-color: #2d3748;
   --highlight-color: #f79256;
 }
 
