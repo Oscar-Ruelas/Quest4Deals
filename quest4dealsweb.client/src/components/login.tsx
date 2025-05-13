@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import "../styling/Login.css";
 
 const Login = () => {
@@ -13,9 +13,8 @@ const Login = () => {
   useEffect(() => {
     const storedUser = localStorage.getItem("user") || sessionStorage.getItem("user");
     if (storedUser) {
-      // If user is already logged in, redirect to return path or home
-      const returnPath = sessionStorage.getItem('returnTo') || '/';
-      sessionStorage.removeItem('returnTo'); // Clean up
+      const returnPath = sessionStorage.getItem("returnTo") || "/";
+      sessionStorage.removeItem("returnTo");
       navigate(returnPath);
     }
   }, [navigate]);
@@ -23,6 +22,7 @@ const Login = () => {
   const handleLogin = async () => {
     setErrorMessage("");
     setIsLoggingIn(true);
+
     try {
       const response = await fetch("/api/auth/login", {
         method: "POST",
@@ -31,21 +31,25 @@ const Login = () => {
         credentials: "include",
       });
 
+      const text = await response.text();
+      const data = text ? JSON.parse(text) : {};
+
       if (!response.ok) {
-        const errorData = await response.json();
-        if (errorData?.message === "User not found") {
-          setErrorMessage("User does not exist.");
-        } else if (errorData?.message === "Incorrect password") {
-          setErrorMessage("Incorrect password.");
-        } else {
-          setErrorMessage("Login failed. Please try again.");
+        if (data?.message === "EmailNotConfirmed") {
+          localStorage.setItem("pendingEmail", data.email);
+          navigate(data.redirectTo || "/verify-email");
+          return;
         }
-        setIsLoggingIn(false);
+
+        setErrorMessage(
+            data?.message === "User not found"
+                ? "User does not exist."
+                : data?.message === "Incorrect password"
+                    ? "Incorrect password."
+                    : "Login failed. Please try again."
+        );
         return;
       }
-
-      const data = await response.json();
-      console.log("Login successful:", data);
 
       if (keepLoggedIn) {
         localStorage.setItem("user", JSON.stringify(data.user));
@@ -53,15 +57,14 @@ const Login = () => {
         sessionStorage.setItem("user", JSON.stringify(data.user));
       }
 
-      // Get the return path and navigate back
-      const returnPath = sessionStorage.getItem('returnTo') || '/';
-      sessionStorage.removeItem('returnTo'); // Clean up
+      const returnPath = sessionStorage.getItem("returnTo") || "/";
+      sessionStorage.removeItem("returnTo");
 
-      // Short delay to show "Logging in..." message
       setTimeout(() => navigate(returnPath), 1000);
     } catch (error) {
       console.error("Error during login:", error);
       setErrorMessage("An error occurred. Please try again.");
+    } finally {
       setIsLoggingIn(false);
     }
   };
@@ -92,6 +95,12 @@ const Login = () => {
               onKeyDown={handleKeyDown}
           />
 
+          <div style={{ width: "100%", textAlign: "right", marginBottom: "10px" }}>
+            <Link to="/reset-password" className="forgot-password-link">
+              Forgot your password?
+            </Link>
+          </div>
+
           {errorMessage && <p className="error-message">{errorMessage}</p>}
           {isLoggingIn && <p className="logging-in-message">Logging in...</p>}
 
@@ -109,13 +118,10 @@ const Login = () => {
               />
               <label htmlFor="keepLoggedIn">Remember me</label>
             </div>
-            <a href="#" className="help-link">
-              Need help?
-            </a>
           </div>
 
           <p className="signup-text">
-            New to Quest4Deals? <a href="/register">Sign up now</a>
+            New to Quest4Deals? <Link to="/register">Sign up now</Link>
           </p>
         </div>
       </div>

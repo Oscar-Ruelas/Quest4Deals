@@ -16,6 +16,8 @@ import GameDetails from "./components/GameDetails";
 import "./styling/Main.css";
 import { useState } from "react";
 import WatchlistContentPage from "./pages/WatchlistContentPage.tsx";
+import VerifyEmail from "./pages/VerifyEmail.tsx";
+import ResetPassword from "./pages/ResetPassword.tsx";
 
 function AppRoutes() {
   const location = useLocation();
@@ -72,6 +74,8 @@ function AppRoutes() {
         <Route path="/register" element={<Register />} />
         <Route path="/edit-profile/:userId" element={<EditProfilePage />} />
         <Route path={"/watchlist"} element={<WatchlistContentPage />} />
+        <Route path="/verify-email" element={<VerifyEmail />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         {/* fallback if user visits details directly */}
         <Route
           path="/details/:id/:title"
