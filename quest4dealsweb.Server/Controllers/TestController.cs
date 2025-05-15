@@ -1,9 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using quest4dealsweb.Server.models; // For TestEmailDto
-using quest4dealsweb.Server.notifications; // For Program.SendEmailAsync
+using quest4dealsweb.Server.models;
+using EmailProgram = quest4dealsweb.Server.notifications.Program; // Alias for notifications.Program
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization; // To protect the endpoint
+using Microsoft.AspNetCore.Authorization;
+using System; // For StringComparison
 
 namespace quest4dealsweb.Server.Controllers
 {
@@ -19,28 +20,57 @@ namespace quest4dealsweb.Server.Controllers
             _logger = logger;
         }
 
-        [HttpPost("send-email")]
-        public async Task<IActionResult> SendTestEmail([FromBody] TestEmailDto emailDto)
+        [HttpPost("send-notification-email")]
+        public async Task<IActionResult> SendTestNotificationEmail([FromBody] TestEmailDto testData)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
+            if (string.Equals(testData.NotificationTypeToSimulate, "Threshold", StringComparison.OrdinalIgnoreCase) && !testData.PriceThreshold.HasValue)
+            {
+                return BadRequest(new { message = "PriceThreshold is required when NotificationTypeToSimulate is 'Threshold'." });
+            }
+
+            string emailSubject = $"Quest4Deals: TEST Price Update for {testData.GameTitle}";
+            string emailBody;
+
+            if (string.Equals(testData.NotificationTypeToSimulate, "Threshold", StringComparison.OrdinalIgnoreCase) && testData.PriceThreshold.HasValue)
+            {
+                emailBody = $@"
+                    <p>Hello {testData.UserName},</p>
+                    <p>This is a <b>TEST</b> notification.</p>
+                    <p>The price for <b>{testData.GameTitle}</b> on <b>{testData.Platform}</b> has reached your set threshold of <b>{testData.PriceThreshold.Value:C}</b>!</p>
+                    <p>The current price is now <b>{testData.NewPrice:C}</b>.</p>
+                    <p>Happy deal hunting!</p>
+                    <p>The Quest4Deals Team (Test System)</p>";
+            }
+            else // Simulating "AnyChange" or fallback
+            {
+                string oldPriceString = testData.OldPrice.HasValue ? $"{testData.OldPrice.Value:C}" : "a previous price";
+                emailBody = $@"
+                    <p>Hello {testData.UserName},</p>
+                    <p>This is a <b>TEST</b> notification.</p>
+                    <p>There's a price update for <b>{testData.GameTitle}</b> on <b>{testData.Platform}</b>.</p>
+                    <p>The price has changed from {oldPriceString} to <b>{testData.NewPrice:C}</b>.</p>
+                    <p>Happy deal hunting!</p>
+                    <p>The Quest4Deals Team (Test System)</p>";
+            }
+
             try
             {
-                _logger.LogInformation($"Attempting to send test email to: {emailDto.RecipientEmail} with subject: {emailDto.Subject}");
+                _logger.LogInformation($"Attempting to send TEST notification email to: {testData.RecipientEmail} with subject: {emailSubject}");
 
-                // Call the static SendEmailAsync method from your notifications Program class
-                await Program.SendEmailAsync(emailDto.RecipientEmail, emailDto.Subject, emailDto.HtmlBody);
+                await EmailProgram.SendEmailAsync(testData.RecipientEmail, emailSubject, emailBody);
 
-                _logger.LogInformation("Test email sent successfully.");
-                return Ok(new { message = "Test email sent successfully." });
+                _logger.LogInformation("Test notification email sent successfully.");
+                return Ok(new { message = "Test notification email sent successfully." });
             }
             catch (System.Exception ex)
             {
-                _logger.LogError(ex, "Error sending test email.");
-                return StatusCode(500, new { message = $"Failed to send test email: {ex.Message}" });
+                _logger.LogError(ex, "Error sending test notification email.");
+                return StatusCode(500, new { message = $"Failed to send test notification email: {ex.Message}" });
             }
         }
     }

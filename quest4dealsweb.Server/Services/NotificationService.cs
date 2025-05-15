@@ -6,6 +6,8 @@ using quest4dealsweb.Server.Data;
 using quest4dealsweb.Server.models;
 using quest4dealsweb.Server.notifications; // For your Program.SendEmail
 using System.Threading.Tasks;
+using EmailProgram = quest4dealsweb.Server.notifications.Program; // Create an alias
+
 
 namespace quest4dealsweb.Server.Services
 {
@@ -98,7 +100,8 @@ namespace quest4dealsweb.Server.Services
                     try
                     {
                         // Assuming notifications.Program.SendEmailAsync is static and accessible
-                        await quest4dealsweb.Server.notifications.Program.SendEmailAsync(user.Email, emailSubject, emailBody);
+                        //await quest4dealsweb.Server.notifications.Program.SendEmailAsync(user.Email, emailSubject, emailBody);
+                        await EmailProgram.SendEmailAsync(user.Email, emailSubject, emailBody);
                         _logger.LogInformation($"Notification email sent to {user.Email} for game {entry.Title}.");
                         entry.LastNotificationSentAt = DateTime.UtcNow;
                         // The entry.Price should be updated by the PriceHistoryService or whatever calls this.
