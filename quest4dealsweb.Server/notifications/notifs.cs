@@ -13,12 +13,11 @@ namespace quest4dealsweb.Server.notifications
         private static readonly string SmtpServer = "smtp.gmail.com";
         private static readonly int SmtpPort = 587;
         private static readonly string SmtpUsername = "quest4deals.notification@gmail.com";
-        private static readonly string SmtpPassword = "ynwc mamy hrci sytz"; // Consider moving to config
+        private static readonly string SmtpPassword = "ynwc mamy hrci sytz"; 
         private static readonly string SenderEmail = "quest4deals.notification@gmail.com";
         private static readonly string SenderName = "Quest4Deals";
 
-        // Path to the logo, relative to the server's execution directory
-        // Adjust this path if you place your logo elsewhere within the server project.
+
         private static readonly string LogoPath = Path.Combine(AppContext.BaseDirectory, "EmailAssets", "logo.png");
         private const string LogoContentId = "logo_image_cid";
 
@@ -57,7 +56,7 @@ namespace quest4dealsweb.Server.notifications
                 image.ContentId = MimeUtils.GenerateMessageId(); // Generate a unique CID
                 // Update htmlBody to reference this CID
                 // We'll append the image tag at the end of the provided htmlBody
-                htmlBody += $"<br><hr><p style='text-align:center;'><img src='cid:{image.ContentId}' alt='Quest4Deals Logo' style='max-width:200px; height:auto;'></p>";
+                htmlBody += $"<br><hr><p style='text-align:left;'><img src='cid:{image.ContentId}' alt='Quest4Deals Logo' style='max-width:200px; height:auto;'></p>";
             }
             else
             {

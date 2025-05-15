@@ -2,10 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using quest4dealsweb.Server.models;
 using EmailProgram = quest4dealsweb.Server.notifications.Program; // Alias
-using quest4dealsweb.Server.Services; // Assuming EmailContentHelper is in Services namespace
+using quest4dealsweb.Server.Services;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-// ... (other using statements and class structure)
 using System;
 
 namespace quest4dealsweb.Server.Controllers
