@@ -7,8 +7,6 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using EmailProgram = quest4dealsweb.Server.notifications.Program; // Alias
-// Add using for the helper if it's in a different namespace, e.g.
-// using quest4dealsweb.Server.Helpers; 
 
 namespace quest4dealsweb.Server.Services
 {

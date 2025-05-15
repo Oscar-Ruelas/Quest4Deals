@@ -1,4 +1,3 @@
-// C:\Users\adria\Desktop\Quest4Deals\quest4dealsweb.Server\Services\EmailContentHelper.cs
 namespace quest4dealsweb.Server.Services // Or quest4dealsweb.Server.notifications
 {
     public static class EmailContentHelper
