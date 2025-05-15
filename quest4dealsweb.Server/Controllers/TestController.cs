@@ -1,16 +1,18 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using quest4dealsweb.Server.models;
-using EmailProgram = quest4dealsweb.Server.notifications.Program; // Alias for notifications.Program
+using EmailProgram = quest4dealsweb.Server.notifications.Program; // Alias
+using quest4dealsweb.Server.Services; // Assuming EmailContentHelper is in Services namespace
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using System; // For StringComparison
+// ... (other using statements and class structure)
+using System;
 
 namespace quest4dealsweb.Server.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize] // Requires authentication to use this endpoint
+    [Authorize]
     public class TestController : ControllerBase
     {
         private readonly ILogger<TestController> _logger;
@@ -33,43 +35,31 @@ namespace quest4dealsweb.Server.Controllers
                 return BadRequest(new { message = "PriceThreshold is required when NotificationTypeToSimulate is 'Threshold'." });
             }
 
-            string emailSubject = $"Quest4Deals: TEST Price Update for {testData.GameTitle}";
-            string emailBody;
+            string emailSubject = $"Quest4Deals: Price Update for {testData.GameTitle}";
 
-            if (string.Equals(testData.NotificationTypeToSimulate, "Threshold", StringComparison.OrdinalIgnoreCase) && testData.PriceThreshold.HasValue)
-            {
-                emailBody = $@"
-                    <p>Hello {testData.UserName},</p>
-                    <p>This is a <b>TEST</b> notification.</p>
-                    <p>The price for <b>{testData.GameTitle}</b> on <b>{testData.Platform}</b> has reached your set threshold of <b>{testData.PriceThreshold.Value:C}</b>!</p>
-                    <p>The current price is now <b>{testData.NewPrice:C}</b>.</p>
-                    <p>Happy deal hunting!</p>
-                    <p>The Quest4Deals Team (Test System)</p>";
-            }
-            else // Simulating "AnyChange" or fallback
-            {
-                string oldPriceString = testData.OldPrice.HasValue ? $"{testData.OldPrice.Value:C}" : "a previous price";
-                emailBody = $@"
-                    <p>Hello {testData.UserName},</p>
-                    <p>This is a <b>TEST</b> notification.</p>
-                    <p>There's a price update for <b>{testData.GameTitle}</b> on <b>{testData.Platform}</b>.</p>
-                    <p>The price has changed from {oldPriceString} to <b>{testData.NewPrice:C}</b>.</p>
-                    <p>Happy deal hunting!</p>
-                    <p>The Quest4Deals Team (Test System)</p>";
-            }
+            string emailBody = EmailContentHelper.GenerateEmailBody(
+                userName: testData.UserName,
+                gameTitle: testData.GameTitle,
+                platform: testData.Platform,
+                newPrice: testData.NewPrice,
+                notificationType: testData.NotificationTypeToSimulate,
+                priceThreshold: testData.PriceThreshold,
+                oldPrice: testData.OldPrice,
+                isTestEmail: false
+            );
 
             try
             {
-                _logger.LogInformation($"Attempting to send TEST notification email to: {testData.RecipientEmail} with subject: {emailSubject}");
-
+                _logger.LogInformation($"Attempting to send TEST (identical body) notification email to: {testData.RecipientEmail} with subject: {emailSubject}");
                 await EmailProgram.SendEmailAsync(testData.RecipientEmail, emailSubject, emailBody);
-
                 _logger.LogInformation("Test notification email sent successfully.");
                 return Ok(new { message = "Test notification email sent successfully." });
             }
             catch (System.Exception ex)
             {
                 _logger.LogError(ex, "Error sending test notification email.");
+                // THIS IS LIKELY THE LINE WITH THE ERROR (around original line 64)
+                // Ensure "message:" is "message ="
                 return StatusCode(500, new { message = $"Failed to send test notification email: {ex.Message}" });
             }
         }

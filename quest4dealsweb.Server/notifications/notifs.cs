@@ -1,51 +1,45 @@
 using System;
 using System.Threading.Tasks;
-
-// Remove the System.Net.Mail import to avoid conflicts with MailKit
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using MimeKit;
+using MimeKit.Utils; // Required for MimeEntity.GenerateMessageId() and for creating image parts
+using System.IO; // Required for File.ReadAllBytes
 
 namespace quest4dealsweb.Server.notifications
 {
     class Program
     {
-        // Email configuration with your specified values
         private static readonly string SmtpServer = "smtp.gmail.com";
         private static readonly int SmtpPort = 587;
-
         private static readonly string SmtpUsername = "quest4deals.notification@gmail.com";
-        private static readonly string SmtpPassword = "ynwc mamy hrci sytz";
+        private static readonly string SmtpPassword = "ynwc mamy hrci sytz"; // Consider moving to config
         private static readonly string SenderEmail = "quest4deals.notification@gmail.com";
         private static readonly string SenderName = "Quest4Deals";
 
-        private static readonly string RecipientEmail = "adrianlfudge@gmail.com";
+        // Path to the logo, relative to the server's execution directory
+        // Adjust this path if you place your logo elsewhere within the server project.
+        private static readonly string LogoPath = Path.Combine(AppContext.BaseDirectory, "EmailAssets", "logo.png");
+        private const string LogoContentId = "logo_image_cid";
 
-        // Email contents
-        private static readonly string EmailHeader = "Saved Game Price Change Notification";
-        private static readonly string EmailBody = "<p>Your saved game <GAME> has hit the price threshold of <PRICE_THRESHOLD> that you set on the <PLATFORM> platform</p>";
 
-        // Changed the name to Main to make it the program entry point
-        // Add this new method to your class
         public static void SendEmail(string recipientEmail, string emailHeader, string emailBody)
         {
-            if(recipientEmail == null || emailBody == null || emailBody == null) { Console.WriteLine("Invalid Parameters in SendEmail");  return; }
-
+            if (string.IsNullOrEmpty(recipientEmail) || string.IsNullOrEmpty(emailHeader) || string.IsNullOrEmpty(emailBody))
+            {
+                Console.WriteLine("Invalid Parameters in SendEmail");
+                return;
+            }
             try
             {
-                // This line runs the task synchronously
-                SendEmailAsync(
-                    recipientEmail,
-                    emailHeader,
-                    emailBody).GetAwaiter().GetResult();
+                SendEmailAsync(recipientEmail, emailHeader, emailBody).GetAwaiter().GetResult();
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error sending email: {ex.Message}");
+                Console.WriteLine($"Error sending email (sync wrapper): {ex.Message}");
                 Console.WriteLine(ex.StackTrace);
             }
         }
-
 
         public static async Task SendEmailAsync(string to, string subject, string htmlBody)
         {
@@ -54,26 +48,41 @@ namespace quest4dealsweb.Server.notifications
             message.To.Add(MailboxAddress.Parse(to));
             message.Subject = subject;
 
-            var bodyBuilder = new BodyBuilder
-            {
-                HtmlBody = htmlBody
-            };
+            var builder = new BodyBuilder();
 
-            message.Body = bodyBuilder.ToMessageBody();
+            // Add the logo image as a linked resource
+            if (File.Exists(LogoPath))
+            {
+                var image = builder.LinkedResources.Add(LogoPath);
+                image.ContentId = MimeUtils.GenerateMessageId(); // Generate a unique CID
+                // Update htmlBody to reference this CID
+                // We'll append the image tag at the end of the provided htmlBody
+                htmlBody += $"<br><hr><p style='text-align:center;'><img src='cid:{image.ContentId}' alt='Quest4Deals Logo' style='max-width:200px; height:auto;'></p>";
+            }
+            else
+            {
+                Console.WriteLine($"Warning: Logo image not found at {LogoPath}");
+                htmlBody += "<br><hr><p style='text-align:center;'>Quest4Deals</p>"; // Fallback text
+            }
+
+            builder.HtmlBody = htmlBody;
+            message.Body = builder.ToMessageBody();
 
             using (var client = new SmtpClient())
             {
-                // This line enables client debugging output to console
-                client.Connect(SmtpServer, SmtpPort, SecureSocketOptions.StartTls);
-
-                // Authenticate with the SMTP server
-                client.Authenticate(SmtpUsername, SmtpPassword);
-
-                // Send the email
-                await client.SendAsync(message);
-
-                // Disconnect properly
-                await client.DisconnectAsync(true);
+                try
+                {
+                    await client.ConnectAsync(SmtpServer, SmtpPort, SecureSocketOptions.StartTls);
+                    await client.AuthenticateAsync(SmtpUsername, SmtpPassword);
+                    await client.SendAsync(message);
+                    await client.DisconnectAsync(true);
+                }
+                catch (Exception ex)
+                {
+                    // Log the exception or rethrow it to be handled by the caller
+                    Console.WriteLine($"Error in SendEmailAsync: {ex.Message}");
+                    throw; // Rethrow to allow calling services to catch and log
+                }
             }
         }
     }

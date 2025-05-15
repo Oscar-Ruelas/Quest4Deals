@@ -923,3 +923,4 @@ C:\Users\adria\Desktop\Quest4Deals\quest4dealsweb.Server\obj\Debug\net8.0\refint
 C:\Users\adria\Desktop\Quest4Deals\quest4dealsweb.Server\obj\Debug\net8.0\quest4dealsweb.Server.pdb
 C:\Users\adria\Desktop\Quest4Deals\quest4dealsweb.Server\obj\Debug\net8.0\quest4dealsweb.Server.genruntimeconfig.cache
 C:\Users\adria\Desktop\Quest4Deals\quest4dealsweb.Server\obj\Debug\net8.0\ref\quest4dealsweb.Server.dll
+C:\Users\adria\Desktop\Quest4Deals\quest4dealsweb.Server\bin\Debug\net8.0\EmailAssets\logo.png
