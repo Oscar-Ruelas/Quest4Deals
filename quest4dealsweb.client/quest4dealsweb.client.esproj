@@ -11,6 +11,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Script Include="src\App.tsx" />
+    <Script Include="src\pages\ResetPassword.tsx" />
+    <Script Include="src\pages\VerifyEmail.tsx" />
     <Script Include="src\pages\WatchlistContentPage.tsx" />
   </ItemGroup>
 </Project>

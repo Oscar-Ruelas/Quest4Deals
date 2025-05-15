@@ -25,9 +25,7 @@ function Register() {
         setLoading(true);
 
         if (!validatePassword(password)) {
-            setError(
-                "Password must contain at least one uppercase letter, a digit, and a special character"
-            );
+            setError("Password must contain at least one uppercase letter, a digit, and a special character.");
             setLoading(false);
             return;
         }
@@ -46,16 +44,9 @@ function Register() {
                 throw new Error(data.message || "Account creation failed");
             }
 
-            if (!data.user || !data.user.id) {
-                throw new Error("Registration successful, but no user data returned.");
-            }
-
-            console.log("Account creation successful:", data);
-
-            localStorage.setItem("user", JSON.stringify(data.user));
-            setSuccess("Account created successfully! Redirecting...");
-
-            setTimeout(() => navigate(`/`), 2000);
+            setSuccess("Confirmation code sent to your email. Redirecting...");
+            localStorage.setItem("pendingEmail", data.email);
+            setTimeout(() => navigate(data.redirectTo || "/verify-email"), 1500);
         } catch (error) {
             console.error("Error during account creation:", error);
             setError(error instanceof Error ? error.message : "Unexpected error");
@@ -73,9 +64,9 @@ function Register() {
     return (
         <div className="register">
             <img src="../../public/logo.png" alt="Quest4Deals Logo" />
-            <h1>Want to save games to view later?</h1>
-            <h2>Create an account here</h2>
-            <h3>Psst... it's free!</h3>
+            <h1>Create your account</h1>
+            <h2>Track your favorite games and save big on deals</h2>
+            <h3>Join free. Cancel anytime.</h3>
 
             {error && <p style={{ color: "red" }}>{error}</p>}
             {success && <p style={{ color: "green" }}>{success}</p>}
@@ -114,9 +105,12 @@ function Register() {
                 {loading ? "Creating Account..." : "Create Account"}
             </button>
 
-            <Link to="/" className="home-link">
-                Go to Home
-            </Link>
+            <p style={{ marginTop: "1em" }}>
+                Already a member?{" "}
+                <Link to="/login" className="home-link">
+                    Sign in
+                </Link>
+            </p>
         </div>
     );
 }
