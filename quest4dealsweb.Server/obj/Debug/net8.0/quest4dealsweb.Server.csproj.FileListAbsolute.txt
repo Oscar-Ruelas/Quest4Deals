@@ -772,3 +772,5 @@ C:/Users/ryanh/OneDrive/Desktop/current classes/senior projects/Quest4Deals/ques
 /Users/oscar/Documents/Quest4Deals/quest4dealsweb.Server/obj/Debug/net8.0/ref/quest4dealsweb.Server.dll
 /Users/oscar/Documents/Quest4Deals/quest4dealsweb.Server/bin/Debug/net8.0/AWSSDK.Core.dll
 /Users/oscar/Documents/Quest4Deals/quest4dealsweb.Server/bin/Debug/net8.0/AWSSDK.SimpleEmail.dll
+/Users/oscar/Documents/Quest4Deals/quest4dealsweb.Server/bin/Debug/net8.0/publish/appsettings.Development.json
+/Users/oscar/Documents/Quest4Deals/quest4dealsweb.Server/bin/Debug/net8.0/publish/appsettings.json
