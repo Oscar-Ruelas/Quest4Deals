@@ -24,6 +24,8 @@ build/
 # ==========================
 bin/
 obj/
+!quest4dealsweb.Server/obj/
+!quest4dealsweb.Server/obj/**
 *.pdb
 *.exe
 *.dll

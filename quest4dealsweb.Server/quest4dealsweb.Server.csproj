@@ -10,11 +10,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-<<<<<<< HEAD
     <PackageReference Include="MailKit" Version="4.11.0" />
-=======
     <PackageReference Include="AWSSDK.SimpleEmail" Version="4.0.0.2" />
->>>>>>> eabb2e90e5d67d5e3ba6eadf1d93d77ba596f566
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.SpaProxy">
       <Version>8.*-*</Version>
