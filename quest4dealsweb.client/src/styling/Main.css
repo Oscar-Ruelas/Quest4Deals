@@ -1,7 +1,7 @@
 /* This makes these colors accessible across the entire project, so we can define a color theme here and use them in styling components */
 :root {
-  --primary-color: rgba(48, 48, 48, 0.4); /* lighter black with transparency */
-  --secondary-color: #4472ca;
+  --primary-color: #1f2937; /* lighter black with transparency */
+  --secondary-color: #2d3748;
   --highlight-color: #f79256;
 }
 
@@ -163,4 +163,51 @@ body {
 
 .lowest-price {
   font-weight: bold;
+}
+
+@media screen and (max-width: 1024px) {
+  .navbar img {
+    width: 100px;
+    height: auto;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .App {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .navbar {
+    flex-direction: column;
+    align-items: center;
+    position: static;
+  }
+
+  .gamecard {
+    width: 100%;
+  }
+
+  .navbar input {
+    width: 80%;
+    margin: 10px 0;
+  }
+
+  .navbar img {
+    width: 100px;
+    height: auto;
+    order: -1;
+    margin-top: 5px;
+  }
+
+  .filter {
+    margin-top: 10px;
+    width: 100%;
+    position: static;
+  }
+
+  .dashboard {
+    grid-column: 1 / -1;
+    grid-row: auto;
+  }
 }

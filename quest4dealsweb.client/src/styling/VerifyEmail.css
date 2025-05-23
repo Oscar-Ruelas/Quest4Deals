@@ -1,0 +1,145 @@
+.verify-email {
+    display: flex;
+    color: white;
+    background-color: var(--secondary-color);
+    border-radius: 10px;
+    padding: 5em;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: larger;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.verify-email input {
+    margin: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    width: 25%;
+    border: none;
+    font-size: 1rem;
+}
+
+.verify-email img {
+    width: 300px;
+    height: auto;
+    border-radius: 10px;
+    margin-bottom: 1em;
+}
+
+.verify-email button {
+    margin: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    width: 25%;
+    border: 2px white solid;
+    background-color: var(--secondary-color);
+    color: white;
+    font-size: larger;
+    transition: 0.3s;
+}
+
+.verify-email button:hover {
+    background-color: white;
+    color: var(--secondary-color);
+    cursor: pointer;
+}
+
+.link-button {
+    background: none;
+    border: none;
+    color: var(--highlight-color);
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 1rem;
+    margin: 0.5em 0;
+}
+
+.link-button:hover {
+    color: white;
+}
+
+.home-link {
+    color: var(--highlight-color);
+    text-decoration: none;
+    font-size: larger;
+    margin-top: 1em;
+}
+
+.home-link:hover {
+    text-decoration: underline;
+}
+
+.verify-email p {
+    margin: 5px 0;
+    text-align: center;
+    width: 100%;
+}
+
+.verify-email .error-message,
+.verify-email .success-message,
+.verify-email .resend-message {
+    font-weight: bold;
+    margin: 10px 0;
+    width: 80%;
+    text-align: center;
+    word-wrap: break-word;
+}
+
+.error-message {
+    color: red;
+}
+
+.success-message {
+    color: #4CAF50;
+}
+
+.resend-message {
+    color: #66ccff;
+}
+
+/* Responsive design */
+@media screen and (max-width: 768px) {
+    .verify-email {
+        padding: 2em;
+        width: 90%;
+        margin: 20px auto;
+    }
+
+    .verify-email input,
+    .verify-email button {
+        width: 80%;
+        font-size: 16px;
+    }
+
+    .verify-email img {
+        width: 200px;
+    }
+
+    .verify-email h1 {
+        font-size: 1.5em;
+        margin-bottom: 15px;
+    }
+
+    .home-link {
+        font-size: 16px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .verify-email {
+        padding: 1.5em;
+        width: 95%;
+    }
+
+    .verify-email input,
+    .verify-email button {
+        width: 90%;
+    }
+
+    .verify-email img {
+        width: 150px;
+    }
+}
+

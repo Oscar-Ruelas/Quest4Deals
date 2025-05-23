@@ -42,6 +42,9 @@ obj/
 *.db
 *.bak
 
+# Ignore specific Debug output for quest4dealsweb.Server
+quest4dealsweb.Server/bin/Debug/net8.0/
+
 # ASP.NET-specific files
 appsettings.json
 appsettings.*.json
@@ -149,3 +152,4 @@ amplifytools.xcconfig
 .secret-*
 **.sample
 #amplify-do-not-edit-end
+

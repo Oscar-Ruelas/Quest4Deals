@@ -20,6 +20,10 @@ builder.Services.AddCors(options =>
         });
 });
 
+builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
+
+
+
 // HttpClient for Nexarda API
 builder.Services.AddHttpClient("NexardaClient", client =>
 {
