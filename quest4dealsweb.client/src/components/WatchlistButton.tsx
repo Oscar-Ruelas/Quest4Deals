@@ -310,7 +310,7 @@ function WatchlistButton({ id, title, storeOffers, genre }: WatchlistButtonProps
                             <>
                                 <i className={`fas ${isInWatchlist ? 'fa-check' : 'fa-plus'}`} aria-hidden="true"></i>
                                 {isAuthenticated
-                                    ? (isInWatchlist ? `On Watchlist (${selectedPlatform})` : `Add to Watchlist (${selectedPlatform})`)
+                                    ? (isInWatchlist ? `Remove From Watchlist (${selectedPlatform})` : `Add to Watchlist (${selectedPlatform})`)
                                     : 'Sign in to Add to Watchlist'}
                             </>
                         )}
