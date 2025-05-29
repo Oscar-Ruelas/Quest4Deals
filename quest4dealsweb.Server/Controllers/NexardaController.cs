@@ -1,4 +1,4 @@
-using System.Text.Json;
+﻿using System.Text.Json;
 
 namespace quest4dealsweb.Server.Controllers;
 
@@ -11,6 +11,8 @@ using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
+using quest4dealsweb.Server.models;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -200,63 +202,63 @@ public class NexardaController : ControllerBase
         {
             if (!int.TryParse(externalGameIdString, out int externalGameId))
             {
-                _logger.LogError($"Invalid externalGameIdString for prices endpoint: {externalGameIdString}");
+                _logger.LogWarning($"Invalid ExternalGameId format: {externalGameIdString}");
                 return;
             }
 
-            using var doc = JsonDocument.Parse(content);
-            var root = doc.RootElement;
+            // ✅ Find the game by ExternalGameId first
+            var game = await _context.Games
+                .FirstOrDefaultAsync(g => g.ExternalGameId == externalGameId);
 
-            string gameTitle = root.TryGetProperty("info", out var infoProp) &&
-                               infoProp.TryGetProperty("title", out var titleProp) ?
-                               titleProp.GetString() ?? "Unknown Game" : "Unknown Game";
+            if (game == null)
+            {
+                _logger.LogWarning($"Game with ExternalGameId {externalGameId} not found in database");
+                return;
+            }
 
-            if (root.TryGetProperty("prices", out var pricesNode) && pricesNode.TryGetProperty("list", out var offersList))
+            // ✅ Parse the price from API response
+            var jsonResponse = JObject.Parse(content);
+
+            // Extract the first offer price (adjust this based on your API structure)
+            var offers = jsonResponse["data"]?["offers"];
+            if (offers == null || !offers.Any())
             {
-                foreach (var offerElement in offersList.EnumerateArray())
-                {
-                    if (offerElement.TryGetProperty("price", out var priceProp) && priceProp.TryGetDecimal(out decimal offerPrice))
-                    {
-                        // Determine platform from offer if possible
-                        // The example `edition_full` "FOR:Steam" was from `GameDetails.tsx` parsing.
-                        // Nexarda's /prices list might have platform info differently.
-                        // Assuming 'platform' is a field in the offer or derivable.
-                        string platform = "Unknown"; // Placeholder
-                        if (offerElement.TryGetProperty("platform", out var platProp) && platProp.ValueKind == JsonValueKind.String)
-                        {
-                            platform = platProp.GetString() ?? "Unknown";
-                        }
-                        else if (offerElement.TryGetProperty("edition_full", out var editionFullProp) && editionFullProp.ValueKind == JsonValueKind.String)
-                        {
-                            var editionFull = editionFullProp.GetString();
-                            if (!string.IsNullOrEmpty(editionFull))
-                            {
-                                var match = System.Text.RegularExpressions.Regex.Match(editionFull, @"FOR:(.+)$", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
-                                if (match.Success)
-                                {
-                                    platform = match.Groups[1].Value.Trim();
-                                }
-                            }
-                        }
-                        _logger.LogInformation($"From /prices endpoint for {gameTitle} (ID: {externalGameId}), found offer on {platform} for {offerPrice:C}");
-                        await _priceHistoryService.CheckAndUpdatePriceHistory(externalGameId, gameTitle, offerPrice, platform);
-                    }
-                }
+                _logger.LogWarning($"No offers found for game {externalGameId}");
+                return;
             }
-            else
+
+            // Get the first offer's price
+            var firstOffer = offers.First();
+            var priceValue = firstOffer["price"]?["amount"]?.ToObject<decimal>();
+
+            if (!priceValue.HasValue)
             {
-                _logger.LogWarning($"Could not find offers list for ExternalGameId: {externalGameId} in /prices endpoint content.");
+                _logger.LogWarning($"No valid price found for game {externalGameId}");
+                return;
             }
-        }
-        catch (JsonException jsonEx)
-        {
-            _logger.LogError(jsonEx, $"JSON parsing error in TryUpdatePriceHistoryFromPricesEndpoint for ExternalGameId: {externalGameIdString}. Content: {content.Substring(0, Math.Min(content.Length, 500))}");
+
+            decimal currentPrice = priceValue.Value;
+
+            // ✅ Use the database Id for the foreign key and correct property name
+            var priceHistory = new GamePriceHistory
+            {
+                GameId = game.Id, // Use database Id, not ExternalGameId
+                Price = currentPrice, // Use the parsed price
+                RecordedAt = DateTime.UtcNow // Use RecordedAt, not Timestamp
+            };
+
+            _context.GamePriceHistories.Add(priceHistory);
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation($"Price history updated for game {game.Title}: ${currentPrice}");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Error in TryUpdatePriceHistoryFromPricesEndpoint for ExternalGameId: {externalGameIdString}");
+            _logger.LogError(ex, $"Error updating price history for ExternalGameId: {externalGameIdString}");
         }
     }
+
+
 
     // Add this helper method to NexardaController
     private async Task TryUpdatePriceHistoryFromProductDetails(string content, string externalGameIdString)

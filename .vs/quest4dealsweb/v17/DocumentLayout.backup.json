@@ -3,12 +3,12 @@
   "WorkspaceRootPath": "C:\\Users\\adria\\Desktop\\Quest4Deals\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{7FE9C367-F73F-4F6D-967A-F6DC73013F25}|quest4dealsweb.Server\\quest4dealsweb.Server.csproj|c:\\users\\adria\\desktop\\quest4deals\\quest4dealsweb.server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7FE9C367-F73F-4F6D-967A-F6DC73013F25}|quest4dealsweb.Server\\quest4dealsweb.Server.csproj|solutionrelative:quest4dealsweb.server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{7FE9C367-F73F-4F6D-967A-F6DC73013F25}|quest4dealsweb.Server\\quest4dealsweb.Server.csproj|c:\\users\\adria\\desktop\\quest4deals\\quest4dealsweb.server\\notifs.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{7FE9C367-F73F-4F6D-967A-F6DC73013F25}|quest4dealsweb.Server\\quest4dealsweb.Server.csproj|solutionrelative:quest4dealsweb.server\\notifs.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7FE9C367-F73F-4F6D-967A-F6DC73013F25}|quest4dealsweb.Server\\quest4dealsweb.Server.csproj|c:\\users\\adria\\desktop\\quest4deals\\quest4dealsweb.server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7FE9C367-F73F-4F6D-967A-F6DC73013F25}|quest4dealsweb.Server\\quest4dealsweb.Server.csproj|solutionrelative:quest4dealsweb.server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{5D5E7572-A1D7-A358-A8E3-2162CD72176D}|quest4dealsweb.client\\quest4dealsweb.client.esproj|c:\\users\\adria\\desktop\\quest4deals\\quest4dealsweb.client\\src\\styling\\main.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
@@ -41,34 +41,34 @@
           "SelectedChildIndex": 1,
           "Children": [
             {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
               "Title": "notifs.cs",
               "DocumentMoniker": "C:\\Users\\adria\\Desktop\\Quest4Deals\\quest4dealsweb.Server\\notifs.cs",
               "RelativeDocumentMoniker": "quest4dealsweb.Server\\notifs.cs",
               "ToolTip": "C:\\Users\\adria\\Desktop\\Quest4Deals\\quest4dealsweb.Server\\notifs.cs",
               "RelativeToolTip": "quest4dealsweb.Server\\notifs.cs",
-              "ViewState": "AgIAACgAAAAAAAAAAAAQwBQAAAAfAAAAAAAAAA==",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAAABYAAAAtAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-04-26T02:43:41.392Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\adria\\Desktop\\Quest4Deals\\quest4dealsweb.Server\\Program.cs",
               "RelativeDocumentMoniker": "quest4dealsweb.Server\\Program.cs",
               "ToolTip": "C:\\Users\\adria\\Desktop\\Quest4Deals\\quest4dealsweb.Server\\Program.cs",
               "RelativeToolTip": "quest4dealsweb.Server\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAlAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAnAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-04-26T02:43:06.032Z",
               "EditorCaption": ""
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
             },
             {
               "$type": "Document",
@@ -80,8 +80,7 @@
               "RelativeToolTip": "quest4dealsweb.client\\src\\styling\\Main.css",
               "ViewState": "AgIAAKYAAAAAAAAAAAAAAKYAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2025-04-24T06:28:13.611Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-04-24T06:28:13.611Z"
             },
             {
               "$type": "Document",
