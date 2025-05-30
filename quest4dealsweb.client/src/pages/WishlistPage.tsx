@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Gamecard, { Game } from '../components/Gamecard'; // Assuming Gamecard can be reused
-import Navbar from '../components/Navbar'; // You might want the Navbar here too
+// You might want the Navbar here too
 import '../styling/WishlistPage.css'; // We'll create this CSS file
 
 // Define a more specific type for watchlist items if needed, based on what /api/watchlist returns
@@ -44,12 +44,7 @@ function WishlistPage() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const navigate = useNavigate();
 
-    // Dummy state for Navbar props if you include Navbar on this page
-    const [searchQuery, setSearchQuery] = useState("");
-    const [isSearching, setIsSearching] = useState(false);
-    const handleReloadDashboard = () => { /* Dummy or implement if needed */ };
-
-
+    
     useEffect(() => {
         const user = localStorage.getItem("user") || sessionStorage.getItem("user");
         if (!user) {
