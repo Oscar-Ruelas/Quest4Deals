@@ -91,6 +91,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<PriceHistoryService>();
 builder.Services.AddScoped<quest4dealsweb.Server.Services.PriceHistoryService>();
+builder.Services.AddScoped<NotificationService>();
 
 var app = builder.Build();
 

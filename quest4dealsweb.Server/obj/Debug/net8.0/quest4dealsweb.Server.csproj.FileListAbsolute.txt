@@ -774,3 +774,17 @@ C:/Users/ryanh/OneDrive/Desktop/current classes/senior projects/Quest4Deals/ques
 /Users/oscar/Documents/Quest4Deals/quest4dealsweb.Server/bin/Debug/net8.0/AWSSDK.SimpleEmail.dll
 /Users/oscar/Documents/Quest4Deals/quest4dealsweb.Server/bin/Debug/net8.0/publish/appsettings.Development.json
 /Users/oscar/Documents/Quest4Deals/quest4dealsweb.Server/bin/Debug/net8.0/publish/appsettings.json
+C:/Users/adria/Desktop/Quest4Deals/quest4dealsweb.Server/bin/Debug/net8.0/EmailAssets/logo.png
+C:/Users/adria/Desktop/Quest4Deals/quest4dealsweb.Server/bin/Debug/net8.0/AWSSDK.Core.dll
+C:/Users/adria/Desktop/Quest4Deals/quest4dealsweb.Server/bin/Debug/net8.0/AWSSDK.SimpleEmail.dll
+C:/Users/adria/Desktop/Quest4Deals/quest4dealsweb.Server/bin/Debug/net8.0/BouncyCastle.Cryptography.dll
+C:/Users/adria/Desktop/Quest4Deals/quest4dealsweb.Server/bin/Debug/net8.0/MailKit.dll
+C:/Users/adria/Desktop/Quest4Deals/quest4dealsweb.Server/bin/Debug/net8.0/MimeKit.dll
+C:/Users/adria/Desktop/Quest4Deals/quest4dealsweb.Server/bin/Debug/net8.0/System.Security.Cryptography.Pkcs.dll
+C:/Users/adria/Desktop/Quest4Deals/quest4dealsweb.Server/bin/Debug/net8.0/runtimes/win/lib/net8.0/System.Security.Cryptography.Pkcs.dll
+/Users/oscar/Documents/Quest4Deals/quest4dealsweb.Server/bin/Debug/net8.0/EmailAssets/logo.png
+/Users/oscar/Documents/Quest4Deals/quest4dealsweb.Server/bin/Debug/net8.0/BouncyCastle.Cryptography.dll
+/Users/oscar/Documents/Quest4Deals/quest4dealsweb.Server/bin/Debug/net8.0/MailKit.dll
+/Users/oscar/Documents/Quest4Deals/quest4dealsweb.Server/bin/Debug/net8.0/MimeKit.dll
+/Users/oscar/Documents/Quest4Deals/quest4dealsweb.Server/bin/Debug/net8.0/System.Security.Cryptography.Pkcs.dll
+/Users/oscar/Documents/Quest4Deals/quest4dealsweb.Server/bin/Debug/net8.0/runtimes/win/lib/net8.0/System.Security.Cryptography.Pkcs.dll

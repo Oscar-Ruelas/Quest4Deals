@@ -1,4 +1,4 @@
-using System.Text.Json;
+﻿using System.Text.Json;
 
 namespace quest4dealsweb.Server.Controllers;
 
@@ -10,6 +10,9 @@ using quest4dealsweb.Server.Services;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
+using quest4dealsweb.Server.models;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -17,15 +20,22 @@ public class NexardaController : ControllerBase
 {
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IMemoryCache _cache;
-    private readonly DataContext _context; // Add this
-    private readonly PriceHistoryService _priceHistoryService; // Add this
+    private readonly DataContext _context;
+    private readonly PriceHistoryService _priceHistoryService;
+    private readonly ILogger<NexardaController> _logger; // Declare the logger field
 
-    public NexardaController(IHttpClientFactory httpClientFactory, IMemoryCache cache, DataContext context, PriceHistoryService priceHistoryService)
+    public NexardaController(
+        IHttpClientFactory httpClientFactory,
+        IMemoryCache cache,
+        DataContext context,
+        PriceHistoryService priceHistoryService,
+        ILogger<NexardaController> logger)
     {
         _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         _cache = cache ?? throw new ArgumentNullException(nameof(cache));
         _context = context ?? throw new ArgumentNullException(nameof(context));
         _priceHistoryService = priceHistoryService ?? throw new ArgumentNullException(nameof(priceHistoryService));
+        _logger = logger;
     }
 
     [HttpGet("games")]
@@ -34,8 +44,9 @@ public class NexardaController : ControllerBase
         try
         {
             var cacheKey = $"games_page_{page}_limit_{limit}";
-
             if (_cache.TryGetValue(cacheKey, out string? cachedContent)) return Ok(cachedContent);
+
+            _logger.LogInformation($"Fetching games from Nexarda: page {page}, limit {limit}"); // Example logger use
 
             var client = _httpClientFactory.CreateClient("NexardaClient");
             var response = await client.GetAsync($"search?type=games&page={page}&limit={limit}");
@@ -48,10 +59,12 @@ public class NexardaController : ControllerBase
 
             return Ok(content);
         }
+        
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Error in GetGames"); // Example logger use
             return StatusCode(500, $"Internal server error: {ex.Message}");
-        }
+}
     }
 
     [HttpGet("games/filter")]
@@ -157,11 +170,10 @@ public class NexardaController : ControllerBase
         try
         {
             var cacheKey = $"product_{type}_{id}";
-
-            if (_cache.TryGetValue(cacheKey, out string? cachedContent))
+            if (_cache.TryGetValue(cacheKey, out string? cachedContent) && cachedContent != null)
             {
                 // Still try to update price history even when using cached data
-                await TryUpdatePriceHistoryFromCachedContent(cachedContent, id);
+                await TryUpdatePriceHistoryFromProductDetails(cachedContent, id);
                 return Ok(cachedContent);
             }
 
@@ -170,88 +182,134 @@ public class NexardaController : ControllerBase
             response.EnsureSuccessStatusCode();
 
             var content = await response.Content.ReadAsStringAsync();
+            await TryUpdatePriceHistoryFromProductDetails(content, id); // Update history
 
-            // Try to update the price history
-            await TryUpdatePriceHistoryFromCachedContent(content, id);
-
-            var cacheOptions = new MemoryCacheEntryOptions()
-                .SetSlidingExpiration(TimeSpan.FromMinutes(10));
+            var cacheOptions = new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMinutes(10));
             _cache.Set(cacheKey, content, cacheOptions);
 
             return Ok(content);
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, $"Error in GetProduct for id {id}");
             return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
 
-    // Add this helper method to NexardaController
-    private async Task TryUpdatePriceHistoryFromCachedContent(string content, string idString)
+    private async Task TryUpdatePriceHistoryFromPricesEndpoint(string content, string externalGameIdString)
     {
         try
         {
-            if (!int.TryParse(idString, out int gameId))
+            if (!int.TryParse(externalGameIdString, out int externalGameId))
+            {
+                _logger.LogWarning($"Invalid ExternalGameId format: {externalGameIdString}");
                 return;
+            }
 
-            // Parse the JSON content
+            // ✅ Find the game by ExternalGameId first
+            var game = await _context.Games
+                .FirstOrDefaultAsync(g => g.ExternalGameId == externalGameId);
+
+            if (game == null)
+            {
+                _logger.LogWarning($"Game with ExternalGameId {externalGameId} not found in database");
+                return;
+            }
+
+            // ✅ Parse the price from API response
+            var jsonResponse = JObject.Parse(content);
+
+            // Extract the first offer price (adjust this based on your API structure)
+            var offers = jsonResponse["data"]?["offers"];
+            if (offers == null || !offers.Any())
+            {
+                _logger.LogWarning($"No offers found for game {externalGameId}");
+                return;
+            }
+
+            // Get the first offer's price
+            var firstOffer = offers.First();
+            var priceValue = firstOffer["price"]?["amount"]?.ToObject<decimal>();
+
+            if (!priceValue.HasValue)
+            {
+                _logger.LogWarning($"No valid price found for game {externalGameId}");
+                return;
+            }
+
+            decimal currentPrice = priceValue.Value;
+
+            // ✅ Use the database Id for the foreign key and correct property name
+            var priceHistory = new GamePriceHistory
+            {
+                GameId = game.Id, // Use database Id, not ExternalGameId
+                Price = currentPrice, // Use the parsed price
+                RecordedAt = DateTime.UtcNow // Use RecordedAt, not Timestamp
+            };
+
+            _context.GamePriceHistories.Add(priceHistory);
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation($"Price history updated for game {game.Title}: ${currentPrice}");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Error updating price history for ExternalGameId: {externalGameIdString}");
+        }
+    }
+
+
+
+    // Add this helper method to NexardaController
+    private async Task TryUpdatePriceHistoryFromProductDetails(string content, string externalGameIdString)
+    {
+        try
+        {
+            if (!int.TryParse(externalGameIdString, out int externalGameId))
+            {
+                _logger.LogError($"Invalid externalGameIdString: {externalGameIdString}");
+                return;
+            }
+
             using var doc = JsonDocument.Parse(content);
             var root = doc.RootElement;
 
-            // Extract the current price from the response
+            // Default platform, can be refined if product details include it
+            string platform = "Unknown"; // You might need to determine platform more accurately
+            string gameTitle = root.TryGetProperty("title", out var titleProp) ? titleProp.GetString() ?? "Unknown Game" : "Unknown Game";
+
+            // This is from the /product endpoint. The prices are usually in a different structure
+            // Let's assume the 'lowest' price from the 'prices' object if available
             if (root.TryGetProperty("prices", out var pricesProp) &&
                 pricesProp.TryGetProperty("lowest", out var lowestPriceProp) &&
-                decimal.TryParse(lowestPriceProp.ToString(), out decimal currentPrice))
+                lowestPriceProp.TryGetDecimal(out decimal currentPrice))
             {
-                // Check if game exists in our database, if not create it
-                var game = await _context.Games.FindAsync(gameId);
-                if (game == null)
-                {
-                    // Extract game title
-                    string title = "Unknown Game";
-                    if (root.TryGetProperty("title", out var titleProp))
-                    {
-                        title = titleProp.GetString() ?? title;
-                    }
-
-                    string genre = "Not Specified";
-                    if (root.TryGetProperty("genre", out var genreProp))
-                    {
-                        genre = genreProp.GetString() ?? genre;
-                    }
-
-                    game = new Game
-                    {
-                        Id = gameId,
-                        Title = title,
-                        Genre = genre,
-                        Price = currentPrice,
-                        UserId = "system", // Default user ID for system-created entries
-                        Platform = "Unknown" // Default platform
-                    };
-
-                    _context.Games.Add(game);
-                    await _context.SaveChangesAsync();
-                }
-                else
-                {
-                    // Update the current price in the Games table if it's different
-                    if (game.Price != currentPrice)
-                    {
-                        game.Price = currentPrice;
-                        _context.Games.Update(game);
-                        await _context.SaveChangesAsync();
-                    }
-                }
-
-                // Update price history
-                await _priceHistoryService.CheckAndUpdatePriceHistory(gameId, currentPrice);
+                _logger.LogInformation($"Attempting to update price history for {gameTitle} (ID: {externalGameId}) from product details. New lowest price: {currentPrice}");
+                // We need to determine the platform for this price.
+                // The /product endpoint doesn't seem to specify platform for the lowest price directly.
+                // This is a simplification. You might need to iterate offers if platform matters here.
+                await _priceHistoryService.CheckAndUpdatePriceHistory(externalGameId, gameTitle, currentPrice, platform);
+            }
+            else if (root.TryGetProperty("game_info", out var gameInfo) &&
+                     gameInfo.TryGetProperty("lowest_price", out var lowestPriceGameInfo) &&
+                     lowestPriceGameInfo.TryGetDecimal(out decimal currentPriceFromGameInfo))
+            {
+                _logger.LogInformation($"Attempting to update price history for {gameTitle} (ID: {externalGameId}) from game_info. New lowest price: {currentPriceFromGameInfo}");
+                // This is often from search results. Platform might be more available here or needs to be assumed.
+                await _priceHistoryService.CheckAndUpdatePriceHistory(externalGameId, gameTitle, currentPriceFromGameInfo, platform);
+            }
+            else
+            {
+                _logger.LogWarning($"Could not extract current price for ExternalGameId: {externalGameId} from product details content.");
             }
         }
-        catch (Exception)
+        catch (JsonException jsonEx)
         {
-            // Log the error but don't fail the request
-            // This is a background task that shouldn't affect the main API response
+            _logger.LogError(jsonEx, $"JSON parsing error in TryUpdatePriceHistoryFromProductDetails for ExternalGameId: {externalGameIdString}. Content: {content.Substring(0, Math.Min(content.Length, 500))}");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Error in TryUpdatePriceHistoryFromProductDetails for ExternalGameId: {externalGameIdString}");
         }
     }
 
@@ -344,14 +402,19 @@ public class NexardaController : ControllerBase
         try
         {
             var cacheKey = $"prices_{type}_{id}_{currency}";
-
-            if (_cache.TryGetValue(cacheKey, out string? cachedContent)) return Ok(cachedContent);
+            if (_cache.TryGetValue(cacheKey, out string? cachedContent) && cachedContent != null)
+            {
+                await TryUpdatePriceHistoryFromPricesEndpoint(cachedContent, id); // Update from cache
+                return Ok(cachedContent);
+            }
 
             var client = _httpClientFactory.CreateClient("NexardaClient");
             var response = await client.GetAsync($"prices?type={type}&id={id}&currency={currency}");
             response.EnsureSuccessStatusCode();
-
             var content = await response.Content.ReadAsStringAsync();
+
+            await TryUpdatePriceHistoryFromPricesEndpoint(content, id); // Update from live call
+
 
             // Deserialize response into dynamic object
             using var doc = JsonDocument.Parse(content);
@@ -395,12 +458,13 @@ public class NexardaController : ControllerBase
             });
 
             var cacheOptions = new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMinutes(5));
-            _cache.Set(cacheKey, filteredJson, cacheOptions);
+            _cache.Set(cacheKey, content, cacheOptions); // Cache the original, unfiltered content from Nexarda, or the filtered one
 
-            return Ok(filteredJson);
+            return Ok(content); // Or return your filteredJson
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, $"Error in GetProductPrices for id {id}");
             return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
