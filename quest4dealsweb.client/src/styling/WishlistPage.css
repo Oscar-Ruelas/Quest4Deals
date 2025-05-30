@@ -1,0 +1,77 @@
+/* src/styling/WishlistPage.css */
+.wishlist-container {
+    padding: 20px;
+    color: white; /* Assuming a dark theme from Main.css */
+}
+
+.wishlist-title {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2.5em;
+    color: var(--highlight-color, #f79256); /* Use highlight color if defined */
+}
+
+.wishlist-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Spacing between game cards */
+    justify-content: center; /* Center cards if they don't fill the row */
+}
+
+    /* Make Gamecard fit well within the grid if needed */
+    .wishlist-grid .gamecard {
+        /* You might not need specific overrides if Gamecard is already responsive */
+        /* Example: width: calc(25% - 20px); for a 4-column layout with 20px gap */
+    }
+
+.error-message {
+    color: #ff6b6b; /* A distinct error color */
+    text-align: center;
+    font-size: 1.1em;
+}
+
+.back-to-home-button {
+    display: block;
+    margin: 30px auto 10px; /* Center button */
+    padding: 12px 25px;
+    background-color: var(--secondary-color, #4472ca);
+    color: white;
+    border: 2px solid white;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+    .back-to-home-button:hover {
+        background-color: white;
+        color: var(--secondary-color, #4472ca);
+    }
+
+
+/* If you use the layout with Navbar and .wishlist-content-area */
+.wishlist-content-area {
+    grid-column: 1 / -1; /* Span all columns if using App's grid */
+    /* Or if Filter is present: grid-column: 2 / -1; */
+    grid-row: 2 / -1;
+    padding: 20px;
+    /* background-color: var(--primary-color); /* Optional: if you want a distinct background */
+}
+
+/* Placeholder image styling - if you use a placeholder */
+.gamecard img[src$="/placeholder.jpg"] {
+    filter: grayscale(1);
+    opacity: 0.7;
+    /* Add a background pattern or color to make it look like a placeholder */
+    background-color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 0.8em;
+    color: #777;
+}
+
+    .gamecard img[src$="/placeholder.jpg"]::after {
+        content: "Image Not Available"; /* Text for placeholder */
+    }

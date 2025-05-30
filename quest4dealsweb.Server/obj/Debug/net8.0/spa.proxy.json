@@ -3,7 +3,7 @@
 "ServerUrl": "https://localhost:51540",
 "RedirectUrl": "",
 "LaunchCommand": "npm run dev",
-"WorkingDirectory": "C:\\Users\\oscar\\Documents\\GitHub\\Quest4Deals\\quest4dealsweb.Server\\..\\quest4dealsweb.client",
+"WorkingDirectory": "/Users/oscar/Documents/Quest4Deals/quest4dealsweb.Server/../quest4dealsweb.client",
 "MaxTimeoutInSeconds": "120",
 "KeepRunning": "false"
 }

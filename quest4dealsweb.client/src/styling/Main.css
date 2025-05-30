@@ -1,0 +1,213 @@
+/* This makes these colors accessible across the entire project, so we can define a color theme here and use them in styling components */
+:root {
+  --primary-color: #1f2937; /* lighter black with transparency */
+  --secondary-color: #2d3748;
+  --highlight-color: #f79256;
+}
+
+html,
+body {
+  background-color: #0a0a0a; /* rich black */
+  font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.main-content {
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  background-color: var(--primary-color); /* semi-transparent glassy black */
+  border-radius: 12px;
+  padding: 20px;
+  margin: 10px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.App {
+  display: grid;
+  grid-template-columns: 200px 1fr 1fr 1fr;
+  grid-template-rows: 50px 1fr 1fr 1fr;
+
+  background-color: var(--primary-color); /* lighter black glass */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  padding: 10px;
+  margin: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  grid-row: 1;
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  background-color: var(--secondary-color);
+  font-size: 1.5em;
+  border-radius: 10px;
+  margin: 5px;
+}
+
+.navbar a {
+  color: white;
+  text-decoration: none;
+}
+
+.navbar a:hover {
+  text-decoration: underline;
+}
+
+.navbar input {
+  width: 400px;
+  height: 30px;
+  border-radius: 5px;
+  border: 1px solid black;
+}
+
+.navbar img {
+  width: 150px;
+  height: auto;
+  border-radius: 10px;
+}
+
+/* ✅ UPDATED FILTER SECTION BELOW */
+.filter {
+  position: sticky;
+  top: 60px;
+  align-self: start;
+  z-index: 100;
+  grid-column: 1;
+  grid-row: 2 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--secondary-color);
+  color: var(--highlight-color);
+  font-size: 1.5em;
+  border-radius: 10px;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.filter select,
+.filter button,
+.navbar button {
+  background-color: var(--secondary-color);
+  color: white;
+  border: 2px solid white;
+  border-radius: 5px;
+  width: 150px;
+  height: 30px;
+  margin: 10px;
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+.filter button:hover,
+.navbar button:hover {
+  background-color: var(--highlight-color);
+  color: white;
+  transition: 0.1s;
+  cursor: pointer;
+}
+
+.filter button:active {
+  background-color: var(--primary-color);
+}
+/* ✅ END FILTER SECTION */
+
+.dashboard {
+  grid-column: 2 / -1;
+  grid-row: 2 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px;
+  justify-content: flex-start;
+}
+
+.gamecard {
+  border: 1px solid black;
+  width: 300px;
+  margin: 2px;
+  justify-content: space-around;
+  background-color: var(--secondary-color);
+  color: white;
+  border-radius: 10px;
+  padding: 5px;
+}
+
+.gamecard img {
+  width: 100%;
+  height: 50%;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.gamecard h2 {
+  font-size: 1.5em;
+  margin: 0;
+}
+
+.game-info p,
+.game-info .age-rating {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.lowest-price {
+  font-weight: bold;
+}
+
+@media screen and (max-width: 1024px) {
+  .navbar img {
+    width: 100px;
+    height: auto;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .App {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .navbar {
+    flex-direction: column;
+    align-items: center;
+    position: static;
+  }
+
+  .gamecard {
+    width: 100%;
+  }
+
+  .navbar input {
+    width: 80%;
+    margin: 10px 0;
+  }
+
+  .navbar img {
+    width: 100px;
+    height: auto;
+    order: -1;
+    margin-top: 5px;
+  }
+
+  .filter {
+    margin-top: 10px;
+    width: 100%;
+    position: static;
+  }
+
+  .dashboard {
+    grid-column: 1 / -1;
+    grid-row: auto;
+  }
+}

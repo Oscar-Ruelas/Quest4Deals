@@ -1,0 +1,282 @@
+.watchlist-container {
+    padding: 2rem;
+    background-color: var(--primary-color);
+    min-height: 100vh;
+    color: #f8fafc;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.watchlist-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    text-align: center;
+    color: #ffffff;
+}
+
+.watchlist-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); /* Adjusted min-width for more content */
+    gap: 1.5rem;
+}
+
+.watchlist-card {
+    background-color: var(--secondary-color);
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+}
+
+    .watchlist-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+    }
+
+/* Placeholder for when image is actively loading (div version) */
+.image-placeholder-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 200px; /* Match expected image height */
+    background-color: #2a2a2a;
+    color: #777;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-style: italic;
+    text-align: center;
+    border: 1px solid #444;
+}
+
+.watchlist-game-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #f1f5f9;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.watchlist-game-meta {
+    font-size: 0.95rem;
+    color: #cbd5e1;
+    margin-bottom: 0.5rem;
+}
+
+.watchlist-card-settings {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #4a5568;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+    .watchlist-card-settings h4 {
+        font-size: 1rem;
+        font-weight: 500;
+        color: #e2e8f0;
+        margin-bottom: 0.5rem;
+    }
+
+    .watchlist-card-settings .notification-label,
+    .watchlist-card-settings .notification-type-selector label,
+    .watchlist-card-settings .price-threshold-input label {
+        color: #cbd5e1;
+        font-size: 0.9rem;
+    }
+
+    .watchlist-card-settings .notification-text {
+        vertical-align: middle;
+    }
+
+    .watchlist-card-settings select,
+    .watchlist-card-settings input[type="number"],
+    .watchlist-card-settings input[type="checkbox"] {
+        padding: 8px;
+        border-radius: 4px;
+        border: 1px solid #4a5568;
+        background-color: #1a202c;
+        color: #e2e8f0;
+        font-size: 0.9rem;
+    }
+
+    .watchlist-card-settings input[type="checkbox"] {
+        margin-right: 8px;
+        vertical-align: middle;
+    }
+
+    .watchlist-card-settings .notification-type-selector,
+    .watchlist-card-settings .price-threshold-input {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .watchlist-card-settings .notification-type-selector select,
+        .watchlist-card-settings .price-threshold-input input[type="number"] {
+            flex-grow: 1;
+        }
+
+
+.watchlist-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+    gap: 10px;
+}
+
+
+.save-settings-button {
+    background-color: #3b82f6;
+    color: white;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+    flex-grow: 1;
+}
+
+    .save-settings-button:hover:not(:disabled) {
+        background-color: #2563eb;
+    }
+
+    .save-settings-button:disabled {
+        background-color: #4b5563;
+        cursor: not-allowed;
+        opacity: 0.7;
+    }
+
+
+.remove-button {
+    background-color: #ef4444;
+    color: white;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+    flex-grow: 1;
+}
+
+    .remove-button:hover:not(:disabled) {
+        background-color: #dc2626;
+    }
+
+    .remove-button:disabled {
+        background-color: #4b5563;
+        cursor: not-allowed;
+        opacity: 0.7;
+    }
+
+
+.watchlist-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh;
+    text-align: center;
+    color: #94a3b8;
+    font-size: 1.2rem;
+}
+
+    .watchlist-loading::before {
+        content: '';
+        display: block;
+        width: 40px;
+        height: 40px;
+        margin-bottom: 20px;
+        border: 4px solid #3b82f6;
+        border-top-color: transparent;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+.watchlist-empty.styled-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 3rem 2rem;
+    margin: 3rem auto;
+    max-width: 600px;
+    background-color: var(--secondary-color);
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+    color: #e2e8f0;
+}
+
+    .watchlist-empty.styled-empty .empty-icon {
+        font-size: 4.5rem;
+        margin-bottom: 1.5rem;
+        color: var(--highlight-color);
+    }
+
+    .watchlist-empty.styled-empty h2 {
+        font-size: 2rem;
+        color: #ffffff;
+        margin-bottom: 1rem;
+    }
+
+    .watchlist-empty.styled-empty p {
+        font-size: 1.05rem;
+        color: #cbd5e1;
+        line-height: 1.7;
+        margin-bottom: 2rem;
+    }
+
+    .watchlist-empty.styled-empty .back-button {
+        font-size: 1rem;
+        padding: 12px 30px;
+        background-color: var(--highlight-color);
+        color: var(--primary-color);
+        border: none;
+        font-weight: 600;
+    }
+
+        .watchlist-empty.styled-empty .back-button:hover {
+            background-color: #e67e22;
+        }
+
+
+.item-error-message {
+    color: #f87171;
+    background-color: rgba(255, 0, 0, 0.1);
+    padding: 8px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    margin-top: 8px;
+    text-align: center;
+}
+
+.toggle-switch {
+    display: none;
+}
+
+.watchlist-card.loading-item {
+    opacity: 0.8;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}

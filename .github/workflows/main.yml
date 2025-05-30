@@ -3,10 +3,10 @@ name: CI Pipeline
 on:
   push:
     branches:
-      - main
+      - Develop
   pull_request:
     branches:
-      - main
+      - Develop
 
 jobs:
   backend:
@@ -44,6 +44,7 @@ jobs:
       - name: Install Frontend Dependencies
         run: |
           cd quest4dealsweb.client
+          npm install react-chartjs-2 chart.js
           npm install
 
       - name: Build Frontend

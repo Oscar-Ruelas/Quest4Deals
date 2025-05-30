@@ -1,58 +1,104 @@
-import { useEffect, useState } from 'react';
-import './App.css';
+// src/App.tsx
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
 
-interface Forecast {
-    date: string;
-    temperatureC: number;
-    temperatureF: number;
-    summary: string;
+import Navbar from "./components/Navbar";
+import Filter from "./components/Filter";
+import Dashboard from "./components/Dashboard";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import EditProfilePage from "./pages/EditProfile";
+import GameDetails from "./components/GameDetails";
+import WishlistPage from "./pages/WishlistPage";
+import WatchlistContentPage from "./pages/WatchlistContentPage";
+import VerifyEmail from "./pages/VerifyEmail";
+import ResetPassword from "./pages/ResetPassword";
+
+import "./styling/Main.css";
+import { useState } from "react";
+
+function AppRoutes() {
+  const location = useLocation();
+  const state = location.state as { backgroundLocation?: Location };
+
+  const [filters, setFilters] = useState({
+    platform: "all",
+    genre: "Genre",
+    price: "PriceOrder",
+  });
+  const [isFiltered, setIsFiltered] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
+
+  const handleReloadDashboard = () => {
+    setReloadKey((prev) => prev + 1);
+  };
+
+  return (
+    <>
+      {/* Main (or “background”) routes */}
+      <Routes location={state?.backgroundLocation || location}>
+        <Route
+          path="/"
+          element={
+            <div className="App">
+              <Navbar
+                setSearchQuery={setSearchQuery}
+                setIsSearching={setIsSearching}
+                onReload={handleReloadDashboard}
+              />
+              <Filter
+                filters={filters}
+                setFilters={setFilters}
+                setIsFiltered={setIsFiltered}
+                onReload={handleReloadDashboard}
+              />
+              <Dashboard
+                isFiltered={isFiltered}
+                filters={filters}
+                key={reloadKey}
+                isSearching={isSearching}
+                searchQuery={searchQuery}
+              />
+            </div>
+          }
+        />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/edit-profile/:userId" element={<EditProfilePage />} />
+        <Route path="/wishlist" element={<WishlistPage />} />
+        <Route path="/watchlist" element={<WatchlistContentPage />} />
+        <Route path="/verify-email" element={<VerifyEmail />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        {/* Fallback if user visits details directly */}
+        <Route
+          path="/details/:id/:title"
+          element={<GameDetails isModal={false} />}
+        />
+      </Routes>
+
+      {/* Modal route for details when navigated from within the app */}
+      {state?.backgroundLocation && (
+        <Routes>
+          <Route
+            path="/details/:id/:title"
+            element={<GameDetails isModal />}
+          />
+        </Routes>
+      )}
+    </>
+  );
 }
 
-function App() {
-    const [forecasts, setForecasts] = useState<Forecast[]>();
-
-    useEffect(() => {
-        populateWeatherData();
-    }, []);
-
-    const contents = forecasts === undefined
-        ? <p><em>Loading... Please refresh once the ASP.NET backend has started. See <a href="https://aka.ms/jspsintegrationreact">https://aka.ms/jspsintegrationreact</a> for more details.</em></p>
-        : <table className="table table-striped" aria-labelledby="tableLabel">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Temp. (C)</th>
-                    <th>Temp. (F)</th>
-                    <th>Summary</th>
-                </tr>
-            </thead>
-            <tbody>
-                {forecasts.map(forecast =>
-                    <tr key={forecast.date}>
-                        <td>{forecast.date}</td>
-                        <td>{forecast.temperatureC}</td>
-                        <td>{forecast.temperatureF}</td>
-                        <td>{forecast.summary}</td>
-                    </tr>
-                )}
-            </tbody>
-        </table>;
-
-    return (
-        <div>
-            <h1 id="tableLabel">Weather forecast</h1>
-            <p>This component demonstrates fetching data from the server.</p>
-            {contents}
-        </div>
-    );
-
-    async function populateWeatherData() {
-        const response = await fetch('weatherforecast');
-        if (response.ok) {
-            const data = await response.json();
-            setForecasts(data);
-        }
-    }
+export default function App() {
+  return (
+    <Router>
+      <AppRoutes />
+    </Router>
+  );
 }
-
-export default App;

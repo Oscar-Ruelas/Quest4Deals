@@ -1,0 +1,122 @@
+﻿/* src/styling/WatchlistButton.css */
+.watchlist-button-container {
+    display: flex; /* Changed to flex for better layout */
+    flex-direction: column;
+    gap: 15px; /* Spacing between elements */
+    padding: 10px;
+    border: 1px solid #444;
+    border-radius: 8px;
+    background-color: #2d3748; /* Darker background for the container */
+    max-width: 400px; /* Or your preferred width */
+    margin-top: 10px;
+}
+
+.platform-selector, .notification-settings {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+    .platform-selector label,
+    .notification-settings label,
+    .notification-settings h4 {
+        margin-right: 8px;
+        color: #e2e8f0; /* Light text color */
+    }
+
+    .platform-select,
+    .notification-settings select,
+    .notification-settings input[type="number"],
+    .notification-settings input[type="checkbox"] {
+        padding: 8px;
+        border-radius: 4px;
+        border: 1px solid #4a5568; /* Slightly lighter border */
+        background-color: #1a202c; /* Dark input background */
+        color: #e2e8f0; /* Light text for input */
+        font-size: 0.9rem;
+    }
+
+    .notification-settings input[type="checkbox"] {
+        margin-right: 5px;
+        vertical-align: middle;
+    }
+
+.notification-text, .notification-label {
+    vertical-align: middle;
+    color: #e2e8f0;
+}
+
+
+.watchlist-button, .save-settings-button {
+    padding: 10px 15px; /* Consistent padding */
+    border-radius: 6px; /* Slightly more rounded */
+    border: none; /* Remove border, rely on background */
+    background-color: #3b82f6; /* Primary button blue */
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    font-size: 0.95rem; /* Slightly larger font */
+    font-weight: 500;
+    text-align: center;
+}
+
+    .watchlist-button.in-watchlist {
+        background-color: #10b981; /* Green when in watchlist */
+    }
+
+    .watchlist-button:hover:not(:disabled),
+    .save-settings-button:hover:not(:disabled) {
+        background-color: #2563eb; /* Darker blue on hover */
+    }
+
+    .watchlist-button.in-watchlist:hover:not(:disabled) {
+        background-color: #059669; /* Darker green on hover */
+    }
+
+    .watchlist-button:disabled,
+    .save-settings-button:disabled {
+        background-color: #4b5563; /* Grey out when disabled */
+        cursor: not-allowed;
+        opacity: 0.7;
+    }
+
+.error-message { /* Ensure this is styled from your main CSS or here */
+    color: #f87171; /* Red for errors */
+    font-size: 0.85rem;
+    margin-top: 8px;
+    background-color: #450a0a;
+    padding: 5px;
+    border-radius: 3px;
+}
+
+.info-message {
+    color: #60a5fa; /* Light blue for info */
+    font-size: 0.9rem;
+}
+
+.loading-spinner::after {
+    content: ' Loading...'; /* More descriptive loading text */
+    display: inline-block;
+    animation: spin 1s infinite linear; /* if you have a spin animation */
+}
+
+/* Optional: Style for the settings section */
+.notification-settings {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #4a5568; /* Separator line */
+}
+
+    .notification-settings h4 {
+        margin-bottom: 10px;
+        font-size: 1.1em;
+        color: #cbd5e1;
+    }
+
+.notification-toggle, .notification-type-selector, .price-threshold-input {
+    margin-bottom: 10px;
+    display: flex; /* Align label and input nicely */
+    align-items: center;
+    gap: 8px;
+}
