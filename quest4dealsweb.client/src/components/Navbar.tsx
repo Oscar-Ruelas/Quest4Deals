@@ -66,59 +66,72 @@ const Navbar = ({ setIsSearching, setSearchQuery, onReload }: NavbarProps) => {
     }
   };
 
-  return (
-      <div className="navbar">
-        <input
-            type="search"
-            placeholder="Search Games"
-            className="search-bar"
-            value={localQuery}
-            onChange={(e) => setLocalQuery(e.target.value)}
-            onKeyDown={handleKeyDown}
-        />
-        <button type="submit" onClick={handleSearchButton}>
-          Search
-        </button>
-        <button onClick={handleClearSearchButton}>Clear Search</button>
-        <img
-            src="/logo.png"
-            alt="Quest4Deals Logo"
-            className="logo"
-            onClick={scrollToTop}
-            onTouchStart={scrollToTop}
-        />
+    return (
+        <div className="navbar">
+            {/* Search Bar and Buttons */}
+            <input
+                type="search"
+                placeholder="Search Games"
+                className="search-bar"
+                value={localQuery}
+                onChange={(e) => setLocalQuery(e.target.value)}
+                onKeyDown={handleKeyDown}
+            />
+            <button type="submit" onClick={handleSearchButton}>
+                Search
+            </button>
+            <button onClick={handleClearSearchButton}>Clear Search</button>
 
-        {user ? (
-            <div className="user-menu">
-              <button onClick={() => setMenuOpen(!menuOpen)} className="user-btn">
-                {user.userName} ⌄
-              </button>
+            {/* Logo */}
+            <img
+                src="/logo.png"
+                alt="Quest4Deals Logo"
+                className="logo"
+                onClick={scrollToTop}
+                onTouchStart={scrollToTop}
+            />
 
-              {menuOpen && (
-                  <div className="dropdown-menu">
-                    <Link to="/watchlist" className="dropdown-item">
-                      View Watchlist
-                    </Link>
-                    <Link to={`/edit-profile/${user?.id}`} className="dropdown-item">
-                      Edit Profile
-                    </Link>
-                    <button
-                        onClick={handleLogout}
-                        className="dropdown-item logout-btn"
-                        id="logout-btn"
-                    >
-                      Logout
-                    </button>
-                  </div>
-              )}
-            </div>
-        ) : (
-            <Link to="/login" className="sign-in">
-              Sign In
+            {/* Budget Calculator Link - Placed near logo or other general links */}
+            <Link to="/budget-calculator" className="navbar-link-button"> {/* Added a class for potential styling */}
+                Budget Calculator
             </Link>
-        )}
-      </div>
-  );
+
+            {/* User Menu or Sign In */}
+            {user ? (
+                <div className="user-menu">
+                    <button onClick={() => setMenuOpen(!menuOpen)} className="user-btn">
+                        {user.userName} ⌄
+                    </button>
+
+                    {menuOpen && (
+                        <div className="dropdown-menu">
+                            <Link to="/watchlist" className="dropdown-item">
+                                View Watchlist
+                            </Link>
+                            {/* Link to Budget Calculator can also be here if preferred */}
+                            {/* <Link to="/budget-calculator" className="dropdown-item">
+                      Budget Calculator
+                    </Link> */}
+                            <Link to={`/edit-profile/${user?.id}`} className="dropdown-item">
+                                Edit Profile
+                            </Link>
+                            <button
+                                onClick={handleLogout}
+                                className="dropdown-item logout-btn"
+                                id="logout-btn"
+                            >
+                                Logout
+                            </button>
+                        </div>
+                    )}
+                </div>
+            ) : (
+                <Link to="/login" className="sign-in">
+                    Sign In
+                </Link>
+            )}
+        </div>
+    );
 };
 
 export default Navbar;

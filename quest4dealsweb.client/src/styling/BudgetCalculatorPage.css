@@ -1,0 +1,361 @@
+.budget-calculator-page {
+    padding: 2rem;
+    color: #f8fafc; /* Light text color, consistent with WatchlistPage */
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    max-width: 900px;
+    margin: 20px auto; /* Centered with some margin */
+    background-color: var(--primary-color); /* From Main.css */
+    border-radius: 12px; /* From Main.css */
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); /* From Main.css */
+}
+
+.budget-calculator-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 2.5rem;
+    text-align: center;
+    color: var(--highlight-color); /* Use highlight color for title */
+}
+
+.calculator-section {
+    background-color: var(--secondary-color); /* Slightly lighter dark shade for sections */
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+    .calculator-section h2 {
+        font-size: 1.6rem;
+        font-weight: 600;
+        color: #e2e8f0; /* Lighter text for section titles */
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #4a5568; /* Subtle separator */
+    }
+
+.input-group {
+    margin-bottom: 1.2rem;
+    display: flex;
+    flex-direction: column;
+}
+
+    .input-group label {
+        font-size: 0.95rem;
+        color: #cbd5e1; /* Text color for labels */
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+    }
+
+    .input-group input[type="text"],
+    .input-group input[type="number"] {
+        padding: 0.75rem;
+        border-radius: 6px;
+        border: 1px solid #4a5568; /* Border color for inputs */
+        background-color: #1a202c; /* Dark background for inputs */
+        color: #e2e8f0; /* Text color inside inputs */
+        font-size: 1rem;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .input-group input[type="number"] {
+        appearance: textfield; /* Remove spinners from number inputs in some browsers */
+    }
+
+.add-game-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem; /* Reduced gap for form elements that are grouped */
+}
+
+    .add-game-form .input-group {
+        margin-bottom: 0.8rem; /* Slightly less margin within the form */
+    }
+
+.calc-button {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+    background-color: var(--highlight-color);
+    color: var(--primary-color); /* Dark text on highlight button */
+    border: none;
+    text-align: center;
+}
+
+    .calc-button.link-button {
+        text-decoration: none;
+        display: inline-block;
+        background-color: var(--secondary-color);
+        color: white;
+        border: 2px solid white;
+    }
+
+
+    .calc-button:hover {
+        opacity: 0.9;
+    }
+
+    .calc-button.link-button:hover {
+        background-color: white;
+        color: var(--secondary-color);
+    }
+
+
+.games-list {
+    list-style: none;
+    padding: 0;
+}
+
+.game-item {
+    background-color: #2d3748; /* Darker item background */
+    padding: 0.8rem 1rem;
+    border-radius: 6px;
+    margin-bottom: 0.8rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.95rem;
+    color: #e2e8f0;
+}
+
+.remove-game-btn {
+    background-color: #ef4444; /* Red for remove */
+    color: white;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+    .remove-game-btn:hover {
+        background-color: #dc2626; /* Darker red on hover */
+    }
+
+.info-text {
+    font-size: 0.85rem;
+    color: #94a3b8; /* Muted color for informational text */
+    margin-top: 0.5rem;
+    line-height: 1.5;
+}
+
+.summary-section {
+    margin-top: 2rem;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.8rem 0;
+    font-size: 1.05rem;
+    color: #e2e8f0;
+}
+
+    .summary-item span:first-child {
+        font-weight: 500;
+        color: #cbd5e1;
+    }
+
+    .summary-item.total-cost span {
+        font-weight: bold;
+        font-size: 1.2rem;
+        color: var(--highlight-color);
+    }
+
+.summary-divider {
+    border: none;
+    border-top: 1px solid #4a5568;
+    margin: 1rem 0;
+}
+
+.remaining-budget.positive span:last-child {
+    color: #4ade80; /* Green for positive balance */
+    font-weight: bold;
+}
+
+.remaining-budget.negative span:last-child {
+    color: #f87171; /* Red for negative balance */
+    font-weight: bold;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .budget-calculator-page {
+        padding: 1rem;
+        margin: 10px;
+    }
+
+    .budget-calculator-title {
+        font-size: 1.8rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .calculator-section h2 {
+        font-size: 1.3rem;
+    }
+
+    .input-group input[type="text"],
+    .input-group input[type="number"],
+    .calc-button {
+        font-size: 0.9rem;
+    }
+}
+
+.game-search-group {
+    position: relative; /* For positioning the dropdown */
+}
+
+.suggestions-dropdown {
+    position: absolute;
+    top: 100%; /* Position below the input group's "Game Title" input */
+    left: 0;
+    right: 0;
+    background-color: #374151; /* Slightly different background for dropdown */
+    border: 1px solid #4a5568;
+    border-top: none;
+    border-radius: 0 0 6px 6px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    z-index: 1000; /* Ensure it's above other elements */
+    max-height: 250px;
+    overflow-y: auto;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.suggestion-item {
+    padding: 0.8rem 1rem;
+    color: #e2e8f0;
+    cursor: pointer;
+    font-size: 0.9rem;
+    border-bottom: 1px solid #4a5568;
+}
+
+    .suggestion-item:last-child {
+        border-bottom: none;
+    }
+
+    .suggestion-item:hover {
+        background-color: #4b5563; /* Hover effect */
+    }
+
+    .suggestion-item.loading-item,
+    .suggestion-item.no-results-item {
+        font-style: italic;
+        color: #94a3b8;
+        cursor: default;
+        padding: 0.8rem 1rem; /* Ensure padding consistency */
+    }
+
+        .suggestion-item.no-results-item:hover {
+            background-color: transparent; /* No hover for no-results/loading */
+        }
+
+.input-group input[type="text"],
+.input-group input[type="number"],
+.input-group select.platform-select-box { /* Added select styling here */
+    padding: 0.75rem;
+    border-radius: 6px;
+    border: 1px solid #4a5568;
+    background-color: #1a202c;
+    color: #e2e8f0;
+    font-size: 1rem;
+    width: 100%;
+    box-sizing: border-box;
+    appearance: none;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23CBD5E1%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: .65em auto;
+    padding-right: 2.5rem; /* Make room for arrow */
+}
+
+    .input-group select.platform-select-box:disabled {
+        opacity: 0.7;
+        background-color: #2d3748; /* Darker when disabled */
+    }
+
+.price-display {
+    padding: 0.75rem;
+    border-radius: 6px;
+    background-color: #1f2937; /* Darker background for display only, matching input */
+    color: #e2e8f0;
+    font-size: 1rem;
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #4a5568;
+    min-height: calc(1.5em + 1.5rem + 2px); /* Try to match input height */
+    display: flex;
+    align-items: center;
+}
+
+.platform-loading-display {
+    padding: 0.75rem;
+    border-radius: 6px;
+    background-color: #1f2937;
+    color: #94a3b8; /* Muted text for loading */
+    font-size: 1rem;
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #4a5568;
+    min-height: calc(1.5em + 1.5rem + 2px);
+    display: flex;
+    align-items: center;
+    font-style: italic;
+}
+
+/* Suggestions Dropdown (ensure these are robust) */
+.game-search-group {
+    position: relative;
+}
+
+.suggestions-dropdown {
+    position: absolute;
+    top: calc(100% - 1px);
+    left: 0;
+    right: 0;
+    background-color: #374151;
+    border: 1px solid #4a5568;
+    border-top: none;
+    border-radius: 0 0 6px 6px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    z-index: 1000;
+    max-height: 250px;
+    overflow-y: auto;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.suggestion-item {
+    padding: 0.8rem 1rem;
+    color: #e2e8f0;
+    cursor: pointer;
+    font-size: 0.9rem;
+    border-bottom: 1px solid #4a5568;
+}
+
+    .suggestion-item:last-child {
+        border-bottom: none;
+    }
+
+    .suggestion-item:hover {
+        background-color: #4b5563;
+    }
+
+    .suggestion-item.loading-item,
+    .suggestion-item.no-results-item {
+        font-style: italic;
+        color: #94a3b8;
+        cursor: default;
+    }
+
+        .suggestion-item.loading-item:hover,
+        .suggestion-item.no-results-item:hover {
+            background-color: transparent;
+        }
