@@ -1,5 +1,5 @@
 ﻿// src/pages/BudgetCalculatorPage.tsx
-import { useState, useMemo, FormEvent, useEffect, useCallback } from "react";
+import { useState, useMemo, FormEvent, useEffect, useCallback, useRef } from "react";
 import { Link } from "react-router-dom";
 import "../styling/BudgetCalculatorPage.css";
 import { Game } from "../components/Gamecard";
@@ -20,12 +20,10 @@ interface PlatformPriceOption {
 
 interface NexardaPriceOffer {
     store: { name: string; image: string; };
-    edition: string;
     edition_full?: string;
     price: number;
     platform?: { slug: string; name: string; };
     available: boolean;
-    url: string;
 }
 
 interface NexardaPricesResponse {
@@ -36,19 +34,21 @@ interface NexardaPricesResponse {
 
 // --- Platform Normalization Logic (Crucial for fixing the bug) ---
 const normalizePlatformName = (offer: NexardaPriceOffer): string => {
+    // 1. Prioritize platform.name, then platform.slug
     let platformName = offer.platform?.name || offer.platform?.slug || "";
 
-    // Fallback logic to find platform name in the edition string
+    // 2. If no platform object, try to parse from the edition string (e.g., "FOR:PC")
     if (!platformName && offer.edition_full) {
         const match = offer.edition_full.match(/FOR:(.+)$/i);
         if (match) platformName = match[1].trim();
     }
 
+    // 3. If still no name, it's unknown and we'll skip it
     if (!platformName) return "Unknown";
 
+    // 4. Normalize the found name into standard categories
     const lowerName = platformName.toLowerCase().trim();
 
-    // Group various PC store names into a single "WINDOWS" category
     if (['pc', 'windows', 'steam', 'epic games', 'gog', 'ea app', 'ea desktop app', 'epic games launcher', 'ubisoft connect', 'battle.net'].some(pcName => lowerName.includes(pcName))) {
         return 'WINDOWS';
     }
@@ -60,7 +60,7 @@ const normalizePlatformName = (offer: NexardaPriceOffer): string => {
     if (lowerName.includes('playstation')) return 'PlayStation'; // Broader fallback
     if (lowerName.includes('xbox')) return 'Xbox'; // Broader fallback
 
-    // Default case to capitalize the first letter
+    // Default case to capitalize the first letter for any other platforms
     return platformName.charAt(0).toUpperCase() + platformName.slice(1);
 };
 
@@ -75,7 +75,6 @@ function BudgetCalculatorPage() {
     const [platformInput, setPlatformInput] = useState<string>("");
     const [priceDisplay, setPriceDisplay] = useState<string>("");
 
-    const [activeApiQueryChar, setActiveApiQueryChar] = useState<string>("");
     const [rawApiResults, setRawApiResults] = useState<Game[]>([]);
     const [filteredDisplaySuggestions, setFilteredDisplaySuggestions] = useState<Game[]>([]);
     const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
@@ -85,117 +84,116 @@ function BudgetCalculatorPage() {
     const [platformPriceOptions, setPlatformPriceOptions] = useState<PlatformPriceOption[]>([]);
     const [loadingPlatformPrices, setLoadingPlatformPrices] = useState<boolean>(false);
 
+    const activeApiQueryChar = useRef<string>("");
+
     // --- Data Fetching & Processing ---
 
     const fetchInitialSuggestions = useCallback(async (queryChar: string) => {
         if (!queryChar) return;
         setLoadingSuggestions(true);
-        setActiveApiQueryChar(queryChar);
-        setRawApiResults([]);
-        setFilteredDisplaySuggestions([]);
+        activeApiQueryChar.current = queryChar;
         try {
             const response = await fetch(`/api/nexarda/search?query=${encodeURIComponent(queryChar)}&limit=30`);
-            if (!response.ok) throw new Error("Failed to fetch initial suggestions");
             const data = await response.json();
-            const parsed = typeof data === 'string' ? JSON.parse(data) : data;
-            const newRawResults = parsed.results?.items || [];
+            const newRawResults = (typeof data === 'string' ? JSON.parse(data) : data).results?.items || [];
             setRawApiResults(newRawResults);
             setFilteredDisplaySuggestions(newRawResults.filter(game => game.title.toLowerCase().startsWith(queryChar.toLowerCase())));
             setShowSuggestions(true);
         } catch (error) {
-            console.error("Error fetching initial game suggestions:", error);
+            console.error("Error fetching suggestions:", error);
         } finally {
             setLoadingSuggestions(false);
         }
     }, []);
 
-    const fetchAndProcessPlatformPrices = async (game: Game) => {
+    const fetchAndProcessPlatformPrices = useCallback(async (game: Game) => {
         setLoadingPlatformPrices(true);
         setPlatformPriceOptions([]);
-        setPlatformInput("");
-        setPriceDisplay("");
         try {
             const response = await fetch(`/api/nexarda/prices?id=${game.game_info.id}`);
-            if (!response.ok) throw new Error(`Failed to fetch platform prices, status: ${response.status}`);
+            if (!response.ok) throw new Error(`Failed to fetch prices, status: ${response.status}`);
 
             const data: NexardaPricesResponse = await response.json();
             const offers = data.prices?.list || [];
 
-            // Use a Map to store the lowest price found for each *normalized* platform name
             const platformPricesMap = new Map<string, number>();
 
             offers.forEach(offer => {
+                // Loosen the condition here to let the normalizer attempt to find a platform
                 if (offer.available && offer.price > 0 &&
                     !offer.edition_full?.toLowerCase().includes('demo') &&
                     !offer.edition_full?.toLowerCase().includes('trial')) {
-
                     const normalizedName = normalizePlatformName(offer);
-                    if (normalizedName === "Unknown") return; // Skip offers we can't identify
+                    if (normalizedName === "Unknown") return; // Skip if we truly can't identify
 
                     const currentLowestForPlatform = platformPricesMap.get(normalizedName);
-
-                    // If we haven't seen this platform yet, or if the new offer is cheaper, update the price
                     if (currentLowestForPlatform === undefined || offer.price < currentLowestForPlatform) {
                         platformPricesMap.set(normalizedName, offer.price);
                     }
                 }
             });
 
-            // Convert the map of lowest prices into the array structure needed for the dropdown
-            const pricedOptions: PlatformPriceOption[] = Array.from(platformPricesMap, ([name, price]) => ({ name, price }))
+            const pricedOptions = Array.from(platformPricesMap, ([name, price]) => ({ name, price }))
                 .sort((a, b) => a.name.localeCompare(b.name));
 
             setPlatformPriceOptions(pricedOptions);
 
-            if (pricedOptions.length === 1) {
-                handlePlatformChange(pricedOptions[0].name);
-            }
-
         } catch (error) {
-            console.error("A network or other error occurred while fetching prices.", error);
+            console.error("A network or other error occurred while fetching prices. Using fallback.", error);
         } finally {
             setLoadingPlatformPrices(false);
         }
-    };
+    }, []);
 
     // --- Component Effects & Event Handlers ---
 
     useEffect(() => {
-        if (gameSearchInput === "") {
-            setActiveApiQueryChar("");
-            setRawApiResults([]);
-            setFilteredDisplaySuggestions([]);
-            setShowSuggestions(false);
-            setSelectedGameForPrices(null);
-            setPlatformPriceOptions([]);
-            setPlatformInput("");
-            setPriceDisplay("");
-            return;
-        }
+        const handler = setTimeout(() => {
+            if (gameSearchInput === "") {
+                activeApiQueryChar.current = "";
+                setRawApiResults([]);
+                setFilteredDisplaySuggestions([]);
+                setShowSuggestions(false);
+                setSelectedGameForPrices(null);
+                setPlatformPriceOptions([]);
+                setPlatformInput("");
+                setPriceDisplay("");
+                return;
+            }
 
-        const firstChar = gameSearchInput[0].toLowerCase();
-        if (firstChar !== activeApiQueryChar.toLowerCase()) {
-            fetchInitialSuggestions(firstChar);
-        } else {
-            const localFiltered = rawApiResults.filter(game =>
-                game.title.toLowerCase().includes(gameSearchInput.toLowerCase())
-            );
-            setFilteredDisplaySuggestions(localFiltered);
-            setShowSuggestions(true);
-        }
+            // If a game is selected and the input matches, don't show suggestions. Fixes flicker.
+            if (selectedGameForPrices && gameSearchInput === selectedGameForPrices.title) {
+                setShowSuggestions(false);
+                return;
+            }
 
-        if (selectedGameForPrices && gameSearchInput !== selectedGameForPrices.title) {
-            setSelectedGameForPrices(null);
-            setPlatformPriceOptions([]);
-            setPlatformInput("");
-            setPriceDisplay("");
-        }
-    }, [gameSearchInput, activeApiQueryChar, rawApiResults, fetchInitialSuggestions, selectedGameForPrices]);
+            // If text changes, it's a new search, so clear previous selection
+            if (selectedGameForPrices && gameSearchInput !== selectedGameForPrices.title) {
+                setSelectedGameForPrices(null);
+            }
+
+            const firstChar = gameSearchInput[0]?.toLowerCase();
+            if (firstChar && firstChar !== activeApiQueryChar.current) {
+                fetchInitialSuggestions(firstChar);
+            } else {
+                const localFiltered = rawApiResults.filter(game =>
+                    game.title.toLowerCase().includes(gameSearchInput.toLowerCase())
+                );
+                setFilteredDisplaySuggestions(localFiltered);
+                setShowSuggestions(localFiltered.length > 0);
+            }
+        }, 300);
+
+        return () => clearTimeout(handler);
+    }, [gameSearchInput, rawApiResults, selectedGameForPrices, fetchInitialSuggestions]);
+
 
     const handleSuggestionClick = (game: Game) => {
+        setShowSuggestions(false);
         setGameSearchInput(game.title);
         setSelectedGameForPrices(game);
-        setShowSuggestions(false);
+        setPlatformInput("");
+        setPriceDisplay("");
         fetchAndProcessPlatformPrices(game);
     };
 
@@ -203,14 +201,13 @@ function BudgetCalculatorPage() {
         setPlatformInput(selectedPlatformName);
         const selectedOption = platformPriceOptions.find(p => p.name === selectedPlatformName);
         if (selectedOption) {
-            setPriceDisplay(selectedOption.price.toFixed(2));
+            setPriceDisplay(selectedOption.price > 0 ? selectedOption.price.toFixed(2) : "N/A");
         }
     };
 
     const handleAddGame = (e: FormEvent) => {
         e.preventDefault();
         const priceNum = parseFloat(priceDisplay);
-
         if (gameSearchInput && platformInput && !isNaN(priceNum) && priceNum >= 0) {
             setGamesInBudget(prev => [...prev, {
                 id: Date.now().toString(),
@@ -219,14 +216,8 @@ function BudgetCalculatorPage() {
                 price: priceNum,
             }]);
             setGameSearchInput("");
-            setPlatformInput("");
-            setPriceDisplay("");
-            setSelectedGameForPrices(null);
-            setPlatformPriceOptions([]);
-            setActiveApiQueryChar("");
-            setRawApiResults([]);
         } else {
-            alert("Please ensure Game Title is selected, a Platform is chosen, and Price is valid.");
+            alert("Please ensure a Game and Platform are selected and have a valid Price.");
         }
     };
 
@@ -271,15 +262,14 @@ function BudgetCalculatorPage() {
                         />
                         {showSuggestions && (
                             <ul className="suggestions-dropdown" onClick={(e) => e.stopPropagation()}>
-                                {loadingSuggestions && <li className="suggestion-item loading-item">Loading suggestions...</li>}
-                                {!loadingSuggestions && filteredDisplaySuggestions.length > 0 && filteredDisplaySuggestions.map((game) => (
-                                    <li key={game.game_info.id + "_" + game.title} className="suggestion-item" onClick={() => handleSuggestionClick(game)}>
-                                        {game.title}
-                                    </li>
-                                ))}
-                                {!loadingSuggestions && filteredDisplaySuggestions.length === 0 && gameSearchInput.length > 0 && (
-                                    <li className="suggestion-item no-results-item">No results found for "{gameSearchInput}".</li>
-                                )}
+                                {loadingSuggestions ? (<li className="suggestion-item loading-item">Loading...</li>) :
+                                    filteredDisplaySuggestions.length > 0 ? (
+                                        filteredDisplaySuggestions.map(game => (
+                                            <li key={game.game_info.id} className="suggestion-item" onClick={() => handleSuggestionClick(game)}>
+                                                {game.title}
+                                            </li>
+                                        ))
+                                    ) : (<li className="suggestion-item no-results-item">No results.</li>)}
                             </ul>
                         )}
                     </div>
@@ -307,10 +297,10 @@ function BudgetCalculatorPage() {
                     <div className="input-group">
                         <label htmlFor="game-price-display">Price ($):</label>
                         <div id="game-price-display" className="price-display">
-                            {priceDisplay ? `$${priceDisplay}` : (loadingPlatformPrices ? "Loading..." : "Select platform")}
+                            {priceDisplay ? (priceDisplay === 'N/A' ? "N/A" : `$${priceDisplay}`) : "Select platform"}
                         </div>
                     </div>
-                    <button type="submit" className="calc-button" disabled={!platformInput || !priceDisplay || isNaN(parseFloat(priceDisplay))}>
+                    <button type="submit" className="calc-button" disabled={!platformInput || !priceDisplay || priceDisplay === 'N/A'}>
                         Add Game
                     </button>
                 </form>
@@ -320,7 +310,7 @@ function BudgetCalculatorPage() {
                 <div className="calculator-section">
                     <h2>Selected Games</h2>
                     <ul className="games-list">
-                        {gamesInBudget.map((game) => (
+                        {gamesInBudget.map(game => (
                             <li key={game.id} className="game-item">
                                 <span>{game.title} ({game.platform}) - ${game.price.toFixed(2)}</span>
                                 <button onClick={() => handleRemoveGame(game.id)} className="remove-game-btn">Remove</button>
@@ -329,7 +319,6 @@ function BudgetCalculatorPage() {
                     </ul>
                 </div>
             )}
-
             <div className="calculator-section">
                 <h2>Sales Tax</h2>
                 <div className="input-group">
@@ -337,7 +326,6 @@ function BudgetCalculatorPage() {
                     <input id="tax-rate-input" type="number" value={taxRate} onChange={(e) => setTaxRate(e.target.value)} placeholder="e.g., 7.5" step="0.01" min="0" />
                 </div>
             </div>
-
             <div className="calculator-section summary-section">
                 <h2>Summary</h2>
                 <div className="summary-item"><span>Subtotal:</span><span>${subtotal.toFixed(2)}</span></div>
@@ -350,7 +338,6 @@ function BudgetCalculatorPage() {
                         <span>${Math.abs(remainingBudget).toFixed(2)}</span>
                     </div>
                 )}
-                {(!budget || parseFloat(budget) === 0) && (<p className="info-text">Enter a budget to see how it compares to your total cost.</p>)}
             </div>
             <div style={{ textAlign: "center", marginTop: "2rem" }}>
                 <Link to="/" className="calc-button link-button">← Back to Home</Link>
