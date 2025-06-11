@@ -1,20 +1,20 @@
 {
   "Version": 1,
-  "Hash": "tUuXxzKMFstN1yDBn/ckiUd8Biqgyc9IKD81fkl/+5M=",
+  "Hash": "Hm9d71fP6muy3W0zlSaWcRGQRt+EeAyZyfQ57RkZfe0=",
   "Source": "quest4dealsweb.Server",
   "BasePath": "_content/quest4dealsweb.Server",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [
     {
-      "Identity": "/Users/oscar/Documents/Quest4Deals/quest4dealsweb.client/quest4dealsweb.client.esproj",
+      "Identity": "C:\\Users\\adria\\Desktop\\Quest4Deals\\quest4dealsweb.client\\quest4dealsweb.client.esproj",
       "Version": 2,
       "Source": "quest4dealsweb.client",
       "GetPublishAssetsTargets": "GetCurrentProjectPublishStaticWebAssetItems",
-      "AdditionalPublishProperties": "Configuration=Debug;Platform=AnyCPU",
+      "AdditionalPublishProperties": "",
       "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;TargetFramework;RuntimeIdentifier;SelfContained",
       "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
-      "AdditionalBuildProperties": "Configuration=Debug;Platform=AnyCPU",
+      "AdditionalBuildProperties": "",
       "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;TargetFramework;RuntimeIdentifier;SelfContained"
     }
   ],

@@ -1,4 +1,3 @@
-// src/App.tsx
 import {
   BrowserRouter as Router,
   Routes,
@@ -17,6 +16,7 @@ import WishlistPage from "./pages/WishlistPage";
 import WatchlistContentPage from "./pages/WatchlistContentPage";
 import VerifyEmail from "./pages/VerifyEmail";
 import ResetPassword from "./pages/ResetPassword";
+import BudgetCalculatorPage from "./pages/BudgetCalculatorPage";
 
 import "./styling/Main.css";
 import { useState } from "react";
@@ -39,60 +39,61 @@ function AppRoutes() {
     setReloadKey((prev) => prev + 1);
   };
 
-  return (
-    <>
-      {/* Main (or “background”) routes */}
-      <Routes location={state?.backgroundLocation || location}>
-        <Route
-          path="/"
-          element={
-            <div className="App">
-              <Navbar
-                setSearchQuery={setSearchQuery}
-                setIsSearching={setIsSearching}
-                onReload={handleReloadDashboard}
-              />
-              <Filter
-                filters={filters}
-                setFilters={setFilters}
-                setIsFiltered={setIsFiltered}
-                onReload={handleReloadDashboard}
-              />
-              <Dashboard
-                isFiltered={isFiltered}
-                filters={filters}
-                key={reloadKey}
-                isSearching={isSearching}
-                searchQuery={searchQuery}
-              />
-            </div>
-          }
-        />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/edit-profile/:userId" element={<EditProfilePage />} />
-        <Route path="/wishlist" element={<WishlistPage />} />
-        <Route path="/watchlist" element={<WatchlistContentPage />} />
-        <Route path="/verify-email" element={<VerifyEmail />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-        {/* Fallback if user visits details directly */}
-        <Route
-          path="/details/:id/:title"
-          element={<GameDetails isModal={false} />}
-        />
-      </Routes>
+    return (
+        <>
+            {/* Main (or “background”) routes */}
+            <Routes location={state?.backgroundLocation || location}>
+                <Route
+                    path="/"
+                    element={
+                        <div className="App">
+                            <Navbar
+                                setSearchQuery={setSearchQuery}
+                                setIsSearching={setIsSearching}
+                                onReload={handleReloadDashboard}
+                            />
+                            <Filter
+                                filters={filters}
+                                setFilters={setFilters}
+                                setIsFiltered={setIsFiltered}
+                                onReload={handleReloadDashboard}
+                            />
+                            <Dashboard
+                                isFiltered={isFiltered}
+                                filters={filters}
+                                key={reloadKey}
+                                isSearching={isSearching}
+                                searchQuery={searchQuery}
+                            />
+                        </div>
+                    }
+                />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/edit-profile/:userId" element={<EditProfilePage />} />
+                <Route path="/wishlist" element={<WishlistPage />} /> {/* This was the old Wishlist, might be removed or kept */}
+                <Route path="/watchlist" element={<WatchlistContentPage />} /> {/* This is the detailed watchlist page */}
+                <Route path="/verify-email" element={<VerifyEmail />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path="/budget-calculator" element={<BudgetCalculatorPage />} /> {/* Added new route */}
+                {/* Fallback if user visits details directly */}
+                <Route
+                    path="/details/:id/:title"
+                    element={<GameDetails isModal={false} />}
+                />
+            </Routes>
 
-      {/* Modal route for details when navigated from within the app */}
-      {state?.backgroundLocation && (
-        <Routes>
-          <Route
-            path="/details/:id/:title"
-            element={<GameDetails isModal />}
-          />
-        </Routes>
-      )}
-    </>
-  );
+            {/* Modal route for details when navigated from within the app */}
+            {state?.backgroundLocation && (
+                <Routes>
+                    <Route
+                        path="/details/:id/:title"
+                        element={<GameDetails isModal />}
+                    />
+                </Routes>
+            )}
+        </>
+    );
 }
 
 export default function App() {
