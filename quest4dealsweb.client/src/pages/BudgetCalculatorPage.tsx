@@ -32,21 +32,17 @@ interface NexardaPricesResponse {
     };
 }
 
-// --- Platform Normalization Logic (Crucial for fixing the bug) ---
+// --- Platform Normalization Logic ---
 const normalizePlatformName = (offer: NexardaPriceOffer): string => {
-    // 1. Prioritize platform.name, then platform.slug
     let platformName = offer.platform?.name || offer.platform?.slug || "";
 
-    // 2. If no platform object, try to parse from the edition string (e.g., "FOR:PC")
     if (!platformName && offer.edition_full) {
         const match = offer.edition_full.match(/FOR:(.+)$/i);
         if (match) platformName = match[1].trim();
     }
 
-    // 3. If still no name, it's unknown and we'll skip it
     if (!platformName) return "Unknown";
 
-    // 4. Normalize the found name into standard categories
     const lowerName = platformName.toLowerCase().trim();
 
     if (['pc', 'windows', 'steam', 'epic games', 'gog', 'ea app', 'ea desktop app', 'epic games launcher', 'ubisoft connect', 'battle.net'].some(pcName => lowerName.includes(pcName))) {
@@ -57,10 +53,9 @@ const normalizePlatformName = (offer: NexardaPriceOffer): string => {
     if (lowerName.includes('xbox series x') || lowerName.includes('xbox series s') || lowerName.includes('xbox-xs')) return 'XBOX-XS';
     if (lowerName.includes('xbox one') || lowerName.includes('xboxone')) return 'Xbox One';
     if (lowerName.includes('switch') || lowerName.includes('nintendo switch')) return 'Nintendo Switch';
-    if (lowerName.includes('playstation')) return 'PlayStation'; // Broader fallback
-    if (lowerName.includes('xbox')) return 'Xbox'; // Broader fallback
+    if (lowerName.includes('playstation')) return 'PlayStation';
+    if (lowerName.includes('xbox')) return 'Xbox';
 
-    // Default case to capitalize the first letter for any other platforms
     return platformName.charAt(0).toUpperCase() + platformName.slice(1);
 };
 
@@ -75,8 +70,7 @@ function BudgetCalculatorPage() {
     const [platformInput, setPlatformInput] = useState<string>("");
     const [priceDisplay, setPriceDisplay] = useState<string>("");
 
-    const [rawApiResults, setRawApiResults] = useState<Game[]>([]);
-    const [filteredDisplaySuggestions, setFilteredDisplaySuggestions] = useState<Game[]>([]);
+    const [suggestions, setSuggestions] = useState<Game[]>([]);
     const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
     const [loadingSuggestions, setLoadingSuggestions] = useState<boolean>(false);
 
@@ -84,27 +78,9 @@ function BudgetCalculatorPage() {
     const [platformPriceOptions, setPlatformPriceOptions] = useState<PlatformPriceOption[]>([]);
     const [loadingPlatformPrices, setLoadingPlatformPrices] = useState<boolean>(false);
 
-    const activeApiQueryChar = useRef<string>("");
+    const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
 
     // --- Data Fetching & Processing ---
-
-    const fetchInitialSuggestions = useCallback(async (queryChar: string) => {
-        if (!queryChar) return;
-        setLoadingSuggestions(true);
-        activeApiQueryChar.current = queryChar;
-        try {
-            const response = await fetch(`/api/nexarda/search?query=${encodeURIComponent(queryChar)}&limit=30`);
-            const data = await response.json();
-            const newRawResults = (typeof data === 'string' ? JSON.parse(data) : data).results?.items || [];
-            setRawApiResults(newRawResults);
-            setFilteredDisplaySuggestions(newRawResults.filter(game => game.title.toLowerCase().startsWith(queryChar.toLowerCase())));
-            setShowSuggestions(true);
-        } catch (error) {
-            console.error("Error fetching suggestions:", error);
-        } finally {
-            setLoadingSuggestions(false);
-        }
-    }, []);
 
     const fetchAndProcessPlatformPrices = useCallback(async (game: Game) => {
         setLoadingPlatformPrices(true);
@@ -115,16 +91,14 @@ function BudgetCalculatorPage() {
 
             const data: NexardaPricesResponse = await response.json();
             const offers = data.prices?.list || [];
-
             const platformPricesMap = new Map<string, number>();
 
             offers.forEach(offer => {
-                // Loosen the condition here to let the normalizer attempt to find a platform
                 if (offer.available && offer.price > 0 &&
                     !offer.edition_full?.toLowerCase().includes('demo') &&
                     !offer.edition_full?.toLowerCase().includes('trial')) {
                     const normalizedName = normalizePlatformName(offer);
-                    if (normalizedName === "Unknown") return; // Skip if we truly can't identify
+                    if (normalizedName === "Unknown") return;
 
                     const currentLowestForPlatform = platformPricesMap.get(normalizedName);
                     if (currentLowestForPlatform === undefined || offer.price < currentLowestForPlatform) {
@@ -139,7 +113,7 @@ function BudgetCalculatorPage() {
             setPlatformPriceOptions(pricedOptions);
 
         } catch (error) {
-            console.error("A network or other error occurred while fetching prices. Using fallback.", error);
+            console.error("A network error occurred while fetching prices.", error);
         } finally {
             setLoadingPlatformPrices(false);
         }
@@ -148,44 +122,54 @@ function BudgetCalculatorPage() {
     // --- Component Effects & Event Handlers ---
 
     useEffect(() => {
-        const handler = setTimeout(() => {
-            if (gameSearchInput === "") {
-                activeApiQueryChar.current = "";
-                setRawApiResults([]);
-                setFilteredDisplaySuggestions([]);
-                setShowSuggestions(false);
-                setSelectedGameForPrices(null);
-                setPlatformPriceOptions([]);
-                setPlatformInput("");
-                setPriceDisplay("");
-                return;
-            }
+        // Clear previous debounce timer on each keystroke
+        if (debounceTimeout.current) {
+            clearTimeout(debounceTimeout.current);
+        }
 
-            // If a game is selected and the input matches, don't show suggestions. Fixes flicker.
-            if (selectedGameForPrices && gameSearchInput === selectedGameForPrices.title) {
-                setShowSuggestions(false);
-                return;
-            }
+        // If input is empty, reset everything related to search/selection
+        if (gameSearchInput.trim() === "") {
+            setSuggestions([]);
+            setShowSuggestions(false);
+            setSelectedGameForPrices(null);
+            setPlatformPriceOptions([]);
+            setPlatformInput("");
+            setPriceDisplay("");
+            return;
+        }
 
-            // If text changes, it's a new search, so clear previous selection
-            if (selectedGameForPrices && gameSearchInput !== selectedGameForPrices.title) {
-                setSelectedGameForPrices(null);
-            }
+        // If a game is already selected and the input matches, don't re-search
+        if (selectedGameForPrices && gameSearchInput === selectedGameForPrices.title) {
+            setShowSuggestions(false);
+            return;
+        }
 
-            const firstChar = gameSearchInput[0]?.toLowerCase();
-            if (firstChar && firstChar !== activeApiQueryChar.current) {
-                fetchInitialSuggestions(firstChar);
-            } else {
-                const localFiltered = rawApiResults.filter(game =>
-                    game.title.toLowerCase().includes(gameSearchInput.toLowerCase())
-                );
-                setFilteredDisplaySuggestions(localFiltered);
-                setShowSuggestions(localFiltered.length > 0);
-            }
-        }, 300);
+        // Start a new debounce timer to fetch suggestions
+        debounceTimeout.current = setTimeout(async () => {
+            setLoadingSuggestions(true);
+            try {
+                const response = await fetch(`/api/nexarda/search?query=${encodeURIComponent(gameSearchInput)}&limit=20`);
+                if (!response.ok) throw new Error("API search failed");
 
-        return () => clearTimeout(handler);
-    }, [gameSearchInput, rawApiResults, selectedGameForPrices, fetchInitialSuggestions]);
+                const data = await response.json();
+                const items = (typeof data === 'string' ? JSON.parse(data) : data).results?.items || [];
+                setSuggestions(items);
+                setShowSuggestions(items.length > 0);
+            } catch (error) {
+                console.error("Error fetching game suggestions:", error);
+                setSuggestions([]);
+            } finally {
+                setLoadingSuggestions(false);
+            }
+        }, 350); // Debounce delay of 350ms
+
+        // Cleanup on unmount
+        return () => {
+            if (debounceTimeout.current) {
+                clearTimeout(debounceTimeout.current);
+            }
+        };
+    }, [gameSearchInput, selectedGameForPrices]);
 
 
     const handleSuggestionClick = (game: Game) => {
@@ -211,10 +195,11 @@ function BudgetCalculatorPage() {
         if (gameSearchInput && platformInput && !isNaN(priceNum) && priceNum >= 0) {
             setGamesInBudget(prev => [...prev, {
                 id: Date.now().toString(),
-                title: gameSearchInput,
+                title: selectedGameForPrices?.title || gameSearchInput, // Prefer the "official" title
                 platform: platformInput,
                 price: priceNum,
             }]);
+            // Reset the form for the next entry
             setGameSearchInput("");
         } else {
             alert("Please ensure a Game and Platform are selected and have a valid Price.");
@@ -256,15 +241,15 @@ function BudgetCalculatorPage() {
                         <input
                             id="game-title-search" type="text" value={gameSearchInput}
                             onChange={(e) => setGameSearchInput(e.target.value)}
-                            onFocus={() => { if (filteredDisplaySuggestions.length > 0) setShowSuggestions(true); }}
+                            onFocus={() => { if (suggestions.length > 0) setShowSuggestions(true); }}
                             onClick={(e) => e.stopPropagation()}
                             placeholder="Type to search for game title..." autoComplete="off" required
                         />
                         {showSuggestions && (
                             <ul className="suggestions-dropdown" onClick={(e) => e.stopPropagation()}>
                                 {loadingSuggestions ? (<li className="suggestion-item loading-item">Loading...</li>) :
-                                    filteredDisplaySuggestions.length > 0 ? (
-                                        filteredDisplaySuggestions.map(game => (
+                                    suggestions.length > 0 ? (
+                                        suggestions.map(game => (
                                             <li key={game.game_info.id} className="suggestion-item" onClick={() => handleSuggestionClick(game)}>
                                                 {game.title}
                                             </li>
