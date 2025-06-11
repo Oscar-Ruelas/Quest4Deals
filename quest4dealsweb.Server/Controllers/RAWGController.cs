@@ -12,7 +12,7 @@ public class RAWGController : ControllerBase
 {
     private readonly HttpClient _httpClient;
     private readonly ILogger<RAWGController> _logger;
-    private const string ApiKey = "73366dd5bac940d28ae476c4abf9abc5"; // Replace with your RAWG API key
+    private const string ApiKey = ""; // Replace with your RAWG API key
     private const string BaseUrl = "https://api.rawg.io/api";
 
     public RAWGController(ILogger<RAWGController> logger)
