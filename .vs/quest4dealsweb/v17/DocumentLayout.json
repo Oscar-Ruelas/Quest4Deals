@@ -7,6 +7,18 @@
       "RelativeMoniker": "D:0:0:{5D5E7572-A1D7-A358-A8E3-2162CD72176D}|quest4dealsweb.client\\quest4dealsweb.client.esproj|solutionrelative:quest4dealsweb.client\\src\\components\\watchlistbutton.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{5D5E7572-A1D7-A358-A8E3-2162CD72176D}|quest4dealsweb.client\\quest4dealsweb.client.esproj|c:\\users\\adria\\desktop\\quest4deals\\quest4dealsweb.client\\src\\styling\\main.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{5D5E7572-A1D7-A358-A8E3-2162CD72176D}|quest4dealsweb.client\\quest4dealsweb.client.esproj|solutionrelative:quest4dealsweb.client\\src\\styling\\main.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D5E7572-A1D7-A358-A8E3-2162CD72176D}|quest4dealsweb.client\\quest4dealsweb.client.esproj|c:\\users\\adria\\desktop\\quest4deals\\quest4dealsweb.client\\src\\components\\navbar.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{5D5E7572-A1D7-A358-A8E3-2162CD72176D}|quest4dealsweb.client\\quest4dealsweb.client.esproj|solutionrelative:quest4dealsweb.client\\src\\components\\navbar.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D5E7572-A1D7-A358-A8E3-2162CD72176D}|quest4dealsweb.client\\quest4dealsweb.client.esproj|c:\\users\\adria\\desktop\\quest4deals\\quest4dealsweb.client\\src\\app.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{5D5E7572-A1D7-A358-A8E3-2162CD72176D}|quest4dealsweb.client\\quest4dealsweb.client.esproj|solutionrelative:quest4dealsweb.client\\src\\app.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{5D5E7572-A1D7-A358-A8E3-2162CD72176D}|quest4dealsweb.client\\quest4dealsweb.client.esproj|c:\\users\\adria\\desktop\\quest4deals\\quest4dealsweb.client\\src\\styling\\watchlistbutton.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
       "RelativeMoniker": "D:0:0:{5D5E7572-A1D7-A358-A8E3-2162CD72176D}|quest4dealsweb.client\\quest4dealsweb.client.esproj|solutionrelative:quest4dealsweb.client\\src\\styling\\watchlistbutton.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
     },
@@ -26,8 +38,47 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 6,
           "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Main.css",
+              "DocumentMoniker": "C:\\Users\\adria\\Desktop\\Quest4Deals\\quest4dealsweb.client\\src\\styling\\Main.css",
+              "RelativeDocumentMoniker": "quest4dealsweb.client\\src\\styling\\Main.css",
+              "ToolTip": "C:\\Users\\adria\\Desktop\\Quest4Deals\\quest4dealsweb.client\\src\\styling\\Main.css",
+              "RelativeToolTip": "quest4dealsweb.client\\src\\styling\\Main.css",
+              "ViewState": "AgIAANoAAAAAAAAAAAAowOoAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2025-06-04T07:00:36.639Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Navbar.tsx",
+              "DocumentMoniker": "C:\\Users\\adria\\Desktop\\Quest4Deals\\quest4dealsweb.client\\src\\components\\Navbar.tsx",
+              "RelativeDocumentMoniker": "quest4dealsweb.client\\src\\components\\Navbar.tsx",
+              "ToolTip": "C:\\Users\\adria\\Desktop\\Quest4Deals\\quest4dealsweb.client\\src\\components\\Navbar.tsx",
+              "RelativeToolTip": "quest4dealsweb.client\\src\\components\\Navbar.tsx",
+              "ViewState": "AgIAAHEAAAAAAAAAAAAAwIgAAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2025-06-04T06:59:52.762Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "App.tsx",
+              "DocumentMoniker": "C:\\Users\\adria\\Desktop\\Quest4Deals\\quest4dealsweb.client\\src\\App.tsx",
+              "RelativeDocumentMoniker": "quest4dealsweb.client\\src\\App.tsx",
+              "ToolTip": "C:\\Users\\adria\\Desktop\\Quest4Deals\\quest4dealsweb.client\\src\\App.tsx",
+              "RelativeToolTip": "quest4dealsweb.client\\src\\App.tsx",
+              "ViewState": "AgIAAEkAAAAAAAAAAAAAwGAAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2025-06-04T06:58:29.311Z",
+              "EditorCaption": ""
+            },
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{eefa5220-e298-11d0-8f78-00a0c9110057}"
@@ -38,7 +89,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 4,
               "Title": "WatchlistButton.css",
               "DocumentMoniker": "C:\\Users\\adria\\Desktop\\Quest4Deals\\quest4dealsweb.client\\src\\styling\\WatchlistButton.css",
               "RelativeDocumentMoniker": "quest4dealsweb.client\\src\\styling\\WatchlistButton.css",
@@ -56,14 +107,14 @@
               "RelativeDocumentMoniker": "quest4dealsweb.client\\src\\components\\WatchlistButton.tsx",
               "ToolTip": "C:\\Users\\adria\\Desktop\\Quest4Deals\\quest4dealsweb.client\\src\\components\\WatchlistButton.tsx",
               "RelativeToolTip": "quest4dealsweb.client\\src\\components\\WatchlistButton.tsx",
-              "ViewState": "AgIAAGMBAAAAAAAAAADwv4EBAAAfAAAAAAAAAA==",
+              "ViewState": "AgIAAC8AAAAAAAAAAAAswDwAAAAnAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
               "WhenOpened": "2025-05-15T05:38:03.321Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 5,
               "Title": "notifs.cs",
               "DocumentMoniker": "C:\\Users\\adria\\Desktop\\Quest4Deals\\quest4dealsweb.Server\\notifs.cs",
               "RelativeDocumentMoniker": "quest4dealsweb.Server\\notifs.cs",
@@ -74,7 +125,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 6,
               "Title": "GameDetails.css",
               "DocumentMoniker": "C:\\Users\\adria\\Desktop\\Quest4Deals\\quest4dealsweb.client\\src\\styling\\GameDetails.css",
               "RelativeDocumentMoniker": "quest4dealsweb.client\\src\\styling\\GameDetails.css",

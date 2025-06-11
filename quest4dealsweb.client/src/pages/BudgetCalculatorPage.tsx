@@ -14,7 +14,7 @@ interface BudgetGameEntry {
 interface PlatformPriceOption {
     slug: string;
     name: string;
-    price: number;
+    price?: number; // Price is now optional for the fallback
 }
 
 interface NexardaPriceOffer {
@@ -30,9 +30,7 @@ interface NexardaPriceOffer {
 interface NexardaPricesResponse {
     prices: {
         list: NexardaPriceOffer[];
-        // other properties like currency, lowest, highest etc.
     };
-    // other top-level properties
 }
 
 
@@ -120,13 +118,13 @@ function BudgetCalculatorPage() {
     }, [gameSearchInput, activeApiQueryChar, rawApiResults, fetchInitialSuggestions, selectedGameForPrices]);
 
 
-    const fetchPlatformPrices = async (gameId: number) => {
+    const fetchPlatformPrices = async (game: Game) => {
         setLoadingPlatformPrices(true);
         setPlatformPriceOptions([]);
         setPlatformInput("");
-        setPriceDisplay(""); // Clear price while loading new platform prices
+        setPriceDisplay("");
         try {
-            const response = await fetch(`/api/nexarda/prices?id=${gameId}`);
+            const response = await fetch(`/api/nexarda/prices?id=${game.game_info.id}`);
             if (!response.ok) throw new Error(`Failed to fetch platform prices (status: ${response.status})`);
             const data: NexardaPricesResponse = await response.json();
 
@@ -148,25 +146,37 @@ function BudgetCalculatorPage() {
                     }
                 }
             });
-            const options = Array.from(platformPricesMap.values()).sort((a, b) => a.name.localeCompare(b.name));
-            setPlatformPriceOptions(options);
-            if (options.length > 0) {
-                // Auto-select first platform and update price
-                setPlatformInput(options[0].slug);
-                setPriceDisplay(options[0].price.toFixed(2));
+
+            const pricedOptions = Array.from(platformPricesMap.values()).sort((a, b) => a.name.localeCompare(b.name));
+
+            if (pricedOptions.length > 0) {
+                // Happy path: We have specific offers with prices
+                setPlatformPriceOptions(pricedOptions);
+                setPlatformInput(pricedOptions[0].slug);
+                setPriceDisplay(pricedOptions[0].price!.toFixed(2));
             } else {
-                // No valid platform offers found, maybe fall back to original lowest_price or inform user
-                setPriceDisplay(selectedGameForPrices?.game_info.lowest_price.toFixed(2) || "N/A");
-                // console.warn("No specific platform offers found, using general lowest price.");
+                // Fallback path: No specific offers, use general game info
+                console.warn("No specific priced offers found. Using fallback platforms and lowest_price.");
+                const fallbackPlatforms = (game.game_info.platforms || [])
+                    .map(p => ({ slug: p.slug, name: p.name }))
+                    .filter(p => p.name && p.slug);
+
+                setPlatformPriceOptions(fallbackPlatforms);
+                const lowestPrice = game.game_info.lowest_price;
+                setPriceDisplay(lowestPrice > 0 ? lowestPrice.toFixed(2) : "N/A");
+                setPlatformInput(""); // Force user to select a platform
             }
 
         } catch (error) {
-            console.error("Error fetching platform prices:", error);
-            // Fallback to the general lowest price from search if platform prices fail
-            if (selectedGameForPrices) {
-                setPriceDisplay(selectedGameForPrices.game_info.lowest_price.toFixed(2));
-            }
-            // Potentially show an error message to the user here for platform prices
+            console.error("Error fetching platform prices, using fallback:", error);
+            // General error fallback
+            const fallbackPlatforms = (game.game_info.platforms || [])
+                .map(p => ({ slug: p.slug, name: p.name }))
+                .filter(p => p.name && p.slug);
+            setPlatformPriceOptions(fallbackPlatforms);
+            const lowestPrice = game.game_info.lowest_price;
+            setPriceDisplay(lowestPrice > 0 ? lowestPrice.toFixed(2) : "N/A");
+            setPlatformInput("");
         } finally {
             setLoadingPlatformPrices(false);
         }
@@ -174,41 +184,36 @@ function BudgetCalculatorPage() {
 
     const handleSuggestionClick = (game: Game) => {
         setGameSearchInput(game.title);
-        setSelectedGameForPrices(game); // Store the selected game
+        setSelectedGameForPrices(game);
         setShowSuggestions(false);
-        setFilteredDisplaySuggestions([]); // Clear suggestions dropdown
-        // Price display will be set after platform prices are fetched and a platform is (auto)selected.
-        // Set initial price display to loading or the game's general lowest price as placeholder
-        setPriceDisplay(game.game_info.lowest_price.toFixed(2)); // Show initial lowest_price
-        fetchPlatformPrices(game.game_info.id);
+        setFilteredDisplaySuggestions([]);
+        fetchPlatformPrices(game);
     };
 
     const handlePlatformChange = (selectedSlug: string) => {
         setPlatformInput(selectedSlug);
+        // Only update price if the selected option has a specific price
         const selectedOption = platformPriceOptions.find(p => p.slug === selectedSlug);
-        if (selectedOption) {
+        if (selectedOption && selectedOption.price !== undefined) {
             setPriceDisplay(selectedOption.price.toFixed(2));
         }
+        // Otherwise, keep the general lowest_price in priceDisplay
     };
 
     const handleAddGame = (e: FormEvent) => {
         e.preventDefault();
-        const priceNum = parseFloat(priceDisplay); // Use priceDisplay which is controlled by platform selection
+        const priceNum = parseFloat(priceDisplay);
 
         let platformNameToAdd = "";
-        if (selectedGameForPrices && platformPriceOptions.length > 0) {
-            const selectedPlatformObj = platformPriceOptions.find(p => p.slug === platformInput);
-            platformNameToAdd = selectedPlatformObj ? selectedPlatformObj.name : "N/A"; // Fallback
-        } else if (!selectedGameForPrices && platformInput) {
-            platformNameToAdd = platformInput; // Manual platform input
-        }
+        const selectedPlatformObj = platformPriceOptions.find(p => p.slug === platformInput);
+        platformNameToAdd = selectedPlatformObj ? selectedPlatformObj.name : "N/A";
 
-        if (gameSearchInput && platformNameToAdd && !isNaN(priceNum) && priceNum >= 0) {
+        if (gameSearchInput && platformNameToAdd !== "N/A" && !isNaN(priceNum) && priceNum >= 0) {
             setGamesInBudget([
                 ...gamesInBudget,
                 {
                     id: Date.now().toString(),
-                    title: gameSearchInput, // Title from search input
+                    title: gameSearchInput,
                     platform: platformNameToAdd,
                     price: priceNum,
                 },
@@ -290,17 +295,18 @@ function BudgetCalculatorPage() {
                             >
                                 <option value="" disabled>{loadingPlatformPrices ? "Loading platforms..." : "-- Select Platform --"}</option>
                                 {platformPriceOptions.map(p => (
-                                    <option key={p.slug} value={p.slug}>{p.name} - ${p.price.toFixed(2)}</option>
+                                    <option key={p.slug} value={p.slug}>
+                                        {p.name}{p.price !== undefined ? ` - $${p.price.toFixed(2)}` : ''}
+                                    </option>
                                 ))}
                             </select>
                         ) : selectedGameForPrices && loadingPlatformPrices ? (
                             <div className="platform-loading-display">Loading platform prices...</div>
                         ) : (
                             <input
-                                id="game-platform-text" type="text" value={platformInput}
-                                onChange={(e) => setPlatformInput(e.target.value)}
-                                placeholder={selectedGameForPrices ? "Select game above first" : "e.g., Steam, PS5"}
-                                required readOnly={!!selectedGameForPrices && platformPriceOptions.length === 0 && !loadingPlatformPrices} // Readonly if game selected but no platforms loaded
+                                id="game-platform-text" type="text"
+                                placeholder={selectedGameForPrices ? "No platforms available" : "Select a game first"}
+                                required readOnly
                             />
                         )}
                     </div>
@@ -308,7 +314,7 @@ function BudgetCalculatorPage() {
                     <div className="input-group">
                         <label htmlFor="game-price-display">Price ($):</label>
                         <div id="game-price-display" className="price-display">
-                            {priceDisplay ? `$${priceDisplay}` : (selectedGameForPrices && loadingPlatformPrices ? "Loading..." : "$0.00")}
+                            {priceDisplay ? (priceDisplay === "N/A" ? "N/A" : `$${priceDisplay}`) : (loadingPlatformPrices ? "Loading..." : "$0.00")}
                         </div>
                     </div>
                     <button type="submit" className="calc-button" disabled={loadingPlatformPrices || (selectedGameForPrices && !platformInput)}>
