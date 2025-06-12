@@ -55,6 +55,29 @@ Ensure the following tools are installed:
 **Clone the repository and navigate to the solution folder:**
 
 ```bash
-git clone https://github.com/your-username/your-repo.git
+git clone https://github.com/Oscar-Ruelas/Quest4Deals.git
 cd quest4dealsweb.Server
+```
 
+**Restore backend and frontend dependencies:**
+
+```bash
+git clone https://github.com/Oscar-Ruelas/Quest4Deals.git
+cd quest4dealsweb.Server
+```
+
+**Run the app:**
+
+```bash
+dotnet run
+```
+This will:
+- Start the ASP.NET Core Web API on https://localhost:5001
+- Automatically run npm install (if needed)
+- Launch the Vite dev server via npm run dev
+- Proxy frontend requests to the backend
+
+Open the app in your browser at:
+```bash
+https://localhost:51540/
+```
