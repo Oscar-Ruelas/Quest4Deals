@@ -62,8 +62,7 @@ cd quest4dealsweb.Server
 **Restore backend and frontend dependencies:**
 
 ```bash
-git clone https://github.com/Oscar-Ruelas/Quest4Deals.git
-cd quest4dealsweb.Server
+dotnet restore
 ```
 
 **Run the app:**
