@@ -26,3 +26,35 @@ Our goal was to create a user-friendly platform where users can build a personal
 - README.md – Project overview and installation guide
 
 This project reflects our efforts in full-stack development, API integration, cloud deployment, and user-centered design. We hope you find it useful or inspiring
+
+
+## How to Run the Project Locally
+
+This project includes:
+
+- A **React + Vite frontend** (`quest4dealsweb.client`)
+- An **ASP.NET Core Web API backend** (`quest4dealsweb.Server`)
+
+Both run together using a single command: `dotnet run`.
+
+---
+
+### Prerequisites
+
+Ensure the following tools are installed:
+
+- [.NET 8.0 SDK or later](https://dotnet.microsoft.com/download)
+- [Node.js (v18+ recommended)](https://nodejs.org/)
+- [npm](https://www.npmjs.com/)
+- SQL Server or compatible database engine
+
+---
+
+### Running the Application
+
+**Clone the repository and navigate to the solution folder:**
+
+```bash
+git clone https://github.com/your-username/your-repo.git
+cd quest4dealsweb.Server
+
