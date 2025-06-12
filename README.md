@@ -1,7 +1,2 @@
 # Quest4Deals
-Senior Project Repo
-
-## Contributing
-- Document the code well so others can understand it
-- Create a pull request for every branch merge, so someone else can review and approve it
-- Adhere to [git flow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow)
+Hi there, welcome to our Senior Project Repo. This repo contains all our source code for a website that we created to send out notifications to the user when their favorite game comes out with deal.
