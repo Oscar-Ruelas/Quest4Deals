@@ -50,6 +50,40 @@ Ensure the following tools are installed:
 
 ---
 
+**Before running the project, configure your backend settings in:**
+
+```
+quest4dealsweb.Server/appsettings.json
+```
+
+Update the following with your own credentials and connection string:
+
+```json
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "ConnectionStrings": {
+    "DefaultConnection": "Your DB URL and PWD Goes Here"
+  },
+  "Gmail": {
+    "Username": "Your Gmail Goes Here",
+    "AppPassword": "Your App PWD Goes Here",
+    "FromEmail": "Your Gmail Goes Here",
+    "FromName": "Quest4Deals"
+  },
+  "AllowedHosts": "*"
+}
+```
+
+>  **Note:** If you're using 2FA on your Gmail account, generate an [App Password](https://support.google.com/accounts/answer/185833) to use for `AppPassword`.
+
+---
+
+
 ### Running the Application
 
 **Clone the repository and navigate to the solution folder:**
